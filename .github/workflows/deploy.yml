@@ -1,0 +1,36 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/ubuntu/project
+
+            echo "📦 Pull latest code"
+            git pull origin main
+
+            echo "⚙️ Backend restart"
+            cd backend
+            npm install
+            pm2 restart backend
+
+            echo "🎨 Frontend build"
+            cd ../frontend
+            npm install
+            npm run build
+
+            echo "🔄 Nginx reload"
+            sudo systemctl reload nginx
