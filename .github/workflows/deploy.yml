@@ -25,7 +25,7 @@ jobs:
             echo "Backend restart"
             cd backend
             npm install
-            pm2 restart backend
+            /home/hansung/.nvm/versions/node/v20.20.2/bin/pm2 restart backend
 
             echo "Frontend build"
             cd ../frontend
