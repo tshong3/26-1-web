@@ -17,20 +17,20 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /home/ubuntu/project
+            cd /home/hansung/project
 
-            echo "📦 Pull latest code"
+            echo "Pull latest code"
             git pull origin main
 
-            echo "⚙️ Backend restart"
+            echo "Backend restart"
             cd backend
             npm install
             pm2 restart backend
 
-            echo "🎨 Frontend build"
+            echo "Frontend build"
             cd ../frontend
             npm install
             npm run build
 
-            echo "🔄 Nginx reload"
+            echo "Nginx reload"
             sudo systemctl reload nginx
