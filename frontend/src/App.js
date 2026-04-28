@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
-import AnalysisPage from './pages/AnalysisPage'; // 💡 새로 추가
+import AnalysisPage from './pages/AnalysisPage';
 
 function App() {
   return (
@@ -14,7 +14,6 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
-          {/* 💡 새로 추가된 데이터 분석 페이지 라우트 */}
           <Route path="/analysis" element={<AnalysisPage />} />
         </Routes>
       </main>
