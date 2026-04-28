@@ -1,0 +1,98 @@
+/* src/pages/AnalysisPage.css */
+
+.analysis-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* 헤더 영역 */
+.analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.analysis-header h2 {
+  margin: 0 0 8px 0;
+  color: #222;
+}
+
+.analysis-header p {
+  color: #666;
+  margin: 0;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.refresh-icon {
+  font-size: 18px;
+}
+
+/* 탭 메뉴 영역 */
+.tab-menu {
+  display: inline-flex;
+  background-color: #f8f9fa;
+  padding: 6px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+  background-color: white;
+  color: #222;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* 차트 카드 영역 */
+.chart-card {
+  background-color: white;
+  border: 1px solid #eaeaea;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.chart-title {
+  margin: 0 0 30px 0;
+  font-size: 18px;
+  color: #222;
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 400px; /* 차트의 고정 높이 */
+}
+
+/* 권장 범위 안내 박스 */
+.recommend-range-box {
+  margin-top: 30px;
+  background-color: #f4f6fb;
+  color: #555;
+  padding: 16px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}

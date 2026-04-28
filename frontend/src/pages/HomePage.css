@@ -1,0 +1,227 @@
+/* src/pages/HomePage.css */
+
+/* 전체 컨테이너 여백 초기화 */
+.home-container {
+  width: 100%;
+}
+
+.home-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px; /* 위아래 여백을 아주 넉넉하게 */
+}
+
+/* --- 1. 기능 소개 카드 영역 --- */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3줄 배치 */
+  gap: 24px;
+}
+
+.feature-card {
+  background-color: white;
+  border: 1px solid #eaeaea;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px); /* 마우스 올리면 살짝 위로 떠오름 */
+  box-shadow: 0 12px 24px rgba(0,0,0,0.05);
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.feature-title {
+  font-size: 18px;
+  color: #222;
+  margin: 0 0 12px 0;
+}
+
+.feature-desc {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* --- 2. 작동 원리 (어떻게 작동하나요?) 영역 --- */
+.how-it-works-section {
+  background-color: #fafbfc; /* 아주 연한 회색 배경으로 구역 구분 */
+  max-width: 100%; /* 배경은 전체 너비 차지 */
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-header h2 {
+  font-size: 28px;
+  color: #222;
+  margin: 0 0 12px 0;
+}
+
+.section-header p {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+.steps-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4줄 배치 */
+  gap: 24px;
+}
+
+.step-card {
+  background-color: white;
+  border: 1px solid #eaeaea;
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  background-color: #4caf50; /* 피그마 초록색 */
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px auto;
+}
+
+.step-title {
+  font-size: 16px;
+  color: #222;
+  margin: 0 0 12px 0;
+}
+
+.step-desc {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --- 3. 하단 시작하기 (CTA) 영역 --- */
+.cta-footer-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.cta-section {
+  background-color: #4caf50; /* 피그마 핵심 초록색 배경 */
+  padding: 80px 20px;
+  text-align: center;
+  color: white;
+}
+
+.cta-section h2 {
+  font-size: 32px;
+  margin: 0 0 16px 0;
+}
+
+.cta-section p {
+  font-size: 16px;
+  margin: 0 0 40px 0;
+  opacity: 0.9;
+}
+
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.btn-primary {
+  background-color: white;
+  color: #4caf50;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+  opacity: 0.9;
+  background-color: rgba(255,255,255,0.1);
+  color: white; /* secondary 버튼 호버 시 글씨 색상 유지 */
+}
+.btn-primary:hover {
+    background-color: #f1f1f1;
+    color: #4caf50;
+}
+
+/* --- 푸터 영역 --- */
+.home-footer {
+  background-color: #1a1a1a; /* 피그마 다크 배경 */
+  color: #888;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-text-light {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+}
+
+.copyright {
+  font-size: 12px;
+  margin: 0;
+}
+
+/* --- 모바일 반응형 처리 --- */
+@media (max-width: 1024px) {
+  .feature-grid { grid-template-columns: repeat(2, 1fr); }
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .feature-grid { grid-template-columns: 1fr; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .cta-buttons { flex-direction: column; }
+}

@@ -1,9 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import HomePage from './pages/HomePage';
+import DashboardPage from './pages/DashboardPage';
+import AnalysisPage from './pages/AnalysisPage'; // 💡 새로 추가
 
 function App() {
   return (
-	  <h1>테스트 입니다</h1>
+    <BrowserRouter>
+      <Header />
+      <main>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          {/* 💡 새로 추가된 데이터 분석 페이지 라우트 */}
+          <Route path="/analysis" element={<AnalysisPage />} />
+        </Routes>
+      </main>
+    </BrowserRouter>
   );
 }
 
