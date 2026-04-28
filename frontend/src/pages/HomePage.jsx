@@ -1,12 +1,10 @@
-// src/pages/HomePage.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-// 피그마와 유사한 아이콘들 불러오기
 import { MdOutlineWaterDrop, MdOutlineInsights, MdOutlineEco, MdOutlineBolt, MdOutlineShield, MdOutlineNotificationsActive } from "react-icons/md";
 import './HomePage.css';
 
 function HomePage() {
-  // 1. 기능 소개 데이터 배열 (코드의 길이를 줄이고 관리를 편하게 합니다)
+  // 기능 소개 데이터 배열
   const features = [
     { id: 1, title: '자동 물주기', desc: '토양 습도를 실시간 모니터링하여 최적의 시점에 자동으로 물을 공급합니다.', icon: <MdOutlineWaterDrop />, color: '#10b981', bg: '#ecfdf5' },
     { id: 2, title: '데이터 분석', desc: '센서 데이터를 시각화하여 식물의 생육 환경을 한눈에 파악할 수 있습니다.', icon: <MdOutlineInsights />, color: '#6366f1', bg: '#eef2ff' },
@@ -16,7 +14,7 @@ function HomePage() {
     { id: 6, title: '스마트 알림', desc: '식물 관리가 필요한 시점을 정확하게 알려드립니다.', icon: <MdOutlineNotificationsActive />, color: '#f43f5e', bg: '#fff1f2' },
   ];
 
-  // 2. 작동 원리 데이터 배열
+  // 작동 원리 데이터 배열
   const steps = [
     { step: '01', title: '센서 측정', desc: '아두이노 센서가 토양 습도, 온도, 습도를 실시간으로 측정합니다.' },
     { step: '02', title: '데이터 전송', desc: '측정된 데이터가 웹 서버로 전송되어 저장됩니다.' },
@@ -27,7 +25,7 @@ function HomePage() {
   return (
     <div className="home-container">
       
-      {/* --- 1. 핵심 기능 소개 영역 --- */}
+      {/* 핵심 기능 소개 영역 */}
       <section className="home-section feature-section">
         <div className="feature-grid">
           {features.map((item) => (
@@ -45,7 +43,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* --- 2. 어떻게 작동하나요? 영역 --- */}
+      {/* 동작 방법 영역 */}
       <section className="home-section how-it-works-section">
         <div className="section-header">
           <h2>어떻게 작동하나요?</h2>
@@ -63,7 +61,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* --- 3. 하단 시작하기(CTA) 및 푸터 영역 --- */}
+      {/* 하단 시작하기 및 footer 영역 */}
       <div className="cta-footer-wrapper">
         <section className="cta-section">
           <h2>지금 바로 시작하세요</h2>
