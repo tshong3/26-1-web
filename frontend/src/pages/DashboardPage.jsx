@@ -1,19 +1,18 @@
-// src/pages/DashboardPage.jsx
 import React from 'react';
 import useSensorStore from '../store/useSensorStore';
 import SensorCard from '../components/SensorCard';
 import './DashboardPage.css';
 
 function DashboardPage() {
-  // Zustand 저장소에서 데이터(history)와 함수(addHistory)를 모두 꺼내옵니다.
+  // 데이터와 함수를 가져옴
   const { sensorData, wateringHistory, addWateringHistory } = useSensorStore();
 
-  // 💡 버튼을 눌렀을 때 실행될 함수
+  // 버튼을 눌렀을 때 실행될 함수
   const handleManualWatering = () => {
-    // 1. 사용자에게 알림 띄우기
+    // 사용자에게 알림 띄우기
     alert('아두이노로 수동 물 주기 명령을 전송했습니다! (가동 시간: 15초)');
     
-    // 2. 저장소의 함수를 호출하여 새로운 기록을 리스트에 추가하기
+    // 저장소의 함수를 호출하여 새로운 기록을 리스트에 추가하기
     addWateringHistory('수동 물 주기', '15초');
   };
 
@@ -48,7 +47,7 @@ function DashboardPage() {
 
       <div className="control-history-wrapper">
         
-        {/* 왼쪽: 물 주기 제어 패널 */}
+        {/* 물 주기 제어 패널 */}
         <div className="control-panel">
           <h3 className="panel-title">물 주기 제어</h3>
           
@@ -60,7 +59,7 @@ function DashboardPage() {
             </div>
           </div>
 
-          {/* 💡 onClick 이벤트 연결 */}
+          {/* onClick 이벤트 연결 */}
           <button className="manual-water-btn" onClick={handleManualWatering}>
             <span>💧</span> 수동 물 주기
           </button>
@@ -70,12 +69,12 @@ function DashboardPage() {
           </div>
         </div>
 
-        {/* 오른쪽: 물 주기 기록 패널 */}
+        {/* 물 주기 기록 패널 */}
         <div className="history-panel">
           <h3 className="panel-title">물 주기 기록</h3>
           
           <div className="history-list">
-            {/* 💡 배열 데이터를 map으로 순회하며 동적으로 렌더링 */}
+            {/* 배열을 map으로 순회하며 동적으로 렌더링 */}
             {wateringHistory.map((history) => (
               <div key={history.id} className="history-item">
                 <div className="history-info">
