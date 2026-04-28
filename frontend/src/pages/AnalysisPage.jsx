@@ -1,10 +1,9 @@
-// src/pages/AnalysisPage.jsx
 import React, { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { MdRefresh } from "react-icons/md";
 import './AnalysisPage.css';
 
-// 💡 차트를 그리기 위한 가짜(Dummy) 시계열 데이터
+// 차트를 그리기 위한 더미 시계열 데이터
 const mockChartData = [
   { time: '오후 05:27', moisture: 58, temperature: 24.2, humidity: 68 },
   { time: '오후 05:37', moisture: 65, temperature: 23.5, humidity: 64 },
@@ -19,7 +18,7 @@ const mockChartData = [
 ];
 
 function AnalysisPage() {
-  // 현재 선택된 탭을 관리하는 상태 ('all', 'moisture', 'temperature', 'humidity')
+  // 현재 선택된 탭을 관리하는 상태('all', 'moisture', 'temperature', 'humidity')
   const [activeTab, setActiveTab] = useState('all');
 
   // 탭에 따라 보여줄 제목과 권장 범위를 결정하는 함수
@@ -36,7 +35,7 @@ function AnalysisPage() {
 
   return (
     <div className="analysis-container">
-      {/* 1. 상단 헤더 영역 */}
+      {/* 상단 헤더 영역 */}
       <div className="analysis-header">
         <div>
           <h2>데이터 분석</h2>
@@ -47,7 +46,7 @@ function AnalysisPage() {
         </button>
       </div>
 
-      {/* 2. 탭 메뉴 영역 */}
+      {/* 탭 메뉴 영역 */}
       <div className="tab-menu">
         <button className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>전체 데이터</button>
         <button className={`tab-btn ${activeTab === 'moisture' ? 'active' : ''}`} onClick={() => setActiveTab('moisture')}>토양 습도</button>
@@ -55,7 +54,7 @@ function AnalysisPage() {
         <button className={`tab-btn ${activeTab === 'humidity' ? 'active' : ''}`} onClick={() => setActiveTab('humidity')}>주변 습도</button>
       </div>
 
-      {/* 3. 차트 표시 영역 */}
+      {/* 차트 표시 영역 */}
       <div className="chart-card">
         <h3 className="chart-title">{chartInfo.title}</h3>
         
@@ -69,7 +68,7 @@ function AnalysisPage() {
               <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
               <Legend wrapperStyle={{ paddingTop: '20px' }} />
               
-              {/* 조건부 렌더링: 탭에 따라 선을 다르게 보여줍니다 */}
+              {/* 조건부 렌더링: 탭에 따라 선을 다르게 보여줌 */}
               {(activeTab === 'all' || activeTab === 'moisture') && 
                 <Line type="monotone" dataKey="moisture" name="토양 습도 (%)" stroke="#60a5fa" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />}
               {(activeTab === 'all' || activeTab === 'temperature') && 
@@ -80,7 +79,7 @@ function AnalysisPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* 권장 범위 정보 박스 (전체 탭이 아닐 때만 보임) */}
+        {/* 권장 범위 정보 박스(전체 탭이 아닐 때만 보임) */}
         {activeTab !== 'all' && (
           <div className="recommend-range-box">
             {chartInfo.range}
