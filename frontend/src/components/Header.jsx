@@ -1,7 +1,5 @@
-// src/components/Header.jsx
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-// 💡 피그마 디자인과 비슷한 아웃라인 아이콘들을 불러옵니다.
 import { MdOutlineHome, MdOutlineSpaceDashboard, MdOutlineInsights, MdOutlineChatBubbleOutline } from "react-icons/md";
 import './Header.css';
 
@@ -16,7 +14,7 @@ function Header() {
       </div>
 
       <nav className="header-nav">
-        {/* 💡 NavLink는 현재 경로와 맞으면 자동으로 className에 'active'를 추가해줍니다. */}
+        {/* NavLink는 현재 경로와 맞으면 자동으로 className에 active를 추가 */}
         <NavLink to="/" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
           <MdOutlineHome className="nav-icon" /> 홈
         </NavLink>

@@ -1,31 +1,31 @@
 /* src/components/Header.css */
 
-/* 1. 헤더 전체 뼈대 (가로 정렬) */
+/* 헤더 전체 뼈대 */
 .header {
   display: flex;
-  justify-content: space-between; /* 왼쪽, 가운데, 오른쪽으로 요소들 밀어내기 */
-  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: space-between;
+  align-items: center;
   padding: 15px 40px;
   background-color: #ffffff;
   border-bottom: 1px solid #eaeaea;
 }
 
-/* 2. 로고 영역 */
+/* 로고 영역 */
 .header-logo a {
   display: flex;
   align-items: center;
   gap: 8px;
-  text-decoration: none; /* 보라색 밑줄 제거 */
+  text-decoration: none;
 }
 
 .logo-text {
   font-size: 20px;
   font-weight: bold;
-  color: #333; /* 보라색 대신 짙은 회색으로 */
+  color: #333;
   margin: 0;
 }
 
-/* 3. 중앙 네비게이션 메뉴 */
+/* 네비게이션 메뉴 */
 .header-nav {
   display: flex;
   gap: 8px;
@@ -48,7 +48,7 @@
   font-size: 20px;
 }
 
-/* 💡 클릭된(활성화된) 메뉴 디자인 */
+/* 클릭된 메뉴 디자인 */
 .nav-item.active {
   background-color: #f0fdf4;
   color: #2f855a;
@@ -58,7 +58,7 @@
   color: #2f855a;
 }
 
-/* 4. 오른쪽 로그인/회원가입 버튼 영역 */
+/* 로그인/회원가입 버튼 영역 */
 .header-auth {
   display: flex;
   align-items: center;
