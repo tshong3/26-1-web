@@ -1,4 +1,3 @@
-// src/components/SensorCard.jsx
 import React from 'react';
 import './SensorCard.css';
 
@@ -13,7 +12,6 @@ function SensorCard({ title, value, unit, icon, badge, status = 'normal', optima
         {badge && <span className="sensor-badge">{badge}</span>}
       </div>
 
-      {/* 💡 숫자와 적정 범위를 하나의 묶음(content)으로 감싸줍니다. */}
       <div className="sensor-content">
         <div className="sensor-body">
           <h3 className="sensor-value">
@@ -21,7 +19,6 @@ function SensorCard({ title, value, unit, icon, badge, status = 'normal', optima
           </h3>
         </div>
         
-        {/* 💡 optimalRange 값이 전달된 카드에만 적정 범위 텍스트를 보여줍니다. */}
         {optimalRange && (
           <div className="sensor-optimal-range">
             {optimalRange}

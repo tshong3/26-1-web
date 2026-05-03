@@ -1,4 +1,3 @@
-// src/store/useSensorStore.js
 import { create } from 'zustand';
 
 const useSensorStore = create((set) => ({
@@ -17,11 +16,11 @@ const useSensorStore = create((set) => ({
 
   // 제어 설정 상태
   controlSettings: {
-    isAutoMode: true,          // 자동 급수 ON/OFF
+    isAutoMode: true, // 자동 급수 ON/OFF
     autoWateringThreshold: 30, // 토양 수분 기준 (%)
-    wateringDuration: 15,      // 물 주는 양 (초)
-    isScheduleMode: false,     // 시간 설정 ON/OFF
-    scheduleTime: "08:00",     // 매일 지정된 시간
+    wateringDuration: 15, // 물 주는 양 (초)
+    isScheduleMode: false, // 시간 설정 ON/OFF
+    scheduleTime: "08:00", // 매일 지정된 시간
   },
 
   updateSensorData: (newData) => set((state) => ({

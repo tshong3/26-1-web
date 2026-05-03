@@ -1,12 +1,10 @@
-/* src/pages/DashboardPage.css */
-
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
 }
 
-/* 💡 헤더 타이틀 및 식물 태그 디자인 */
+/* 헤더 타이틀 및 식물 태그 디자인 */
 .header-title-group {
   display: flex;
   align-items: center;
@@ -37,7 +35,7 @@
   margin: 0 0 24px 0;
 }
 
-/* 💡 종합 상태 배너 디자인 */
+/* 종합 상태 배너 디자인 */
 .overall-status-banner {
   padding: 24px 30px;
   border-radius: 16px;
@@ -55,7 +53,6 @@
 .status-info h3 strong { font-weight: 800; font-size: 24px; }
 .status-info p { margin: 0; font-size: 15px; opacity: 0.9; }
 
-/* 아래는 기존 코드 유지 */
 .sensor-cards-wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

@@ -1,5 +1,3 @@
-/* src/components/SensorCard.css */
-
 .sensor-card {
   box-sizing: border-box;
   background-color: white;
@@ -8,7 +6,7 @@
   padding: 24px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* 요소들을 위아래로 넓게 퍼트림 */
+  justify-content: space-between;
   gap: 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.02);
   transition: all 0.3s ease;
@@ -48,11 +46,10 @@
   border-radius: 6px;
 }
 
-/* 💡 숫자와 적정 범위를 묶어주는 영역 */
 .sensor-content {
   display: flex;
   flex-direction: column;
-  gap: 6px; /* 숫자와 작은 글씨 사이의 좁은 간격 */
+  gap: 6px;
   margin-bottom: 4px;
 }
 
@@ -73,7 +70,6 @@
   margin-left: 4px;
 }
 
-/* 💡 새로 추가된 적정 범위 글씨 디자인 */
 .sensor-optimal-range {
   font-size: 12px;
   color: #888;
@@ -94,24 +90,24 @@
   transition: width 0.5s ease-in-out;
 }
 
-/* 🟢 정상 상태 (normal) */
+/* 정상 상태 */
 .sensor-card.normal .sensor-icon { background-color: #ecfdf5; color: #10b981; }
 .sensor-card.normal .sensor-badge { background-color: #ecfdf5; color: #10b981; }
 .sensor-card.normal .progress-bar-fill { background-color: #10b981; }
 .sensor-card.normal .sensor-title, .sensor-card.normal .sensor-value { color: #111; }
 
-/* 🟡 주의 상태 (warning) */
+/* 주의 상태 */
 .sensor-card.warning { border-color: #fde68a; background-color: #fffbeb; }
 .sensor-card.warning .sensor-icon { background-color: #fef3c7; color: #d97706; }
 .sensor-card.warning .sensor-badge { background-color: #fef3c7; color: #d97706; }
 .sensor-card.warning .progress-bar-fill { background-color: #f59e0b; }
 .sensor-card.warning .sensor-title, .sensor-card.warning .sensor-value { color: #92400e; }
-.sensor-card.warning .sensor-optimal-range { color: #b45309; } /* 주의 상태일 때 적정 범위 글씨도 약간 어두운 주황색으로 */
+.sensor-card.warning .sensor-optimal-range { color: #b45309; }
 
-/* 🔴 위험 상태 (danger) */
+/* 위험 상태 */
 .sensor-card.danger { border-color: #fecaca; background-color: #fef2f2; }
 .sensor-card.danger .sensor-icon { background-color: #fee2e2; color: #dc2626; }
 .sensor-card.danger .sensor-badge { background-color: #fee2e2; color: #dc2626; }
 .sensor-card.danger .progress-bar-fill { background-color: #ef4444; }
 .sensor-card.danger .sensor-title, .sensor-card.danger .sensor-value { color: #991b1b; }
-.sensor-card.danger .sensor-optimal-range { color: #b91c1c; } /* 위험 상태일 때 적정 범위 글씨도 약간 어두운 빨간색으로 */
+.sensor-card.danger .sensor-optimal-range { color: #b91c1c; }

@@ -211,7 +211,6 @@
   margin: 0;
 }
 
-/* 모바일 반응형 처리 */
 @media (max-width: 1024px) {
   .feature-grid { grid-template-columns: repeat(2, 1fr); }
   .steps-grid { grid-template-columns: repeat(2, 1fr); }

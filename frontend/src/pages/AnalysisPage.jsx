@@ -1,4 +1,3 @@
-// src/pages/AnalysisPage.jsx
 import React, { useState } from 'react';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
@@ -7,25 +6,24 @@ import {
 import { MdRefresh } from "react-icons/md";
 import './AnalysisPage.css';
 
-// 💡 스크롤 기능을 확인하기 위해 24개의 넉넉한 더미 데이터를 생성합니다.
 const generateMockData = () => {
   const data = [];
   for (let i = 0; i <= 24; i++) {
     data.push({
       time: `${i}시간 전`,
-      moisture: Math.floor(Math.random() * 50) + 20,    // 20~70%
+      moisture: Math.floor(Math.random() * 50) + 20, // 20~70%
       temperature: Math.floor(Math.random() * 15) + 15, // 15~30°C
-      humidity: Math.floor(Math.random() * 40) + 40,    // 40~80%
+      humidity: Math.floor(Math.random() * 40) + 40, // 40~80%
     });
   }
-  return data.reverse(); // 최신 시간이 오른쪽으로 오도록 뒤집기
+  return data.reverse(); // 최신 시간이 오른쪽으로
 };
 
 const mockChartData = generateMockData();
 
 function AnalysisPage() {
-  const [activeTab, setActiveTab] = useState('moisture'); // 기본 탭을 토양 습도로 변경
-  const [timeRange, setTimeRange] = useState('day');      // 기간 선택 상태 (day, week, month)
+  const [activeTab, setActiveTab] = useState('moisture'); // 기본 탭 토양 습도
+  const [timeRange, setTimeRange] = useState('day'); // 기간 선택 상태
 
   const getChartInfo = () => {
     switch (activeTab) {
@@ -38,7 +36,7 @@ function AnalysisPage() {
 
   const chartInfo = getChartInfo();
 
-  // 💡 데이터가 너무 많을 때 처음 화면에 보여줄 데이터 개수 (가장 최근 10개)
+  // 데이터가 너무 많을 때 가장 최근 10개 데이터만 처음 화면에 보여줌
   const startIndex = Math.max(mockChartData.length - 10, 0);
 
   return (
@@ -46,14 +44,14 @@ function AnalysisPage() {
       <div className="analysis-header">
         <div>
           <h2>데이터 분석</h2>
-          <p>센서 데이터의 시간별 변화 추이와 과거 기록을 확인하세요.</p>
+          <p>식물의 상태 변화를 확인할 수 있어요</p>
         </div>
         <button className="refresh-btn">
           <MdRefresh className="refresh-icon" /> 실시간 업데이트
         </button>
       </div>
 
-      {/* 💡 새로운 UI: 조회 기간 선택 필터 */}
+      {/* 조회 기간 선택 필터 */}
       <div className="filter-controls">
         <div className="tab-menu">
           <button className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>전체 보기</button>
@@ -92,17 +90,17 @@ function AnalysisPage() {
               />
               <Legend verticalAlign="top" height={40} />
               
-              {/* 💡 ReferenceArea: 정상 범위(초록색) 배경 칠하기 */}
+              {/* 정상 범위 배경 칠하기 */}
               {activeTab !== 'all' && chartInfo.safeMin !== null && (
                 <ReferenceArea 
                   y1={chartInfo.safeMin} 
                   y2={chartInfo.safeMax} 
-                  fill="#10b981" /* 초록색 */
-                  fillOpacity={0.08} /* 매우 연하게 투명도 적용 */
+                  fill="#10b981"
+                  fillOpacity={0.08}
                 />
               )}
 
-              {/* 데이터 선 (모양을 약간 둥글게(monotone) 적용) */}
+              {/* 데이터 선 */}
               {(activeTab === 'all' || activeTab === 'moisture') && 
                 <Line type="monotone" dataKey="moisture" name="토양 습도 (%)" stroke="#3b82f6" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 6 }} />}
               {(activeTab === 'all' || activeTab === 'temperature') && 
@@ -110,7 +108,7 @@ function AnalysisPage() {
               {(activeTab === 'all' || activeTab === 'humidity') && 
                 <Line type="monotone" dataKey="humidity" name="주변 습도 (%)" stroke="#06b6d4" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 6 }} />}
               
-              {/* 💡 Brush: 차트 하단 가로 스크롤바 드래그 기능 */}
+              {/* 하단 가로 스크롤바 */}
               <Brush 
                 dataKey="time" 
                 height={30} 

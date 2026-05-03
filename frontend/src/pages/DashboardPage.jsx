@@ -60,7 +60,6 @@ function DashboardPage() {
       </div>
 
       <div className="sensor-cards-wrapper">
-        {/* 💡 물탱크 수위를 제외한 카드들에 optimalRange 속성 추가 */}
         <SensorCard 
           title="토양 습도" value={sensorData.soilMoisture} unit="%" icon="💧" 
           optimalRange="적정: 30 ~ 70%"
