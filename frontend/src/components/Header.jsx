@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { MdOutlineHome, MdOutlineSpaceDashboard, MdOutlineInsights, MdOutlineChatBubbleOutline } from "react-icons/md";
+import { MdOutlineHome, MdOutlineSpaceDashboard, MdOutlineInsights, MdOutlineChatBubbleOutline, MdOutlineTune } from "react-icons/md";
 import './Header.css';
 
 function Header() {
@@ -9,18 +9,21 @@ function Header() {
       <div className="header-logo">
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className="logo-icon">🌱</span>
-          <h1 className="logo-text">스마트 가드닝</h1>
+          <h1 className="logo-text">식물 키우기</h1>
         </Link>
       </div>
 
       <nav className="header-nav">
-        {/* NavLink는 현재 경로와 맞으면 자동으로 className에 active를 추가 */}
         <NavLink to="/" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
           <MdOutlineHome className="nav-icon" /> 홈
         </NavLink>
         
         <NavLink to="/dashboard" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
           <MdOutlineSpaceDashboard className="nav-icon" /> 대시보드
+        </NavLink>
+
+        <NavLink to="/control" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+          <MdOutlineTune className="nav-icon" /> 급수 시스템
         </NavLink>
         
         <NavLink to="/analysis" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>

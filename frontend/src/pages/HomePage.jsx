@@ -75,7 +75,7 @@ function HomePage() {
         <footer className="home-footer">
           <div className="footer-logo">
             <span className="logo-icon">🌱</span>
-            <span className="logo-text-light">스마트 화분</span>
+            <span className="logo-text-light">식물 키우기</span>
           </div>
           <p className="copyright">© 2026 Smart Home Gardening System. All rights reserved.</p>
         </footer>

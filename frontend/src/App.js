@@ -1,9 +1,9 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
+import ControlPage from './pages/ControlPage';
 import AnalysisPage from './pages/AnalysisPage';
 
 function App() {
@@ -14,6 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/control" element={<ControlPage />} />
           <Route path="/analysis" element={<AnalysisPage />} />
         </Routes>
       </main>
