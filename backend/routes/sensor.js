@@ -12,29 +12,44 @@ router.post("/", async (req, res) => {
             temperature,
             humidity,
             soil_moisture,
-            light
+            light,
         } = req.body;
 
         if (!device_id) {
             return res.status(400).json({
                 success: false,
-                message: "device_id 필수",
+                message: "device_id는 필수입니다.",
             });
         }
 
-        const sql = `
-      INSERT INTO sensor_data
-      (device_id, temperature, humidity, soil_moisture, light)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `;
+        const [pots] = await promiseDb.query(
+            "SELECT id FROM pot WHERE device_id = ?",
+            [device_id]
+        );
 
-        await promiseDb.query(sql, [
-            device_id,
-            temperature ?? null,
-            humidity ?? null,
-            soil_moisture ?? null,
-            light ?? null
-        ]);
+        if (pots.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "등록되지 않은 device_id입니다.",
+            });
+        }
+
+        const potId = pots[0].id;
+
+        await promiseDb.query(
+            `
+      INSERT INTO sensor_data
+      (pot_id, temperature, humidity, soil_moisture, light)
+      VALUES (?, ?, ?, ?, ?)
+      `,
+            [
+                potId,
+                temperature ?? null,
+                humidity ?? null,
+                soil_moisture ?? null,
+                light ?? null,
+            ]
+        );
 
         res.json({
             success: true,
@@ -42,7 +57,6 @@ router.post("/", async (req, res) => {
         });
     } catch (error) {
         console.error("센서 데이터 저장 오류:", error);
-
         res.status(500).json({
             success: false,
             message: "센서 데이터 저장 실패",
@@ -50,5 +64,4 @@ router.post("/", async (req, res) => {
         });
     }
 });
-
 module.exports = router;
