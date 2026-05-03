@@ -1,13 +1,17 @@
+/* src/components/SensorCard.css */
+
 .sensor-card {
-  box-sizing: border-box; /* 카드 크기가 내부 여백때문에 커지지 않도록 고정 */
+  box-sizing: border-box;
   background-color: white;
   border: 1px solid #eaeaea;
   border-radius: 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px; /* 요소들 사이의 세로 간격 */
+  justify-content: space-between; /* 요소들을 위아래로 넓게 퍼트림 */
+  gap: 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  transition: all 0.3s ease;
 }
 
 .sensor-header {
@@ -23,7 +27,6 @@
 }
 
 .sensor-icon {
-  background-color: #f4f6f8;
   width: 36px;
   height: 36px;
   display: flex;
@@ -35,18 +38,22 @@
 
 .sensor-title {
   font-size: 14px;
-  color: #555;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-/* '보통' 배지 디자인 */
 .sensor-badge {
-  background-color: #fff3cd;
-  color: #856404;
   font-size: 12px;
   font-weight: bold;
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: 6px;
+}
+
+/* 💡 숫자와 적정 범위를 묶어주는 영역 */
+.sensor-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* 숫자와 작은 글씨 사이의 좁은 간격 */
+  margin-bottom: 4px;
 }
 
 .sensor-body {
@@ -57,15 +64,20 @@
 .sensor-value {
   font-size: 32px;
   font-weight: bold;
-  color: #111;
   margin: 0;
 }
 
 .sensor-unit {
   font-size: 16px;
   font-weight: 500;
-  color: #888;
   margin-left: 4px;
+}
+
+/* 💡 새로 추가된 적정 범위 글씨 디자인 */
+.sensor-optimal-range {
+  font-size: 12px;
+  color: #888;
+  font-weight: 500;
 }
 
 .progress-bar-bg {
@@ -78,7 +90,28 @@
 
 .progress-bar-fill {
   height: 100%;
-  background-color: #111;
   border-radius: 4px;
   transition: width 0.5s ease-in-out;
 }
+
+/* 🟢 정상 상태 (normal) */
+.sensor-card.normal .sensor-icon { background-color: #ecfdf5; color: #10b981; }
+.sensor-card.normal .sensor-badge { background-color: #ecfdf5; color: #10b981; }
+.sensor-card.normal .progress-bar-fill { background-color: #10b981; }
+.sensor-card.normal .sensor-title, .sensor-card.normal .sensor-value { color: #111; }
+
+/* 🟡 주의 상태 (warning) */
+.sensor-card.warning { border-color: #fde68a; background-color: #fffbeb; }
+.sensor-card.warning .sensor-icon { background-color: #fef3c7; color: #d97706; }
+.sensor-card.warning .sensor-badge { background-color: #fef3c7; color: #d97706; }
+.sensor-card.warning .progress-bar-fill { background-color: #f59e0b; }
+.sensor-card.warning .sensor-title, .sensor-card.warning .sensor-value { color: #92400e; }
+.sensor-card.warning .sensor-optimal-range { color: #b45309; } /* 주의 상태일 때 적정 범위 글씨도 약간 어두운 주황색으로 */
+
+/* 🔴 위험 상태 (danger) */
+.sensor-card.danger { border-color: #fecaca; background-color: #fef2f2; }
+.sensor-card.danger .sensor-icon { background-color: #fee2e2; color: #dc2626; }
+.sensor-card.danger .sensor-badge { background-color: #fee2e2; color: #dc2626; }
+.sensor-card.danger .progress-bar-fill { background-color: #ef4444; }
+.sensor-card.danger .sensor-title, .sensor-card.danger .sensor-value { color: #991b1b; }
+.sensor-card.danger .sensor-optimal-range { color: #b91c1c; } /* 위험 상태일 때 적정 범위 글씨도 약간 어두운 빨간색으로 */

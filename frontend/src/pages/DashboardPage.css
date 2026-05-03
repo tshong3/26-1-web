@@ -1,34 +1,76 @@
+/* src/pages/DashboardPage.css */
+
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
 }
 
-.dashboard-header h2 {
-  margin: 0 0 8px 0;
+/* 💡 헤더 타이틀 및 식물 태그 디자인 */
+.header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.header-title-group h2 {
+  margin: 0;
   color: #222;
+  font-size: 28px;
+}
+
+.plant-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #ecfdf5;
+  color: #10b981;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: bold;
 }
 
 .dashboard-header p {
   color: #666;
-  margin: 0 0 30px 0;
+  margin: 0 0 24px 0;
 }
 
+/* 💡 종합 상태 배너 디자인 */
+.overall-status-banner {
+  padding: 24px 30px;
+  border-radius: 16px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.overall-status-banner.good { background-color: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+.overall-status-banner.warning { background-color: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+.overall-status-banner.danger { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+.status-info h3 { margin: 0 0 8px 0; font-size: 22px; font-weight: normal; }
+.status-info h3 strong { font-weight: 800; font-size: 24px; }
+.status-info p { margin: 0; font-size: 15px; opacity: 0.9; }
+
+/* 아래는 기존 코드 유지 */
 .sensor-cards-wrapper {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
   box-sizing: border-box;
 }
 
-.control-history-wrapper {
+.dashboard-bottom-wrapper {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
   margin-top: 24px;
 }
 
-.control-panel, .history-panel {
+.ai-alert-panel, .history-panel {
   background-color: white;
   border: 1px solid #eaeaea;
   border-radius: 16px;
@@ -36,104 +78,39 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
-.panel-title {
-  margin: 0 0 24px 0;
-  font-size: 20px;
-  color: #222;
-}
+.panel-title { margin: 0 0 24px 0; font-size: 20px; color: #222; }
 
-/* 자동 물 주기 안내 박스 */
-.auto-water-info {
+.ai-message-card {
   display: flex;
-  gap: 12px;
-  background-color: #f4f6fb;
+  gap: 16px;
   padding: 20px;
   border-radius: 12px;
-  margin-bottom: 30px;
+  margin-bottom: 16px;
 }
 
-.info-icon {
-  color: #4f46e5;
-  font-weight: bold;
-}
+.ai-message-card.warning { background-color: #fffbeb; border-left: 4px solid #f59e0b; }
+.ai-message-card.warning .ai-icon { color: #f59e0b; }
+.ai-message-card.tip { background-color: #f0fdf4; border-left: 4px solid #10b981; }
+.ai-message-card.tip .ai-icon { color: #10b981; }
 
-.auto-water-info strong {
-  display: block;
-  font-size: 14px;
-  color: #4f46e5;
-  margin-bottom: 6px;
-}
+.ai-icon { font-size: 24px; margin-top: 2px; }
+.ai-content strong { display: block; font-size: 15px; color: #222; margin-bottom: 6px; }
+.ai-content p { margin: 0 0 8px 0; font-size: 13.5px; color: #555; line-height: 1.5; }
+.ai-time { font-size: 12px; color: #888; }
 
-.auto-water-info p {
-  margin: 0;
-  font-size: 13px;
-  color: #4f46e5;
-}
-
-/* 수동 물 주기 버튼 */
-.manual-water-btn {
-  width: 100%;
-  padding: 20px;
-  background-color: #111;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  transition: opacity 0.2s;
-}
-
-.manual-water-btn:hover {
-  opacity: 0.8;
-}
-
-.last-update {
-  margin-top: 24px;
-  text-align: center;
-  color: #666;
-  font-size: 14px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-}
-
-/* 물 주기 기록 리스트 */
 .history-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  
-  /* 아이템 3개 정도의 높이로 제한 */
   max-height: 290px; 
-  /* 넘치는 부분 스크롤 생성 */
   overflow-y: auto; 
-  /* 스크롤바가 내용과 겹치지 않도록 오른쪽 여백 추가 */
   padding-right: 10px; 
 }
 
-.history-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.history-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.history-list::-webkit-scrollbar-thumb {
-  background: #d4d4d4;
-  border-radius: 4px;
-}
-
-.history-list::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
+.history-list::-webkit-scrollbar { width: 6px; }
+.history-list::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+.history-list::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 4px; }
+.history-list::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
 .history-item {
   display: flex;
@@ -144,48 +121,17 @@
   border-radius: 12px;
 }
 
-.history-info {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
+.history-info { display: flex; align-items: center; gap: 16px; }
 .history-icon.success {
-  color: #10b981;
-  border: 1.5px solid #10b981;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
-  font-weight: bold;
+  color: #10b981; border: 1.5px solid #10b981; border-radius: 50%;
+  width: 24px; height: 24px; display: flex; justify-content: center; align-items: center;
+  font-size: 14px; font-weight: bold;
 }
 
-.history-info strong {
-  display: block;
-  font-size: 15px;
-  color: #222;
-  margin-bottom: 4px;
-}
+.history-info strong { display: block; font-size: 15px; color: #222; margin-bottom: 4px; }
+.history-info p { margin: 0; font-size: 13px; color: #888; }
+.history-duration { font-size: 15px; font-weight: 600; color: #444; }
 
-.history-info p {
-  margin: 0;
-  font-size: 13px;
-  color: #888;
-}
-
-.history-duration {
-  font-size: 15px;
-  font-weight: 600;
-  color: #444;
-}
-
-/* 모바일 반응형 */
 @media (max-width: 768px) {
-  .sensor-cards-wrapper,
-  .control-history-wrapper {
-    grid-template-columns: 1fr;
-  }
+  .dashboard-bottom-wrapper { grid-template-columns: 1fr; }
 }

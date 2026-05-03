@@ -1,27 +1,34 @@
+// src/components/SensorCard.jsx
 import React from 'react';
 import './SensorCard.css';
 
-function SensorCard({ title, value, unit, icon, badge }) {
+function SensorCard({ title, value, unit, icon, badge, status = 'normal', optimalRange }) {
   return (
-    <div className="sensor-card">
-      {/* 카드 상단(아이콘, 제목, 배지) */}
+    <div className={`sensor-card ${status}`}>
       <div className="sensor-header">
         <div className="sensor-title-wrapper">
           <span className="sensor-icon">{icon}</span>
           <span className="sensor-title">{title}</span>
         </div>
-        {/* badge 데이터가 있을 때만 노란색 배지를 보여줌 */}
         {badge && <span className="sensor-badge">{badge}</span>}
       </div>
 
-      {/* 카드 중앙(수치) */}
-      <div className="sensor-body">
-        <h3 className="sensor-value">
-          {value}<span className="sensor-unit">{unit}</span>
-        </h3>
+      {/* 💡 숫자와 적정 범위를 하나의 묶음(content)으로 감싸줍니다. */}
+      <div className="sensor-content">
+        <div className="sensor-body">
+          <h3 className="sensor-value">
+            {value}<span className="sensor-unit">{unit}</span>
+          </h3>
+        </div>
+        
+        {/* 💡 optimalRange 값이 전달된 카드에만 적정 범위 텍스트를 보여줍니다. */}
+        {optimalRange && (
+          <div className="sensor-optimal-range">
+            {optimalRange}
+          </div>
+        )}
       </div>
 
-      {/* 카드 하단(프로그레스 바) */}
       <div className="progress-bar-bg">
         <div 
           className="progress-bar-fill" 
