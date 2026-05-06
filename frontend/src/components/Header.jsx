@@ -36,7 +36,7 @@ function Header() {
       </nav>
 
       <div className="header-auth">
-        <span className="login-btn">로그인</span>
+        <Link to="/login" className="login-btn" style={{ textDecoration: 'none' }}>로그인</Link>
         <button className="signup-btn">회원가입</button>
       </div>
     </header>

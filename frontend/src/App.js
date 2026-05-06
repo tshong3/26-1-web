@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import ControlPage from './pages/ControlPage';
 import AnalysisPage from './pages/AnalysisPage';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/control" element={<ControlPage />} />
           <Route path="/analysis" element={<AnalysisPage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </main>
     </BrowserRouter>
