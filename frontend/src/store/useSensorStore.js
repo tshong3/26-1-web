@@ -1,6 +1,19 @@
 import { create } from 'zustand';
 
 const useSensorStore = create((set) => ({
+  // 로그인 상태 관리
+  isLoggedIn: false,
+  login: () => set({ isLoggedIn: true }),
+  logout: () => set({ isLoggedIn: false }),
+
+  // 내 화분 목록 데이터
+  potList: [
+    { id: 1, potName: '안방 화분', plantType: '장미', pin: '123456' },
+    { id: 2, potName: '거실 창가', plantType: '몬스테라', pin: '654321' }
+  ],
+  activePotId: 1, 
+
+  // 센서 데이터
   sensorData: {
     soilMoisture: 42.9,
     temperature: 24.5,
@@ -9,18 +22,17 @@ const useSensorStore = create((set) => ({
     waterLevel: 75,   
   },
   
+  // 기록 및 제어 설정
   wateringHistory: [
-    { id: 1, type: '자동 급수', date: '2026. 4. 22. 오후 1:24:59', duration: '30초' },
-    { id: 2, type: '수동 급수', date: '2026. 4. 22. 오전 7:24:59', duration: '45초' }
+    { id: 1, type: '자동 물 주기', date: '2026. 4. 22. 오후 1:24:59', duration: '30초' },
+    { id: 2, type: '수동 물 주기', date: '2026. 4. 22. 오전 7:24:59', duration: '45초' }
   ],
-
-  // 제어 설정 상태
   controlSettings: {
-    isAutoMode: true, // 자동 급수 ON/OFF
-    autoWateringThreshold: 30, // 토양 수분 기준 (%)
-    wateringDuration: 15, // 물 주는 양 (초)
-    isScheduleMode: false, // 시간 설정 ON/OFF
-    scheduleTime: "08:00", // 매일 지정된 시간
+    isAutoMode: true,
+    autoWateringThreshold: 30,
+    wateringDuration: 15,
+    isScheduleMode: false,
+    scheduleTime: "08:00",
   },
 
   updateSensorData: (newData) => set((state) => ({
@@ -37,6 +49,11 @@ const useSensorStore = create((set) => ({
   updateControlSettings: (newSettings) => set((state) => ({
     controlSettings: { ...state.controlSettings, ...newSettings }
   })),
+
+  addPot: (newPot) => set((state) => ({
+    potList: [...state.potList, { id: Date.now(), ...newPot }]
+  })),
+  setActivePotId: (id) => set({ activePotId: id }),
 }));
 
 export default useSensorStore;

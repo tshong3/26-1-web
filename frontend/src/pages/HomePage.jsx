@@ -1,4 +1,3 @@
-// src/pages/HomePage.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MdOutlineWaterDrop, MdOutlineInsights, MdOutlineEco, MdOutlineBolt, MdOutlineShield, MdOutlineNotificationsActive } from "react-icons/md";
@@ -26,7 +25,7 @@ function HomePage() {
               이제 <span className="text-highlight-yellow">놓치지 마세요</span>
             </h1>
             <p className="hero-subtitle">
-              복잡한 관리는 AI와 아두이노에 맡기세요. 실시간 센서 데이터와 맞춤형 자동화 설정으로 당신의 식물을 언제나 싱그럽게 유지해 줍니다.
+              이제는 편리하게 관리하세요. 실시간 센서 데이터와 맞춤형 자동화 설정으로 식물을 언제나 건강하게 유지해 줍니다.
             </p>
             <div className="hero-buttons">
               <Link to="/login" className="btn-primary-large">무료로 시작하기</Link>
@@ -34,7 +33,6 @@ function HomePage() {
             </div>
           </div>
 
-          {/* 💡 구체적인 숫자를 빼고 'AI 스마트 케어'가 작동하는 느낌으로 변경 */}
           <div className="hero-visual">
             <div className="app-mockup">
               <div className="mockup-header">
@@ -52,7 +50,7 @@ function HomePage() {
                   <span className="ai-badge">Auto Mode ON</span>
                 </div>
 
-                {/* 하단: 케어 로그(알림) 형식으로 서비스의 가치를 직관적으로 전달 */}
+                {/* 하단: 케어 로그 형식으로 서비스의 가치를 직관적으로 전달 */}
                 <div className="ai-action-list">
                   <div className="ai-action-item">
                     <div className="action-icon bg-blue"><MdOutlineWaterDrop /></div>
@@ -72,7 +70,6 @@ function HomePage() {
 
               </div>
 
-              {/* 하단 뱃지도 안방 화분을 관리 중이라는 감성적인 문구로 변경 */}
               <div className="mockup-badge">
                 <span className="live-dot"></span> 내 화분 관리 중...
               </div>
@@ -104,10 +101,10 @@ function HomePage() {
       <div className="cta-wrapper">
         <section className="cta-section modern-cta">
           <div className="cta-content">
-            <h2>지금 바로 스마트 가드닝을 경험하세요</h2>
-            <p>몇 번의 클릭만으로 내 화분과 웹을 연동할 수 있습니다.</p>
+            <h2>지금 바로 식물 키우기 시스템을 경험하세요</h2>
+            <p>편리하게 나의 화분과 웹을 연동할 수 있습니다.</p>
           </div>
-          <Link to="/login" className="btn-primary-large shadow-glow">내 화분 등록하기</Link>
+          <Link to="/login" className="btn-primary-large shadow-glow">화분 등록하기</Link>
         </section>
       </div>
 

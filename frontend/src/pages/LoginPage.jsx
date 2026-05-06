@@ -1,19 +1,21 @@
+// src/pages/LoginPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdEco } from "react-icons/md";
+import useSensorStore from '../store/useSensorStore'; // 💡 스토어 불러오기
 import './LoginPage.css';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useSensorStore(); // 💡 스토어에서 로그인 작동 함수 가져오기
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // 실제 서비스에서는 여기서 백엔드 api로 로그인 요청을 보냄(지금은 테스트로 아무거나 입력해도 넘어감)
     if (email && password) {
+      login(); // 💡 시스템 전체의 로그인 상태를 '참(true)'으로 변경!
       alert('환영합니다!');
-      navigate('/pots'); // 로그인 성공 시 '내 화분 목록' 페이지로 이동
+      navigate('/pots'); 
     } else {
       alert('이메일과 비밀번호를 모두 입력해 주세요.');
     }
@@ -27,7 +29,7 @@ function LoginPage() {
             <span className="logo-icon-large">🌱</span>
           </div>
           <h2>식물 키우기</h2>
-          <p>쉽고 편리한 식물 관리 시스템</p>
+          <p>내 손안의 스마트 가드닝 시스템</p>
         </div>
 
         <form className="login-form" onSubmit={handleLogin}>
@@ -64,7 +66,7 @@ function LoginPage() {
         </form>
 
         <div className="signup-link-box">
-          계정이 없으신가요? <span className="signup-link">회원가입</span>
+          계정이 없으신가요? <span className="signup-link">회원가입하기</span>
         </div>
       </div>
     </div>
