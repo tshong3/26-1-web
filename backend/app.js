@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const authRoutes = require("./routes/auth");
 const sensorRoutes = require("./routes/sensor");
+const wateringRoutes = require("./routes/watering");
 const app = express();
 
 app.use(cors());
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/sensor-data", sensorRoutes);
+app.use("/api/watering", wateringRoutes);
 
 app.get("/api", (req, res) => {
   res.json({ message: "backend working" });
