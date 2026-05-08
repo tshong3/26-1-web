@@ -28,6 +28,10 @@ function getDurationMs(body, defaultValue = 15000) {
     return defaultValue;
 }
 
+function isPositiveInteger(value) {
+    return Number.isInteger(value) && value > 0;
+}
+
 function normalizeTime(value) {
     if (!value) return "08:00:00";
 
@@ -573,6 +577,76 @@ router.post("/device/command/result", async (req, res) => {
         res.status(500).json({
             success: false,
             message: "급수 실행 결과 저장 실패",
+            error: error.message,
+        });
+    }
+});
+
+/**
+ * 급수 로그 조회 API
+ * GET /api/watering/logs/:potId?limit=50
+ */
+router.get("/logs/:potId", async (req, res) => {
+    try {
+        const potId = Number(req.params.potId);
+        const requestedLimit = Number(req.query.limit || 50);
+        const limit = Number.isInteger(requestedLimit)
+            ? Math.min(Math.max(requestedLimit, 1), 100)
+            : 50;
+
+        if (!isPositiveInteger(potId)) {
+            return res.status(400).json({
+                success: false,
+                message: "pot_id는 1 이상의 정수여야 합니다.",
+            });
+        }
+
+        const [pots] = await promiseDb.query(
+            "SELECT id FROM pot WHERE id = ?",
+            [potId]
+        );
+
+        if (pots.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "존재하지 않는 화분입니다.",
+            });
+        }
+
+        const [logs] = await promiseDb.query(
+            `
+            SELECT
+                pot_id,
+                command_id,
+                command_type,
+                duration_ms,
+                success,
+                message,
+                created_at
+            FROM watering_logs
+            WHERE pot_id = ?
+            ORDER BY created_at DESC
+            LIMIT ?
+            `,
+            [potId, limit]
+        );
+
+        res.json({
+            success: true,
+            data: {
+                pot_id: potId,
+                count: logs.length,
+                items: logs.map((log) => ({
+                    ...log,
+                    success: Boolean(log.success),
+                })),
+            },
+        });
+    } catch (error) {
+        console.error("급수 로그 조회 오류:", error);
+        res.status(500).json({
+            success: false,
+            message: "급수 로그 조회 실패",
             error: error.message,
         });
     }
