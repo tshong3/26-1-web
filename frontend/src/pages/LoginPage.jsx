@@ -1,21 +1,21 @@
-// src/pages/LoginPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useSensorStore from '../store/useSensorStore'; // 💡 스토어 불러오기
+import useSensorStore from '../store/useSensorStore'; 
 import './LoginPage.css';
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useSensorStore(); // 💡 스토어에서 로그인 작동 함수 가져오기
+  const { login } = useSensorStore(); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = (e) => {
     e.preventDefault();
     if (email && password) {
-      login(); // 💡 시스템 전체의 로그인 상태를 '참(true)'으로 변경!
+      login(); 
       alert('환영합니다!');
-      navigate('/pots'); 
+      // 로그인 성공 시 바로 대시보드 화면으로 이동
+      navigate('/dashboard'); 
     } else {
       alert('이메일과 비밀번호를 모두 입력해 주세요.');
     }

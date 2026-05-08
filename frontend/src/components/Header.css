@@ -40,6 +40,7 @@
   height: 100%;
 }
 
+/* 공통 탭 디자인 */
 .nav-item {
   display: flex;
   align-items: center;
@@ -50,35 +51,45 @@
   font-weight: 600;
   transition: color 0.2s ease;
   position: relative;
-  height: 100%;
-}
-
-/* 마우스 올렸을 때 */
-.nav-item:hover {
-  color: #10b981;
-}
-
-/* 활성화 상태 디자인: 하단 밑줄 사용 */
-.nav-item.active {
-  color: #10b981;
-}
-
-.nav-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background-color: #10b981;
-  border-radius: 3px 3px 0 0;
+  padding: 4px 4px;
 }
 
 .nav-icon {
   font-size: 18px;
 }
 
-/* 로그인/회원가입 영역 */
+.nav-item:hover {
+  color: #10b981;
+}
+
+.nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; 
+  height: 3px;
+  background-color: #10b981;
+  border-radius: 3px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item:hover::after {
+  width: 40%;
+  opacity: 0.5;
+}
+
+.nav-item.active {
+  color: #10b981;
+}
+
+.nav-item.active::after {
+  width: 100%;
+  opacity: 1;
+}
+
+/* 로그인/회원가입 */
 .header-auth {
   display: flex;
   align-items: center;
