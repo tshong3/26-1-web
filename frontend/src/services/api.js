@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://farm.nulldns.top', // 메인 서버 주소
+  baseURL: 'https://farm.nulldns.top', // 메인 서버 주소
   headers: {
     'Content-Type': 'application/json',
   },
