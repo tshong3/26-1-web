@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db/connection");
+const {
+    formatKstDateTime,
+    getKstNowDate,
+    pad,
+} = require("../utils/kstDate");
 
 const promiseDb = db.promise();
 
@@ -8,23 +13,19 @@ function isPositiveInteger(value) {
     return Number.isInteger(value) && value > 0;
 }
 
-function pad(num) {
-    return String(num).padStart(2, "0");
-}
-
-function formatDateTime(date) {
+function formatKstBaseDateTime(date) {
     return (
-        `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
-        `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+        `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())} ` +
+        `${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:${pad(date.getUTCSeconds())}`
     );
 }
 
-function formatDate(date) {
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+function formatKstBaseDate(date) {
+    return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
 }
 
-function formatMonth(date) {
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
+function formatKstBaseMonth(date) {
+    return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}`;
 }
 
 function toNumberOrNull(value) {
@@ -41,7 +42,7 @@ function normalizeSensorRow(row) {
         humidity: toNumberOrNull(row.humidity),
         soil_moisture: toNumberOrNull(row.soil_moisture),
         light: toNumberOrNull(row.light),
-        created_at: row.created_at,
+        created_at: formatKstDateTime(row.created_at),
     };
 }
 
@@ -64,25 +65,25 @@ async function ensurePotExists(potId) {
 }
 
 function getChartConfig(unit) {
-    const now = new Date();
+    const now = getKstNowDate();
 
     if (unit === "hour") {
         const endAnchor = new Date(now);
-        endAnchor.setMinutes(0, 0, 0);
+        endAnchor.setUTCMinutes(0, 0, 0);
 
         const start = new Date(endAnchor);
-        start.setHours(start.getHours() - 23);
+        start.setUTCHours(start.getUTCHours() - 23);
 
         const end = new Date(endAnchor);
-        end.setHours(end.getHours() + 1);
+        end.setUTCHours(end.getUTCHours() + 1);
 
         const buckets = Array.from({ length: 24 }, (_, index) => {
             const bucketDate = new Date(start);
-            bucketDate.setHours(bucketDate.getHours() + index);
+            bucketDate.setUTCHours(bucketDate.getUTCHours() + index);
 
             return {
-                bucket: formatDateTime(bucketDate),
-                label: `${pad(bucketDate.getHours())}:00`,
+                bucket: formatKstBaseDateTime(bucketDate),
+                label: `${pad(bucketDate.getUTCHours())}:00`,
             };
         });
 
@@ -95,20 +96,24 @@ function getChartConfig(unit) {
     }
 
     if (unit === "day") {
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const today = new Date(Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate()
+        ));
         const start = new Date(today);
-        start.setDate(start.getDate() - 29);
+        start.setUTCDate(start.getUTCDate() - 29);
 
         const end = new Date(today);
-        end.setDate(end.getDate() + 1);
+        end.setUTCDate(end.getUTCDate() + 1);
 
         const buckets = Array.from({ length: 30 }, (_, index) => {
             const bucketDate = new Date(start);
-            bucketDate.setDate(bucketDate.getDate() + index);
+            bucketDate.setUTCDate(bucketDate.getUTCDate() + index);
 
             return {
-                bucket: formatDate(bucketDate),
-                label: formatDate(bucketDate),
+                bucket: formatKstBaseDate(bucketDate),
+                label: formatKstBaseDate(bucketDate),
             };
         });
 
@@ -121,20 +126,24 @@ function getChartConfig(unit) {
     }
 
     if (unit === "month") {
-        const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const currentMonth = new Date(Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            1
+        ));
         const start = new Date(currentMonth);
-        start.setMonth(start.getMonth() - 11);
+        start.setUTCMonth(start.getUTCMonth() - 11);
 
         const end = new Date(currentMonth);
-        end.setMonth(end.getMonth() + 1);
+        end.setUTCMonth(end.getUTCMonth() + 1);
 
         const buckets = Array.from({ length: 12 }, (_, index) => {
             const bucketDate = new Date(start);
-            bucketDate.setMonth(bucketDate.getMonth() + index);
+            bucketDate.setUTCMonth(bucketDate.getUTCMonth() + index);
 
             return {
-                bucket: formatMonth(bucketDate),
-                label: formatMonth(bucketDate),
+                bucket: formatKstBaseMonth(bucketDate),
+                label: formatKstBaseMonth(bucketDate),
             };
         });
 
@@ -315,7 +324,7 @@ router.get("/chart/:potId", async (req, res) => {
             GROUP BY bucket
             ORDER BY bucket ASC
             `,
-            [potId, formatDateTime(config.start), formatDateTime(config.end)]
+            [potId, formatKstBaseDateTime(config.start), formatKstBaseDateTime(config.end)]
         );
 
         const averageMap = new Map(
@@ -338,8 +347,9 @@ router.get("/chart/:potId", async (req, res) => {
             data: {
                 pot_id: potId,
                 unit,
-                start_at: formatDateTime(config.start),
-                end_at: formatDateTime(config.end),
+                start_at: formatKstBaseDateTime(config.start),
+                end_at: formatKstBaseDateTime(config.end),
+                timezone: "Asia/Seoul",
                 count: data.length,
                 items: data,
             },

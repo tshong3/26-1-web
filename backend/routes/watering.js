@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db/connection");
+const {
+    formatKstDateTime,
+    getKstNowDate,
+} = require("../utils/kstDate");
 
 const promiseDb = db.promise();
 
@@ -47,33 +51,50 @@ function pad(num) {
     return String(num).padStart(2, "0");
 }
 
-function formatDateTime(date) {
+function formatKstBaseDateTime(date) {
     return (
-        `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
-        `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+        `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())} ` +
+        `${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:${pad(date.getUTCSeconds())}`
     );
+}
+
+function normalizeWateringSetting(setting) {
+    return {
+        ...setting,
+        auto_enabled: Boolean(setting.auto_enabled),
+        schedule_enabled: Boolean(setting.schedule_enabled),
+        last_watered_at: formatKstDateTime(setting.last_watered_at),
+        next_water_at: formatKstDateTime(setting.next_water_at),
+        timezone: "Asia/Seoul",
+    };
 }
 
 /**
  * 예약 급수 다음 실행 시간 계산
  */
 function calculateNextWaterAt(wateringTime, intervalValue, intervalUnit) {
-    const now = new Date();
-
     const [hour, minute, second] = wateringTime.split(":").map(Number);
+    const now = getKstNowDate();
 
-    const next = new Date();
-    next.setHours(hour || 0, minute || 0, second || 0, 0);
+    const next = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        hour || 0,
+        minute || 0,
+        second || 0,
+        0
+    ));
 
     if (next <= now) {
         if (intervalUnit === "WEEK") {
-            next.setDate(next.getDate() + intervalValue * 7);
+            next.setUTCDate(next.getUTCDate() + intervalValue * 7);
         } else {
-            next.setDate(next.getDate() + intervalValue);
+            next.setUTCDate(next.getUTCDate() + intervalValue);
         }
     }
 
-    return formatDateTime(next);
+    return formatKstBaseDateTime(next);
 }
 
 /**
@@ -130,6 +151,7 @@ router.get("/settings/:potId", async (req, res) => {
                     duration_ms: 15000,
                     last_watered_at: null,
                     next_water_at: null,
+                    timezone: "Asia/Seoul",
                 },
             });
         }
@@ -138,11 +160,7 @@ router.get("/settings/:potId", async (req, res) => {
 
         res.json({
             success: true,
-            data: {
-                ...setting,
-                auto_enabled: Boolean(setting.auto_enabled),
-                schedule_enabled: Boolean(setting.schedule_enabled),
-            },
+            data: normalizeWateringSetting(setting),
         });
     } catch (error) {
         console.error("급수 설정 조회 오류:", error);
@@ -262,6 +280,7 @@ router.post("/settings/:potId", async (req, res) => {
                 watering_time: wateringTime,
                 duration_ms: durationMs,
                 next_water_at: nextWaterAt,
+                timezone: "Asia/Seoul",
             },
         });
     } catch (error) {
@@ -639,7 +658,9 @@ router.get("/logs/:potId", async (req, res) => {
                 items: logs.map((log) => ({
                     ...log,
                     success: Boolean(log.success),
+                    created_at: formatKstDateTime(log.created_at),
                 })),
+                timezone: "Asia/Seoul",
             },
         });
     } catch (error) {
