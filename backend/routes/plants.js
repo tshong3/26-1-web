@@ -3,58 +3,198 @@ const router = express.Router();
 const db = require("../db/connection");
 const authMiddleware = require("../middleware/authMiddleware");
 
+const promiseDb = db.promise();
+
 // 식물 도감 리스트 조회
-router.get("/guide", (req, res) => {
-    const sql = "SELECT * FROM plant_guide ORDER BY name ASC";
-    db.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ message: "도감 조회 실패", error: err });
-        res.json(results);
-    });
+router.get("/guide", async (req, res) => {
+    try {
+        const [results] = await promiseDb.query(
+            "SELECT * FROM plant_guide ORDER BY name ASC"
+        );
+        res.json({ success: true, data: results });
+    } catch (error) {
+        console.error("도감 조회 오류:", error);
+        res.status(500).json({ success: false, message: "도감 조회 실패", error: error.message });
+    }
 });
 
 // 내 화분 등록
-router.post("/register", authMiddleware, (req, res) => {
-    const { plant_id, pot_id, nickname } = req.body;
-    const user_id = req.user.id;
+router.post("/register", authMiddleware, async (req, res) => {
+    try {
+        const { plant_id, pot_id, nickname } = req.body;
+        const user_id = req.user.id;
 
-    // 1. 선택한 식물의 기본 가이드 정보 가져오기 (plant_guide)
-    const sqlMaster = "SELECT recommend_moisture FROM plant_guide WHERE id = ?";
-    db.query(sqlMaster, [plant_id], (err, masterResults) => {
-        if (err || masterResults.length === 0) {
-            return res.status(400).json({ message: "식물 정보가 없습니다." });
-        }
-
-        // 가이드에 있는 기본 권장 습도를 가져오기
-        const defaultTargetMoisture = masterResults[0].recommend_moisture;
-
-        const sqlUpdatePot = `
-            UPDATE pot 
+        const [result] = await promiseDb.query(
+            `UPDATE pot 
             SET plant_id = ?, 
                 nickname = ?, 
-                target_moisture_min = ?, 
                 user_id = ? 
-            WHERE id = ?
-        `;
+            WHERE id = ?`,
+            [plant_id, nickname, user_id, pot_id]
+        );
 
-        db.query(sqlUpdatePot, [plant_id, nickname, defaultTargetMoisture, user_id, pot_id], (err, result) => {
-            if (err) return res.status(500).json({ message: "화분 정보 업데이트 실패", error: err });
-            
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ message: "해당 화분(기기)을 찾을 수 없습니다." });
-            }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: "해당 화분(기기)을 찾을 수 없습니다." });
+        }
 
-            /* 
-               여기에 AI API를 비동기로 호출해서 
-               위에서 넣은 defaultTargetMoisture를 AI가 추천하는 
-               정밀한 값으로 다시 한 번 UPDATE 치는 로직을 추가
-            */
-
-            res.status(200).json({ 
-                message: "내 화분 등록 완료! AI가 식물 상태 분석을 시작합니다.",
-                targetMoisture: defaultTargetMoisture 
-            });
+        res.status(200).json({ 
+            success: true,
+            message: "내 화분 등록 완료! AI가 식물 상태 분석을 시작합니다."
         });
-    });
+    } catch (error) {
+        console.error("화분 등록 오류:", error);
+        res.status(500).json({ success: false, message: "화분 등록 실패", error: error.message });
+    }
 });
+
+// 내 화분 목록 조회
+router.get("/pots", authMiddleware, async (req, res) => {
+    try {
+        const user_id = req.user.id;
+
+        const [pots] = await promiseDb.query(
+            `SELECT 
+                pot.id,
+                pot.pot_name,
+                pot.nickname,
+                pot.device_id,
+                pot.target_moisture_min,
+                pot.target_moisture_max,
+                pot.target_temp_min,
+                pot.target_temp_max,
+                pot.last_ai_comment,
+                pot.created_at,
+                plant_guide.id AS plant_id,
+                plant_guide.name AS plant_name,
+                plant_guide.description,
+                plant_guide.recommend_moisture,
+                plant_guide.recommend_temp,
+                plant_guide.image_url
+            FROM pot
+            LEFT JOIN plant_guide ON pot.plant_id = plant_guide.id
+            WHERE pot.user_id = ?
+            ORDER BY pot.created_at DESC`,
+            [user_id]
+        );
+
+        res.json({ success: true, data: pots });
+    } catch (error) {
+        console.error("화분 목록 조회 오류:", error);
+        res.status(500).json({ success: false, message: "화분 목록 조회 실패", error: error.message });
+    }
+});
+
+// 화분 상세 조회
+router.get("/pots/:potId", authMiddleware, async (req, res) => {
+    try {
+        const user_id = req.user.id;
+        const potId = Number(req.params.potId);
+
+        const [pots] = await promiseDb.query(
+            `SELECT 
+                pot.id,
+                pot.pot_name,
+                pot.nickname,
+                pot.device_id,
+                pot.target_moisture_min,
+                pot.target_moisture_max,
+                pot.target_temp_min,
+                pot.target_temp_max,
+                pot.last_ai_comment,
+                pot.created_at,
+                plant_guide.id AS plant_id,
+                plant_guide.name AS plant_name,
+                plant_guide.description,
+                plant_guide.recommend_moisture,
+                plant_guide.recommend_temp,
+                plant_guide.image_url
+            FROM pot
+            LEFT JOIN plant_guide ON pot.plant_id = plant_guide.id
+            WHERE pot.id = ? AND pot.user_id = ?`,
+            [potId, user_id]
+        );
+
+        if (pots.length === 0) {
+            return res.status(404).json({ success: false, message: "화분을 찾을 수 없습니다." });
+        }
+
+        res.json({ success: true, data: pots[0] });
+    } catch (error) {
+        console.error("화분 상세 조회 오류:", error);
+        res.status(500).json({ success: false, message: "화분 상세 조회 실패", error: error.message });
+    }
+});
+
+// 화분 수정
+router.put("/pots/:potId", authMiddleware, async (req, res) => {
+    try {
+        const user_id = req.user.id;
+        const potId = Number(req.params.potId);
+        const { 
+            pot_name, 
+            nickname, 
+            plant_id, 
+            target_moisture_min, 
+            target_moisture_max, 
+            target_temp_min, 
+            target_temp_max 
+        } = req.body;
+
+        const [result] = await promiseDb.query(
+            `UPDATE pot 
+            SET pot_name = COALESCE(?, pot_name),
+                nickname = COALESCE(?, nickname),
+                plant_id = COALESCE(?, plant_id),
+                target_moisture_min = COALESCE(?, target_moisture_min),
+                target_moisture_max = COALESCE(?, target_moisture_max),
+                target_temp_min = COALESCE(?, target_temp_min),
+                target_temp_max = COALESCE(?, target_temp_max)
+            WHERE id = ? AND user_id = ?`,
+            [
+                pot_name ?? null, 
+                nickname ?? null, 
+                plant_id ?? null, 
+                target_moisture_min ?? null, 
+                target_moisture_max ?? null, 
+                target_temp_min ?? null, 
+                target_temp_max ?? null, 
+                potId, 
+                user_id
+            ]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: "화분을 찾을 수 없습니다." });
+        }
+
+        res.json({ success: true, message: "화분 수정 완료" });
+    } catch (error) {
+        console.error("화분 수정 오류:", error);
+        res.status(500).json({ success: false, message: "화분 수정 실패", error: error.message });
+    }
+});
+
+// 화분 삭제
+router.delete("/pots/:potId", authMiddleware, async (req, res) => {
+    try {
+        const user_id = req.user.id;
+        const potId = Number(req.params.potId);
+
+        const [result] = await promiseDb.query(
+            "DELETE FROM pot WHERE id = ? AND user_id = ?",
+            [potId, user_id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: "화분을 찾을 수 없습니다." });
+        }
+
+        res.json({ success: true, message: "화분 삭제 완료" });
+    } catch (error) {
+        console.error("화분 삭제 오류:", error);
+        res.status(500).json({ success: false, message: "화분 삭제 실패", error: error.message });
+    }
+});
+
 
 module.exports = router;
