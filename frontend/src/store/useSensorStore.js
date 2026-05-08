@@ -1,10 +1,46 @@
 import { create } from 'zustand';
+import { authService } from '../services/authService';
 
 const useSensorStore = create((set) => ({
-  // 로그인 상태 관리
-  isLoggedIn: false,
-  login: () => set({ isLoggedIn: true }),
-  logout: () => set({ isLoggedIn: false }),
+  // 로그인 상태 관리: 새로고침 시에도 유지되도록 로컬 스토리지 확인
+  isLoggedIn: !!localStorage.getItem('token'),
+
+  // 테스트용 임시 계정: 이메일에 test 입력하면 로그인 성공
+  login: async (email, password) => {
+    if (email === 'test@test.com') {
+      localStorage.setItem('token', 'dev-fake-token');
+      set({ isLoggedIn: true });
+      return { success: true };
+    }
+
+    // 실제 백엔드 API와 연동된 비동기 로그인 함수
+    try {
+      const data = await authService.login(email, password);
+      // 성공 시 전달받은 토큰을 로컬 스토리지에 저장
+      localStorage.setItem('token', data.token); 
+      set({ isLoggedIn: true });
+      return { success: true };
+    } catch (error) {
+      console.error('로그인 에러:', error);
+      return { 
+        success: false, 
+        message: error.response?.data?.message || '이메일 또는 비밀번호를 확인해주세요.' 
+      };
+    }
+  },
+
+  // 백엔드 API와 연동된 비동기 로그아웃 함수
+  logout: async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error('로그아웃 에러:', error);
+    } finally {
+      // 무조건 로컬 스토리지에서 토큰 삭제 후 상태 변경
+      localStorage.removeItem('token');
+      set({ isLoggedIn: false });
+    }
+  },
 
   // 내 화분 목록 데이터
   potList: [

@@ -100,7 +100,7 @@ function HomePage() {
       <div className="cta-wrapper">
         <section className="cta-section modern-cta">
           <div className="cta-content">
-            <h2>지금 바로 스마트 가드닝을 경험하세요</h2>
+            <h2>지금 바로 식물 키우기를 경험하세요</h2>
             <p>몇 번의 클릭만으로 내 화분과 웹을 연동할 수 있습니다.</p>
           </div>
           <Link to="/login" className="btn-primary-large shadow-glow">내 화분 등록하기</Link>
