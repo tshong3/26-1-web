@@ -1,6 +1,5 @@
-// src/pages/LoginPage.jsx
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // 💡 Link 추가
+import { useNavigate, Link } from 'react-router-dom';
 import useSensorStore from '../store/useSensorStore'; 
 import './LoginPage.css';
 
@@ -9,14 +8,14 @@ function LoginPage() {
   const { login } = useSensorStore(); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false); // 💡 로딩 상태 추가
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     if (email && password) {
       setLoading(true); // 통신 시작 시 버튼 비활성화
       
-      const result = await login(email, password); // 💡 API 비동기 호출
+      const result = await login(email, password); // API 비동기 호출
       
       setLoading(false); // 통신 종료
 
@@ -40,7 +39,7 @@ function LoginPage() {
             <span className="logo-icon-large">🌱</span>
           </div>
           <h2>식물 키우기</h2>
-          <p>내 손안의 스마트 가드닝 시스템</p>
+          <p>쉽고 편리한 식물 관리 시스템</p>
         </div>
 
         <form className="login-form" onSubmit={handleLogin}>
@@ -79,8 +78,7 @@ function LoginPage() {
         </form>
 
         <div className="signup-link-box">
-          계정이 없으신가요? 
-          {/* 💡 a 태그나 span 대신 라우터 Link로 변경하여 회원가입 페이지로 연결 */}
+          계정이 없으신가요?
           <Link to="/register" className="signup-link">회원가입하기</Link>
         </div>
       </div>

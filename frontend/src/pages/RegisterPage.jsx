@@ -1,8 +1,7 @@
-// src/pages/RegisterPage.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/authService';
-import './LoginPage.css'; // 로그인 페이지와 CSS 공유
+import './LoginPage.css';
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -23,7 +22,7 @@ function RegisterPage() {
 
     setLoading(true);
     try {
-      // 💡 백엔드 명세서에 맞춰 데이터 전송
+      // 백엔드 명세서에 맞춰 데이터 전송
       await authService.register({ email, password });
       alert('회원가입이 완료되었습니다! 로그인해 주세요.');
       navigate('/login'); // 가입 성공 시 로그인 페이지로 이동
@@ -43,7 +42,7 @@ function RegisterPage() {
             <span className="logo-icon-large">🌱</span>
           </div>
           <h2>회원가입</h2>
-          <p>스마트 가드닝의 세계로 오신 것을 환영합니다</p>
+          <p>식물 키우기에 오신 것을 환영합니다</p>
         </div>
 
         <form className="login-form" onSubmit={handleRegister}>
