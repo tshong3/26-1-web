@@ -7,6 +7,7 @@ const sensorRoutes = require("./routes/sensor");
 const wateringRoutes = require("./routes/watering");
 const notificationRoutes = require("./routes/notifications");
 const plantRoutes = require("./routes/plants");
+const startWateringScheduler = require("./jobs/wateringScheduler");
 const app = express();
 
 app.use(cors());
@@ -25,4 +26,5 @@ app.get("/api", (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
+  startWateringScheduler();
 });
