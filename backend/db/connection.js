@@ -10,4 +10,8 @@ const db = mysql.createPool({
   connectionLimit: 10,
 });
 
+db.on("connection", (connection) => {
+  connection.query("SET time_zone = '+09:00'");
+});
+
 module.exports = db;
