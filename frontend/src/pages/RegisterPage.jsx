@@ -1,3 +1,4 @@
+// src/pages/RegisterPage.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/authService';
@@ -5,6 +6,7 @@ import './LoginPage.css';
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const [nickname, setNickname] = useState(''); // 💡 닉네임 상태 추가
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -13,7 +15,8 @@ function RegisterPage() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (!email || !password || !passwordConfirm) {
+    // 💡 닉네임 입력 여부도 함께 확인
+    if (!nickname || !email || !password || !passwordConfirm) {
       return alert('모든 항목을 입력해 주세요.');
     }
     if (password !== passwordConfirm) {
@@ -22,8 +25,8 @@ function RegisterPage() {
 
     setLoading(true);
     try {
-      // 백엔드 명세서에 맞춰 데이터 전송
-      await authService.register({ email, password });
+      // 💡 백엔드 명세서에 맞춰 닉네임 데이터도 함께 전송
+      await authService.register({ email, password, nickname });
       alert('회원가입이 완료되었습니다! 로그인해 주세요.');
       navigate('/login'); // 가입 성공 시 로그인 페이지로 이동
     } catch (error) {
@@ -46,6 +49,18 @@ function RegisterPage() {
         </div>
 
         <form className="login-form" onSubmit={handleRegister}>
+          {/* 💡 닉네임 입력 칸 추가 (이메일 위쪽으로 배치) */}
+          <div className="input-group">
+            <label>닉네임</label>
+            <input 
+              type="text" 
+              placeholder="사용할 닉네임을 입력하세요" 
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
           <div className="input-group">
             <label>이메일</label>
             <input 

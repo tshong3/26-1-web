@@ -1,11 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import useSensorStore from '../store/useSensorStore';
 import SensorCard from '../components/SensorCard';
 import { MdOutlineTipsAndUpdates, MdWarningAmber, MdEco } from "react-icons/md";
 import './DashboardPage.css';
 
 function DashboardPage() {
-  const { sensorData, wateringHistory } = useSensorStore();
+  // 화분 목록, 닉네임, 선택 상태 등을 불러옴
+  const { 
+    sensorData, 
+    wateringHistory, 
+    potList, 
+    activePotId, 
+    setActivePotId, 
+    addPot, 
+    nickname 
+  } = useSensorStore();
+
+  // 화분 등록 모달을 위한 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newPotName, setNewPotName] = useState('');
+  const [newPlantName, setNewPlantName] = useState('');
+  const [newDeviceId, setNewDeviceId] = useState('');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -14,6 +29,7 @@ function DashboardPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // 상태 판단 함수들
   const getMoistureStatus = (value) => {
     if (value < 20) return { status: 'danger', badge: '나쁨' };
     if (value < 30) return { status: 'warning', badge: '보통' };
@@ -41,13 +57,96 @@ function DashboardPage() {
 
   const overall = getOverallStatus();
 
+  // 드롭다운 선택 핸들러
+  const handleDropdownChange = (e) => {
+    const value = e.target.value;
+    if (value === 'add_new') {
+      setIsModalOpen(true);
+    } else {
+      setActivePotId(Number(value));
+    }
+  };
+
+  // 새 화분 등록 핸들러
+  const handleAddPot = (e) => {
+    e.preventDefault();
+    if (potList.some((pot) => pot.potName === newPotName)) {
+      return alert('이미 존재하는 화분 이름입니다.');
+    }
+    if (!newDeviceId.trim() || newDeviceId.length < 4) {
+      return alert('올바른 등록 PIN(최소 4자리 이상)을 입력해 주세요.');
+    }
+    
+    // DB 구조에 맞게 스토어에 추가
+    addPot({ potName: newPotName, plantName: newPlantName, deviceId: newDeviceId });
+    alert('화분이 등록되었습니다!');
+    setIsModalOpen(false);
+    setNewPotName(''); setNewPlantName(''); setNewDeviceId('');
+  };
+
+  // 화분 등록 모달 컴포넌트 분리
+  const renderAddPotModal = () => (
+    isModalOpen && (
+      <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h3>새로운 화분 등록</h3>
+            <button className="close-btn" onClick={() => setIsModalOpen(false)}>✕</button>
+          </div>
+          <form onSubmit={handleAddPot} className="add-pot-form">
+            <div className="input-group">
+              <label>화분 이름</label>
+              <input type="text" placeholder="예: 안방 화분" value={newPotName} onChange={(e) => setNewPotName(e.target.value)} required />
+            </div>
+            <div className="input-group">
+              <label>식물 이름</label>
+              <input type="text" placeholder="예: 장미" value={newPlantName} onChange={(e) => setNewPlantName(e.target.value)} required />
+            </div>
+            <div className="input-group">
+              <label>등록 PIN (기기 식별용)</label>
+              <input type="text" placeholder="아두이노 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
+            </div>
+            <button type="submit" className="btn-primary-large" style={{ width: '100%', marginTop: '16px' }}>
+              등록하기
+            </button>
+          </form>
+        </div>
+      </div>
+    )
+  );
+
+  // 화분이 없을 때
+  if (potList.length === 0) {
+    return (
+      <div className="dashboard-container empty-state">
+        <div className="empty-icon" style={{ fontSize: '60px', marginBottom: '20px' }}>🪴</div>
+        <h2>등록된 화분이 없습니다</h2>
+        <p style={{ color: '#64748b', marginBottom: '30px' }}>
+          {nickname}님의 첫 번째 반려식물을 등록하고 스마트하게 관리해보세요!
+        </p>
+        <button className="btn-primary-large" onClick={() => setIsModalOpen(true)}>
+          + 새 화분 등록하기
+        </button>
+        {renderAddPotModal()}
+      </div>
+    );
+  }
+
+  // 화분이 있을 때: 현재 선택된 화분 정보 가져오기
+  const activePot = potList.find(p => p.id === activePotId) || potList[0];
+
   return (
     <div className="dashboard-container">
       
-      <div className="dashboard-header">
+      <div className="dashboard-header flex-header">
         <div className="header-title-group">
-          <h2>안방 화분</h2>
-          <span className="plant-tag"><MdEco /> 장미</span>
+          <select className="pot-dropdown" value={activePot.id} onChange={handleDropdownChange}>
+            {potList.map((pot) => (
+              <option key={pot.id} value={pot.id}>{pot.potName}</option>
+            ))}
+            <option value="add_new" style={{ fontWeight: 'bold', color: '#10b981' }}>+ 새 화분 등록</option>
+          </select>
+          <span className="plant-tag"><MdEco /> {activePot.plantName || activePot.plantType}</span>
         </div>
         <p>화분의 실시간 상태를 확인하세요.</p>
       </div>
@@ -128,6 +227,9 @@ function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* 모달 렌더링 호출 */}
+      {renderAddPotModal()}
     </div>
   );
 }

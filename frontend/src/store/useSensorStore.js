@@ -4,12 +4,16 @@ import { authService } from '../services/authService';
 const useSensorStore = create((set) => ({
   // 로그인 상태 관리: 새로고침 시에도 유지되도록 로컬 스토리지 확인
   isLoggedIn: !!localStorage.getItem('token'),
+  
+  // 닉네임 상태 추가: 로컬 스토리지에서 불러오기
+  nickname: localStorage.getItem('nickname') || '',
 
-  // 테스트용 임시 계정: 이메일에 test 입력하면 로그인 성공
+  // 테스트용 임시 계정: 이메일에 test@test.com 입력
   login: async (email, password) => {
     if (email === 'test@test.com') {
       localStorage.setItem('token', 'dev-fake-token');
-      set({ isLoggedIn: true });
+      localStorage.setItem('nickname', '테스트유저'); // 테스트용 닉네임
+      set({ isLoggedIn: true, nickname: '테스트유저' });
       return { success: true };
     }
 
@@ -18,7 +22,12 @@ const useSensorStore = create((set) => ({
       const data = await authService.login(email, password);
       // 성공 시 전달받은 토큰을 로컬 스토리지에 저장
       localStorage.setItem('token', data.token); 
-      set({ isLoggedIn: true });
+      
+      // 백엔드에서 넘겨주는 nickname을 저장(데이터가 없으면 '가드너'로 대체)
+      const userNick = data.nickname || '가드너'; 
+      localStorage.setItem('nickname', userNick);
+      
+      set({ isLoggedIn: true, nickname: userNick });
       return { success: true };
     } catch (error) {
       console.error('로그인 에러:', error);
@@ -36,9 +45,10 @@ const useSensorStore = create((set) => ({
     } catch (error) {
       console.error('로그아웃 에러:', error);
     } finally {
-      // 무조건 로컬 스토리지에서 토큰 삭제 후 상태 변경
+      // 무조건 로컬 스토리지에서 토큰과 닉네임 삭제 후 상태 변경
       localStorage.removeItem('token');
-      set({ isLoggedIn: false });
+      localStorage.removeItem('nickname'); 
+      set({ isLoggedIn: false, nickname: '' });
     }
   },
 
@@ -86,9 +96,14 @@ const useSensorStore = create((set) => ({
     controlSettings: { ...state.controlSettings, ...newSettings }
   })),
 
-  addPot: (newPot) => set((state) => ({
-    potList: [...state.potList, { id: Date.now(), ...newPot }]
-  })),
+  // 새 화분 추가 시 바로 그 화분으로 선택되도록 수정
+  addPot: (newPot) => set((state) => {
+    const newId = Date.now();
+    return { 
+      potList: [...state.potList, { id: newId, ...newPot }],
+      activePotId: newId 
+    };
+  }),
   setActivePotId: (id) => set({ activePotId: id }),
 }));
 

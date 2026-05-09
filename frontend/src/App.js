@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import useSensorStore from './store/useSensorStore';
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
@@ -10,15 +11,18 @@ import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
+  // 로그인 상태 가져오기
+  const { isLoggedIn } = useSensorStore();
+
   return (
     <BrowserRouter>
       <Header />
       <main>
         <Routes>
-          {/* 누구나 접근 가능한 공개 라우트 */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          {/* 로그인 상태가 true면 무조건 대시보드로 강제 이동 */}
+          <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <HomePage />} />
+          <Route path="/login" element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+          <Route path="/register" element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
 
           {/* 로그인한 사용자만 접근 가능한 보호된 라우트 */}
           <Route element={<ProtectedRoute />}>

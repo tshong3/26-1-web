@@ -5,7 +5,7 @@ import useSensorStore from '../store/useSensorStore';
 import './Header.css';
 
 function Header() {
-  const { isLoggedIn, logout } = useSensorStore();
+  const { isLoggedIn, logout, nickname } = useSensorStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,6 +37,21 @@ function Header() {
     navigate('/'); 
   };
 
+  const scrollToFeatures = (e) => {
+    e.preventDefault();
+
+    if (location.pathname !== '/') {
+      // 다른 페이지에 있다면 홈으로 먼저 이동 후 스크롤
+      navigate('/');
+      setTimeout(() => {
+        document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      // 이미 홈 화면이라면 바로 스크롤
+      document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <header className="header">
       <div className="header-logo">
@@ -53,7 +68,6 @@ function Header() {
       <nav className="header-nav">
         {isLoggedIn ? (
           <>
-            {/* 로그인 후 */}
             <NavLink to="/dashboard" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
               대시보드
             </NavLink>
@@ -74,8 +88,9 @@ function Header() {
               홈
             </Link>
             <a 
-              href="#features" 
+              onClick={scrollToFeatures}
               className={activeSection === 'features' ? "nav-item active" : "nav-item"}
+              style={{ cursor: 'pointer' }}
             >
               서비스 소개
             </a>
@@ -85,13 +100,16 @@ function Header() {
 
       <div className="header-auth">
         {isLoggedIn ? (
-          <button onClick={handleLogout} className="logout-btn">
-            <MdLogout className="nav-icon" style={{ fontSize: '18px' }}/> 로그아웃
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <span style={{ fontWeight: '600', color: '#0f172a' }}>{nickname}님</span>
+            <button onClick={handleLogout} className="logout-btn">
+              <MdLogout className="nav-icon" style={{ fontSize: '18px' }}/> 로그아웃
+            </button>
+          </div>
         ) : (
           <>
             <Link to="/login" className="login-btn">로그인</Link>
-            <Link to="/login" className="signup-btn">무료로 시작하기</Link>
+            <Link to="/register" className="signup-btn">무료로 시작하기</Link>
           </>
         )}
       </div>
