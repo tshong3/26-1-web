@@ -28,7 +28,8 @@ function DashboardPage() {
     activePotId, 
     setActivePotId, 
     addPot, 
-    nickname 
+    nickname,
+    fetchPots
   } = useSensorStore();
 
   // 알림 스토어에서 상태와 데이터 가져오기
@@ -41,7 +42,8 @@ function DashboardPage() {
   // 대시보드 진입 시 알림 목록 가져오기
   useEffect(() => {
     fetchNotifications();
-  }, [fetchNotifications]);
+    fetchPots();
+  }, [fetchNotifications, fetchPots]);
 
   // 상태 판단 및 기타 핸들러
   const getMoistureStatus = (value) => {
