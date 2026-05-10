@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useSensorStore from '../store/useSensorStore';
 import { MdWaterDrop, MdOutlineSettingsBackupRestore } from "react-icons/md"; 
 import './ControlPage.css';
 
+
 function ControlPage() {
-  const { sensorData, controlSettings, updateControlSettings, addWateringHistory, updateSensorData } = useSensorStore();
+  const { sensorData, controlSettings, updateControlSettings, updateSensorData, activePotId, fetchWateringSettings, saveWateringSettings, runManualWatering, fetchWateringLogs, fetchLatestSensorData,} = useSensorStore();
   const [isAutoMode, setIsAutoMode] = useState(controlSettings.isAutoMode || false);
   const [threshold, setThreshold] = useState(controlSettings.autoWateringThreshold || 30);
   const [isScheduleMode, setIsScheduleMode] = useState(controlSettings.isScheduleMode || false);
@@ -18,7 +19,7 @@ function ControlPage() {
   const [periodError, setPeriodError] = useState('');
   const [manualDuration, setManualDuration] = useState(15);
 
-  const handleSaveSettings = () => {
+  const handleSaveSettings = async () => {
     updateControlSettings({
       isAutoMode,
       autoWateringThreshold: threshold,
@@ -27,12 +28,37 @@ function ControlPage() {
       scheduleTime,
       wateringDuration: duration,
     });
-    alert('급수 설정이 저장되었습니다.');
+
+    if(!activePotId){
+      alert('선택된 화분이 없습니다.');
+      return;
+    }
+
+    const result=await saveWateringSettings(activePotId);
+    if(result.success){
+      alert('급수 설정이 저장되었습니다.');
+    }else{
+      alert(result.message||'급수 설정 저장에 실패했습니다.');
+    }
   };
 
-  const handleManualWatering = () => {
-    alert(`수동 급수를 시작합니다.`);
-    addWateringHistory('수동 급수', `${manualDuration}초`);
+  const handleManualWatering = async() => {
+    if(!activePotId){
+      alert('선택된 화분이 없습니다.');
+      return;
+    }
+
+    updateControlSettings({wateringDuration: manualDuration});
+
+    const result=await runManualWatering(activePotId);
+    if(result.success){
+      alert(`수동 급수를 시작합니다.`);
+
+      await fetchWateringLogs(activePotId);
+      await fetchLatestSensorData(activePotId);
+    }else{
+      alert(result.message||'수동 급수에 실패했습니다.')
+    }
   };
 
   const handleWaterRefill = () => {
@@ -41,6 +67,31 @@ function ControlPage() {
   };
 
   const isDurationEnabled = isAutoMode || isScheduleMode;
+
+  //activePotId 바뀌거나 페이지 처음 들어올 때 설정 가져오기
+   useEffect(() => {
+    if (!activePotId) return;
+
+    (async () => {
+      //급수 설정 로드
+      const result = await fetchWateringSettings(activePotId);
+      if (result.success) {
+        const data = result.data;
+
+        setIsAutoMode(data.auto_enabled);
+        setIsScheduleMode(data.schedule_enabled);
+        setThreshold(data.min_soil_moisture);
+        setDuration(Math.round((data.duration_ms || 15000) / 1000));
+        setScheduleTime(data.watering_time?.slice(0, 5) || '08:00');
+
+      }
+      //급수 로그 로드
+      await fetchWateringLogs(activePotId);
+
+      //최신 센서 데이터 로드
+      await fetchLatestSensorData(activePotId);
+    })();
+  }, [activePotId, fetchWateringSettings, fetchWateringLogs, fetchLatestSensorData]);
 
   return (
     <div className="control-container">
