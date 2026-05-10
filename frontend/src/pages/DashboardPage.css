@@ -248,3 +248,55 @@
 .input-group input:focus {
   border-color: #10b981;
 }
+
+/* AI 스마트 알림 동적 상태 스타일 */
+.ai-messages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.loading-text {
+  text-align: center;
+  color: #64748b;
+  padding: 30px 20px;
+  font-size: 14px;
+}
+
+/* 알림이 없을 때의 빈 카드 디자인 */
+.ai-message-card.empty {
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  justify-content: center;
+  text-align: center;
+  color: #94a3b8;
+  padding: 30px 20px;
+}
+
+/* 심각도별 카드 색상 및 테두리 */
+/* Critical(위험 - 빨간색) */
+.ai-message-card.danger {
+  background-color: #fef2f2;
+  border-left: 4px solid #ef4444;
+}
+.ai-message-card.danger .ai-icon {
+  color: #ef4444;
+}
+
+/* Warning(경고 - 노란색) */
+.ai-message-card.warning {
+  background-color: #fffbeb;
+  border-left: 4px solid #f59e0b;
+}
+.ai-message-card.warning .ai-icon {
+  color: #f59e0b;
+}
+
+/* Info/Tip(정보 - 초록색) */
+.ai-message-card.tip {
+  background-color: #f0fdf4;
+  border-left: 4px solid #10b981;
+}
+.ai-message-card.tip .ai-icon {
+  color: #10b981;
+}

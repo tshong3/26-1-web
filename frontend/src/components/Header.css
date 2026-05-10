@@ -1,5 +1,5 @@
 .header {
-  position: sticky;
+  position: relative;
   top: 0;
   z-index: 1000;
   display: flex;
@@ -38,6 +38,9 @@
   align-items: center;
   gap: 36px;
   height: 100%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* 공통 탭 디자인 */
@@ -150,4 +153,179 @@
   background-color: #f8fafc;
   border-color: #cbd5e1;
   color: #0f172a;
+}
+
+/* 알림 UI 스타일 */
+.notification-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.noti-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.noti-btn:hover {
+  background-color: #f1f5f9;
+}
+
+.noti-icon {
+  font-size: 24px;
+  color: #64748b;
+}
+
+.noti-icon.active-icon {
+  color: #1e293b;
+}
+
+.noti-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background-color: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 2px solid white;
+  pointer-events: none;
+}
+
+/* 알림 드롭다운 뼈대 스타일 */
+.noti-dropdown {
+  position: absolute;
+  top: 100%;
+  right: -50px;
+  margin-top: 12px;
+  width: 360px;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.noti-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  background-color: #f8fafc;
+}
+
+.noti-dropdown-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.mark-all-read-btn {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mark-all-read-btn:hover {
+  text-decoration: underline;
+}
+
+/* 알림 드롭다운 상세 목록 UI */
+.noti-dropdown-body {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.noti-dropdown-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.noti-dropdown-body::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+}
+
+.noti-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.noti-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  position: relative;
+}
+
+.noti-item:hover {
+  background-color: #f8fafc;
+}
+
+/* 명세서 기준으로 severity별 좌측 포인트 테두리 컬러 */
+.noti-item.severity-critical { border-left: 4px solid #ef4444; } /* 빨간색 (위험) */
+.noti-item.severity-warning { border-left: 4px solid #f59e0b; } /* 노란색 (경고) */
+.noti-item.severity-info { border-left: 4px solid #3b82f6; }    /* 파란색 (정보) */
+
+/* 읽음 상태에 따른 디자인 차이 */
+.noti-item.read {
+  opacity: 0.6;
+  background-color: #fcfcfc;
+}
+
+.noti-item.unread {
+  background-color: white;
+}
+
+.noti-content {
+  flex: 1;
+  padding-right: 12px;
+}
+
+.noti-message {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #1e293b;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.noti-item.unread .noti-message {
+  font-weight: 600; /* 안 읽은 알림은 굵게 표시 */
+}
+
+.noti-time {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* 안 읽은 알림 우측 파란색 점 표시 */
+.noti-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
 }

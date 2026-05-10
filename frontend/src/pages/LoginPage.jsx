@@ -9,25 +9,38 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({ email: '', password: '' });
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (email && password) {
-      setLoading(true); // 통신 시작 시 버튼 비활성화
-      
-      const result = await login(email, password); // API 비동기 호출
-      
-      setLoading(false); // 통신 종료
+    
+    // 에러 검증 로직
+    let newErrors = { email: '', password: '' };
+    let hasError = false;
 
-      if (result.success) {
-        alert('환영합니다!');
-        // 로그인 성공 시 바로 대시보드 화면으로 이동
-        navigate('/dashboard'); 
-      } else {
-        alert(result.message); // 백엔드에서 전달한 에러 메시지 출력
-      }
+    if (!email) {
+      newErrors.email = '이메일을 입력하세요.';
+      hasError = true;
+    }
+    if (!password) {
+      newErrors.password = '비밀번호를 입력하세요.';
+      hasError = true;
+    }
+
+    if (hasError) {
+      setErrors(newErrors);
+      return; // 에러가 있으면 멈춤
+    }
+
+    setLoading(true); 
+    const result = await login(email, password); 
+    setLoading(false); 
+
+    if (result.success) {
+      alert('환영합니다!');
+      navigate('/dashboard'); 
     } else {
-      alert('이메일과 비밀번호를 모두 입력해 주세요.');
+      alert(result.message); 
     }
   };
 
@@ -47,22 +60,32 @@ function LoginPage() {
             <label>이메일</label>
             <input 
               type="email" 
+              className={errors.email ? 'error-border' : ''}
               placeholder="example@email.com" 
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrors(prev => ({ ...prev, email: '' })); // 입력 시 에러 해제
+              }}
               disabled={loading}
             />
+            {errors.email && <span className="error-text">{errors.email}</span>}
           </div>
           
           <div className="input-group">
             <label>비밀번호</label>
             <input 
               type="password" 
+              className={errors.password ? 'error-border' : ''}
               placeholder="비밀번호를 입력하세요" 
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrors(prev => ({ ...prev, password: '' }));
+              }}
               disabled={loading}
             />
+            {errors.password && <span className="error-text">{errors.password}</span>}
           </div>
 
           <div className="login-options">

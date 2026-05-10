@@ -131,3 +131,16 @@
   cursor: pointer;
   margin-left: 4px;
 }
+
+.input-group input.error-border {
+  border-color: #ef4444;
+  outline-color: #ef4444;
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 1px;
+  display: block;
+}

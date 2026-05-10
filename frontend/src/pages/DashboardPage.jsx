@@ -1,11 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import useSensorStore from '../store/useSensorStore';
+import useNotificationStore from '../store/useNotificationStore';
 import SensorCard from '../components/SensorCard';
-import { MdOutlineTipsAndUpdates, MdWarningAmber, MdEco } from "react-icons/md";
+import { MdOutlineTipsAndUpdates, MdWarningAmber, MdEco, MdInfoOutline, MdErrorOutline } from "react-icons/md";
 import './DashboardPage.css';
 
+// 시간 변환
+const timeAgo = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInMs = now - date;
+  const diffInMins = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInMins < 1) return '방금 전';
+  if (diffInMins < 60) return `${diffInMins}분 전`;
+  if (diffInHours < 24) return `${diffInHours}시간 전`;
+  return `${diffInDays}일 전`;
+};
+
 function DashboardPage() {
-  // 화분 목록, 닉네임, 선택 상태 등을 불러옴
   const { 
     sensorData, 
     wateringHistory, 
@@ -16,20 +31,19 @@ function DashboardPage() {
     nickname 
   } = useSensorStore();
 
-  // 화분 등록 모달을 위한 상태
+  // 알림 스토어에서 상태와 데이터 가져오기
+  const { notifications, fetchNotifications, loading } = useNotificationStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPotName, setNewPotName] = useState('');
   const [newPlantName, setNewPlantName] = useState('');
   const [newDeviceId, setNewDeviceId] = useState('');
 
+  // 대시보드 진입 시 알림 목록 가져오기
   useEffect(() => {
-    const interval = setInterval(() => {
-      // API 연결 시 주석 해제하여 10초마다 갱신
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
+    fetchNotifications();
+  }, [fetchNotifications]);
 
-  // 상태 판단 함수들
+  // 상태 판단 및 기타 핸들러
   const getMoistureStatus = (value) => {
     if (value < 20) return { status: 'danger', badge: '나쁨' };
     if (value < 30) return { status: 'warning', badge: '보통' };
@@ -57,34 +71,39 @@ function DashboardPage() {
 
   const overall = getOverallStatus();
 
-  // 드롭다운 선택 핸들러
-  const handleDropdownChange = (e) => {
-    const value = e.target.value;
-    if (value === 'add_new') {
-      setIsModalOpen(true);
-    } else {
-      setActivePotId(Number(value));
+  // 알림 타입별 아이콘 및 클래스 결정 함수
+  const getNotiStyle = (severity, type) => {
+    switch (severity) {
+      case 'critical':
+        return { icon: <MdErrorOutline />, className: 'danger' };
+      case 'warning':
+        return { icon: <MdWarningAmber />, className: 'warning' };
+      case 'info':
+      default:
+        // 조도 관련이면 전구 아이콘, 그 외는 정보 아이콘
+        return { 
+          icon: type === 'light' ? <MdOutlineTipsAndUpdates /> : <MdInfoOutline />, 
+          className: 'tip' 
+        };
     }
   };
 
-  // 새 화분 등록 핸들러
+  const handleDropdownChange = (e) => {
+    const value = e.target.value;
+    if (value === 'add_new') setIsModalOpen(true);
+    else setActivePotId(Number(value));
+  };
+
   const handleAddPot = (e) => {
     e.preventDefault();
-    if (potList.some((pot) => pot.potName === newPotName)) {
-      return alert('이미 존재하는 화분 이름입니다.');
-    }
-    if (!newDeviceId.trim() || newDeviceId.length < 4) {
-      return alert('올바른 등록 PIN(최소 4자리 이상)을 입력해 주세요.');
-    }
-    
-    // DB 구조에 맞게 스토어에 추가
+    if (potList.some((pot) => pot.potName === newPotName)) return alert('이미 존재하는 화분 이름입니다.');
+    if (!newDeviceId.trim() || newDeviceId.length < 4) return alert('올바른 등록 PIN(최소 4자리 이상)을 입력해 주세요.');
     addPot({ potName: newPotName, plantName: newPlantName, deviceId: newDeviceId });
     alert('화분이 등록되었습니다!');
     setIsModalOpen(false);
     setNewPotName(''); setNewPlantName(''); setNewDeviceId('');
   };
 
-  // 화분 등록 모달 컴포넌트 분리
   const renderAddPotModal = () => (
     isModalOpen && (
       <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
@@ -115,14 +134,13 @@ function DashboardPage() {
     )
   );
 
-  // 화분이 없을 때
   if (potList.length === 0) {
     return (
       <div className="dashboard-container empty-state">
         <div className="empty-icon" style={{ fontSize: '60px', marginBottom: '20px' }}>🪴</div>
         <h2>등록된 화분이 없습니다</h2>
         <p style={{ color: '#64748b', marginBottom: '30px' }}>
-          {nickname}님의 첫 번째 반려식물을 등록하고 스마트하게 관리해보세요!
+          {nickname}님의 식물을 등록하고 스마트하게 관리해보세요!
         </p>
         <button className="btn-primary-large" onClick={() => setIsModalOpen(true)}>
           + 새 화분 등록하기
@@ -132,7 +150,6 @@ function DashboardPage() {
     );
   }
 
-  // 화분이 있을 때: 현재 선택된 화분 정보 가져오기
   const activePot = potList.find(p => p.id === activePotId) || potList[0];
 
   return (
@@ -159,53 +176,46 @@ function DashboardPage() {
       </div>
 
       <div className="sensor-cards-wrapper">
-        <SensorCard 
-          title="토양 습도" value={sensorData.soilMoisture} unit="%" icon="💧" 
-          optimalRange="적정: 30 ~ 70%"
-          {...getMoistureStatus(sensorData.soilMoisture)} 
-        />
-        <SensorCard 
-          title="온도" value={sensorData.temperature} unit="°C" icon="🌡️" 
-          optimalRange="적정: 18 ~ 26°C"
-          {...getTemperatureStatus(sensorData.temperature)} 
-        />
-        <SensorCard 
-          title="주변 습도" value={sensorData.humidity} unit="%" icon="💨" 
-          optimalRange="적정: 40 ~ 70%"
-          status="normal" badge="적절" 
-        />
-        <SensorCard 
-          title="조도 (밝기)" value={sensorData.illuminance} unit="lx" icon="☀️" 
-          optimalRange="적정: 500lx 이상"
-          status={sensorData.illuminance < 500 ? 'warning' : 'normal'} 
-          badge={sensorData.illuminance < 500 ? '어두움' : '적절'}
-        />
-        <SensorCard 
-          title="물탱크 수위" value={sensorData.waterLevel} unit="%" icon="🌊" 
-          {...getWaterLevelStatus(sensorData.waterLevel)} 
-        />
+        <SensorCard title="토양 습도" value={sensorData.soilMoisture} unit="%" icon="💧" optimalRange="적정: 30 ~ 70%" {...getMoistureStatus(sensorData.soilMoisture)} />
+        <SensorCard title="온도" value={sensorData.temperature} unit="°C" icon="🌡️" optimalRange="적정: 18 ~ 26°C" {...getTemperatureStatus(sensorData.temperature)} />
+        <SensorCard title="주변 습도" value={sensorData.humidity} unit="%" icon="💨" optimalRange="적정: 40 ~ 70%" status="normal" badge="적절" />
+        <SensorCard title="조도 (밝기)" value={sensorData.illuminance} unit="lx" icon="☀️" optimalRange="적정: 500lx 이상" status={sensorData.illuminance < 500 ? 'warning' : 'normal'} badge={sensorData.illuminance < 500 ? '어두움' : '적절'} />
+        <SensorCard title="물탱크 수위" value={sensorData.waterLevel} unit="%" icon="🌊" {...getWaterLevelStatus(sensorData.waterLevel)} />
       </div>
 
       <div className="dashboard-bottom-wrapper">
         <div className="ai-alert-panel">
           <h3 className="panel-title">AI 스마트 알림</h3>
           
-          <div className="ai-message-card warning">
-            <div className="ai-icon"><MdWarningAmber /></div>
-            <div className="ai-content">
-              <strong>물탱크 수위 부족</strong>
-              <p>물탱크의 수위가 20% 미만이에요. 물을 보충해 주세요.</p>
-              <span className="ai-time">방금 전</span>
-            </div>
-          </div>
-
-          <div className="ai-message-card tip">
-            <div className="ai-icon"><MdOutlineTipsAndUpdates /></div>
-            <div className="ai-content">
-              <strong>조도 상태 양호</strong>
-              <p>현재 창가의 햇빛이 식물 광합성에 아주 적절한 수준(850lx)이에요.</p>
-              <span className="ai-time">1시간 전</span>
-            </div>
+          {/* 실시간 알림 목록 렌더링 */}
+          <div className="ai-messages-container">
+            {loading && notifications.length === 0 ? (
+              <p className="loading-text">알림 분석 중...</p>
+            ) : notifications.length === 0 ? (
+              <div className="ai-message-card empty">
+                <p>현재 분석된 알림이 없습니다.</p>
+              </div>
+            ) : (
+              // 최신 3개만 대시보드에 노출(너무 길어지는 것 방지)
+              notifications.slice(0, 3).map((noti) => {
+                const style = getNotiStyle(noti.severity, noti.type);
+                return (
+                  <div key={noti.id} className={`ai-message-card ${style.className}`}>
+                    <div className="ai-icon">{style.icon}</div>
+                    <div className="ai-content">
+                      {/* 백엔드 type을 한글 제목으로 변환 */}
+                      <strong>
+                        {noti.type === 'soil_moisture' ? '토양 수분 부족' : 
+                         noti.type === 'water_level' ? '물탱크 수위 부족' : 
+                         noti.type === 'temperature' ? '주의 온도 이탈' : '식물 건강 가이드'}
+                      </strong>
+                      <p>{noti.message}</p>
+                      <span className="ai-time">{timeAgo(noti.created_at)}</span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 
@@ -228,7 +238,6 @@ function DashboardPage() {
         </div>
       </div>
 
-      {/* 모달 렌더링 호출 */}
       {renderAddPotModal()}
     </div>
   );
