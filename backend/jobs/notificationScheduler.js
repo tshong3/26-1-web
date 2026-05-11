@@ -4,6 +4,8 @@ const {
     createNotification,
     shouldSendNotification,
 } = require("../services/notificationService");
+const { generateNotificationMessage } = require("../services/aiMessageGenerator");
+
 
 const promiseDb = db.promise();
 
@@ -123,17 +125,41 @@ async function runNotificationScheduler() {
                     NOTIFICATION_COOLDOWN_HOURS
                 );
 
-                if (!canSend) {
+if (!canSend) {
                     skippedCount += 1;
                     continue;
                 }
+
+                // AI에게 자연스러운 메시지 생성 요청 (실패 시 템플릿 메시지로 폴백)
+                const aiContext = {
+                    plantLabel: pot.nickname || pot.plant_name || "식물",
+                    type: issue.type,
+                    severity: issue.severity,
+                    sensor: {
+                        temperature: pot.temperature !== null ? Number(pot.temperature) : null,
+                        humidity: pot.humidity !== null ? Number(pot.humidity) : null,
+                        soil_moisture: pot.soil_moisture,
+                        light: pot.light,
+                    },
+                    target: {
+                        temp_min: pot.target_temp_min,
+                        temp_max: pot.target_temp_max,
+                        moisture_min: pot.target_moisture_min,
+                        moisture_max: pot.target_moisture_max,
+                    },
+                };
+
+                const finalMessage = await generateNotificationMessage(
+                    aiContext,
+                    issue.message  // 폴백: 기존 템플릿 메시지
+                );
 
                 await createNotification({
                     userId: pot.user_id,
                     potId: pot.pot_id,
                     type: issue.type,
                     severity: issue.severity,
-                    message: issue.message,
+                    message: finalMessage,
                 });
                 createdCount += 1;
             }
