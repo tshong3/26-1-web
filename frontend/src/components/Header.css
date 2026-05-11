@@ -1,5 +1,5 @@
 .header {
-  position: relative;
+  position: sticky; /* 헤더 고정 */
   top: 0;
   z-index: 1000;
   display: flex;
