@@ -62,15 +62,15 @@ router.get("/pots", authMiddleware, async (req, res) => {
                 pot.created_at,
                 plant_guide.id AS plant_id,
                 plant_guide.name AS plant_name,
-                plant_guide.description,
-                plant_guide.recommend_moisture_min,
-                plant_guide.recommend_moisture_max,
+                plant_guide.soil_moisture_min,
+                plant_guide.soil_moisture_max,
                 plant_guide.temperature_min,
                 plant_guide.temperature_max,
                 plant_guide.humidity_min,
                 plant_guide.humidity_max,
                 plant_guide.light_min,
-                plant_guide.light_max
+                plant_guide.light_max,
+                plant_guide.recommend_water_level
             FROM pot
             LEFT JOIN plant_guide ON pot.plant_id = plant_guide.id
             WHERE pot.user_id = ?
@@ -101,15 +101,15 @@ router.get("/pots/:potId", authMiddleware, async (req, res) => {
                 pot.created_at,
                 plant_guide.id AS plant_id,
                 plant_guide.name AS plant_name,
-                plant_guide.description,
-                plant_guide.recommend_moisture_min,
-                plant_guide.recommend_moisture_max,
+                plant_guide.soil_moisture_min,
+                plant_guide.soil_moisture_max,
                 plant_guide.temperature_min,
                 plant_guide.temperature_max,
                 plant_guide.humidity_min,
                 plant_guide.humidity_max,
                 plant_guide.light_min,
-                plant_guide.light_max
+                plant_guide.light_max,
+                plant_guide.recommend_water_level
             FROM pot
             LEFT JOIN plant_guide ON pot.plant_id = plant_guide.id
             WHERE pot.id = ? AND pot.user_id = ?`,
