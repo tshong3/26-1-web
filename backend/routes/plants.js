@@ -58,18 +58,19 @@ router.get("/pots", authMiddleware, async (req, res) => {
                 pot.pot_name,
                 pot.nickname,
                 pot.device_id,
-                pot.target_moisture_min,
-                pot.target_moisture_max,
-                pot.target_temp_min,
-                pot.target_temp_max,
                 pot.last_ai_comment,
                 pot.created_at,
                 plant_guide.id AS plant_id,
                 plant_guide.name AS plant_name,
-                plant_guide.description,
-                plant_guide.recommend_moisture,
-                plant_guide.recommend_temp,
-                plant_guide.image_url
+                plant_guide.soil_moisture_min,
+                plant_guide.soil_moisture_max,
+                plant_guide.temperature_min,
+                plant_guide.temperature_max,
+                plant_guide.humidity_min,
+                plant_guide.humidity_max,
+                plant_guide.light_min,
+                plant_guide.light_max,
+                plant_guide.recommend_water_level
             FROM pot
             LEFT JOIN plant_guide ON pot.plant_id = plant_guide.id
             WHERE pot.user_id = ?
@@ -96,18 +97,19 @@ router.get("/pots/:potId", authMiddleware, async (req, res) => {
                 pot.pot_name,
                 pot.nickname,
                 pot.device_id,
-                pot.target_moisture_min,
-                pot.target_moisture_max,
-                pot.target_temp_min,
-                pot.target_temp_max,
                 pot.last_ai_comment,
                 pot.created_at,
                 plant_guide.id AS plant_id,
                 plant_guide.name AS plant_name,
-                plant_guide.description,
-                plant_guide.recommend_moisture,
-                plant_guide.recommend_temp,
-                plant_guide.image_url
+                plant_guide.soil_moisture_min,
+                plant_guide.soil_moisture_max,
+                plant_guide.temperature_min,
+                plant_guide.temperature_max,
+                plant_guide.humidity_min,
+                plant_guide.humidity_max,
+                plant_guide.light_min,
+                plant_guide.light_max,
+                plant_guide.recommend_water_level
             FROM pot
             LEFT JOIN plant_guide ON pot.plant_id = plant_guide.id
             WHERE pot.id = ? AND pot.user_id = ?`,
@@ -130,35 +132,19 @@ router.put("/pots/:potId", authMiddleware, async (req, res) => {
     try {
         const user_id = req.user.id;
         const potId = Number(req.params.potId);
-        const { 
-            pot_name, 
-            nickname, 
-            plant_id, 
-            target_moisture_min, 
-            target_moisture_max, 
-            target_temp_min, 
-            target_temp_max 
-        } = req.body;
+        const { pot_name, nickname, plant_id } = req.body;
 
         const [result] = await promiseDb.query(
             `UPDATE pot 
             SET pot_name = COALESCE(?, pot_name),
                 nickname = COALESCE(?, nickname),
-                plant_id = COALESCE(?, plant_id),
-                target_moisture_min = COALESCE(?, target_moisture_min),
-                target_moisture_max = COALESCE(?, target_moisture_max),
-                target_temp_min = COALESCE(?, target_temp_min),
-                target_temp_max = COALESCE(?, target_temp_max)
+                plant_id = COALESCE(?, plant_id)
             WHERE id = ? AND user_id = ?`,
             [
-                pot_name ?? null, 
-                nickname ?? null, 
-                plant_id ?? null, 
-                target_moisture_min ?? null, 
-                target_moisture_max ?? null, 
-                target_temp_min ?? null, 
-                target_temp_max ?? null, 
-                potId, 
+                pot_name ?? null,
+                nickname ?? null,
+                plant_id ?? null,
+                potId,
                 user_id
             ]
         );
@@ -195,6 +181,5 @@ router.delete("/pots/:potId", authMiddleware, async (req, res) => {
         res.status(500).json({ success: false, message: "화분 삭제 실패", error: error.message });
     }
 });
-
 
 module.exports = router;
