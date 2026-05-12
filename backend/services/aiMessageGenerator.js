@@ -12,12 +12,12 @@ const MAX_TOKENS = 200;
  * AI 호출 실패 시 fallbackMessage를 반환한다.
  *
  * @param {Object} context
- * @param {string} context.plantLabel - 식물명 또는 애칭 (예: "장미야")
+ * @param {string} context.plantLabel - 식물명 (예: "장미")
  * @param {string} context.type - 'temperature' | 'humidity' | 'soil_moisture' | 'light'
  * @param {string} context.severity - 'info' | 'warning' | 'critical'
  * @param {Object} context.sensor - { temperature, humidity, soil_moisture, light }
- * @param {Object} context.target - { temp_min, temp_max, moisture_min, moisture_max }
- * @param {Object} [context.lastWatering] - { duration_ms, success, message, created_at } (optional)
+ * @param {Object} context.target - plant_guide의 4개 항목 min/max
+ * @param {Object} [context.lastWatering] - 자동 급수 정보 (optional)
  * @param {string} fallbackMessage - AI 호출 실패 시 사용할 메시지
  * @returns {Promise<string>} - 생성된 메시지 (또는 fallbackMessage)
  */
@@ -49,7 +49,7 @@ async function generateNotificationMessage(context, fallbackMessage) {
 function buildPrompt({ plantLabel, type, severity, sensor, target, lastWatering }) {
     const typeKor = {
         temperature: "온도",
-        humidity: "공기 습도",
+        humidity: "주변 공기 습도",
         soil_moisture: "토양 수분",
         light: "조도",
     }[type] || "센서값";
@@ -64,16 +64,22 @@ function buildPrompt({ plantLabel, type, severity, sensor, target, lastWatering 
 
     situation += `현재 센서값:\n`;
     if (sensor.temperature !== null) situation += `- 온도: ${sensor.temperature}도\n`;
-    if (sensor.humidity !== null) situation += `- 공기 습도: ${sensor.humidity}%\n`;
+    if (sensor.humidity !== null) situation += `- 주변 공기 습도: ${sensor.humidity}%\n`;
     if (sensor.soil_moisture !== null) situation += `- 토양 수분: ${sensor.soil_moisture}%\n`;
     if (sensor.light !== null) situation += `- 조도: ${sensor.light}\n`;
 
     situation += `\n적정 범위:\n`;
-    if (target.temp_min !== null && target.temp_max !== null) {
-        situation += `- 온도: ${target.temp_min}~${target.temp_max}도\n`;
+    if (target.temperature_min !== null && target.temperature_max !== null) {
+        situation += `- 온도: ${target.temperature_min}~${target.temperature_max}도\n`;
     }
-    if (target.moisture_min !== null && target.moisture_max !== null) {
-        situation += `- 토양 수분: ${target.moisture_min}~${target.moisture_max}%\n`;
+    if (target.soil_moisture_min !== null && target.soil_moisture_max !== null) {
+        situation += `- 토양 수분: ${target.soil_moisture_min}~${target.soil_moisture_max}%\n`;
+    }
+    if (target.humidity_min !== null && target.humidity_max !== null) {
+        situation += `- 주변 공기 습도: ${target.humidity_min}~${target.humidity_max}%\n`;
+    }
+    if (target.light_min !== null && target.light_max !== null) {
+        situation += `- 조도: ${target.light_min}~${target.light_max}\n`;
     }
 
     if (lastWatering) {
@@ -91,7 +97,8 @@ function buildPrompt({ plantLabel, type, severity, sensor, target, lastWatering 
 조건:
 - 100자 이내
 - 친근하지만 정확한 톤
-- 조사 자연스럽게 ("장미야는" 같은 호격 조사 어색함은 피하기 — "장미야의 토양은" 식)
+- 조사 자연스럽게 처리 (식물명 + 적절한 조사)
+- ${typeKor} 항목에 대해서만 이야기 (다른 센서값은 참고용일 뿐, 메시지에 포함하지 말 것)
 - 사용자가 취해야 할 조치를 한 문장으로 포함
 - 이모지나 특수문자 없이 평문만
 - 메시지 본문만 출력 (앞뒤 설명, 인사말 없이)`;
