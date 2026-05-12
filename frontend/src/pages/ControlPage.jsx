@@ -5,7 +5,21 @@ import './ControlPage.css';
 
 
 function ControlPage() {
-  const { sensorData, controlSettings, updateControlSettings, updateSensorData, activePotId, fetchWateringSettings, saveWateringSettings, runManualWatering, fetchWateringLogs, fetchLatestSensorData,} = useSensorStore();
+  const { 
+    sensorData, 
+    controlSettings, 
+    updateControlSettings, 
+    updateSensorData, 
+    potList,
+    activePotId, 
+    setActivePotId,
+    fetchWateringSettings, 
+    saveWateringSettings, 
+    runManualWatering, 
+    fetchWateringLogs, 
+    fetchLatestSensorData
+  } = useSensorStore();
+
   const [isAutoMode, setIsAutoMode] = useState(controlSettings.isAutoMode || false);
   const [threshold, setThreshold] = useState(controlSettings.autoWateringThreshold || 30);
   const [isScheduleMode, setIsScheduleMode] = useState(controlSettings.isScheduleMode || false);
@@ -34,7 +48,7 @@ function ControlPage() {
       return;
     }
 
-    const result=await saveWateringSettings(activePotId);
+    const result = await saveWateringSettings(activePotId);
     if(result.success){
       alert('급수 설정이 저장되었습니다.');
     }else{
@@ -50,7 +64,7 @@ function ControlPage() {
 
     updateControlSettings({wateringDuration: manualDuration});
 
-    const result=await runManualWatering(activePotId);
+    const result = await runManualWatering(activePotId);
     if(result.success){
       alert(`수동 급수를 시작합니다.`);
 
@@ -66,42 +80,53 @@ function ControlPage() {
     alert('물탱크가 가득 채워졌습니다.');
   };
 
+  // 드롭다운 핸들러 추가
+  const handleDropdownChange = (e) => {
+    setActivePotId(Number(e.target.value));
+  };
+
   const isDurationEnabled = isAutoMode || isScheduleMode;
 
-  //activePotId 바뀌거나 페이지 처음 들어올 때 설정 가져오기
-   useEffect(() => {
+  // activePotId 바뀌거나 페이지 처음 들어올 때 설정 가져오기
+  useEffect(() => {
     if (!activePotId) return;
 
     (async () => {
-      //급수 설정 로드
       const result = await fetchWateringSettings(activePotId);
       if (result.success) {
         const data = result.data;
-
         setIsAutoMode(data.auto_enabled);
         setIsScheduleMode(data.schedule_enabled);
         setThreshold(data.min_soil_moisture);
         setDuration(Math.round((data.duration_ms || 15000) / 1000));
         setScheduleTime(data.watering_time?.slice(0, 5) || '08:00');
-
       }
-      //급수 로그 로드
       await fetchWateringLogs(activePotId);
-
-      //최신 센서 데이터 로드
       await fetchLatestSensorData(activePotId);
     })();
   }, [activePotId, fetchWateringSettings, fetchWateringLogs, fetchLatestSensorData]);
 
+  const activePot = potList.find(p => p.id === activePotId) || potList[0];
+
+  if (!activePot) {
+    return <div className="control-container"><h2>등록된 화분이 없습니다.</h2></div>;
+  }
+
   return (
     <div className="control-container">
-      <div className="control-header">
-        <h2>급수 시스템</h2>
-        <p>자동 급수를 설정할 수 있습니다</p>
+      <div className="dashboard-header flex-header">
+        <div className="header-title-group">
+          <select className="pot-dropdown" value={activePot.id} onChange={handleDropdownChange}>
+            {potList.map((pot) => (
+              <option key={pot.id} value={pot.id}>{pot.potName}</option>
+            ))}
+          </select>
+          <span className="plant-tag">🌿 {activePot.plantName || activePot.plantType}</span>
+        </div>
+        <p>급수 시스템을 설정하고 수동으로 물을 줄 수 있습니다.</p>
       </div>
 
       <div className="control-panels-wrapper">
-        
         {/* 자동 급수 설정 패널 */}
         <div className="control-card">
           <div className="card-title-group">
@@ -153,8 +178,6 @@ function ControlPage() {
             <div className={`inner-card-content ${!isScheduleMode ? 'disabled' : ''}`}>
               <div className="input-row between" style={{ marginBottom: '16px', alignItems: 'flex-start' }}>
                 <label style={{ marginTop: '12px' }}>주기</label>
-                
-                {/* 입력 영역과 에러 메시지를 묶어주는 래퍼 */}
                 <div className="period-input-wrapper">
                   <div className="custom-period-input">
                     <input 
@@ -163,21 +186,15 @@ function ControlPage() {
                       value={scheduleValue} 
                       onChange={(e) => {
                         let val = e.target.value;
-                        
-                        // 0부터 입력 불가
                         if (val.startsWith('0')) {
                           setPeriodError('1부터 입력할 수 있습니다.');
                           return;
                         }
-
-                        // 정상 입력 시 에러 초기화
                         setPeriodError('');
-
                         if (val.length > 2) val = val.slice(0, 2); 
                         setScheduleValue(val === '' ? '' : parseInt(val));
                       }}
                       onBlur={() => {
-                        // 포커스를 잃을 때 에러 지우고 1로 복구
                         setPeriodError('');
                         if (!scheduleValue || scheduleValue < 1) setScheduleValue(1);
                       }}
@@ -195,10 +212,8 @@ function ControlPage() {
                     </select>
                     <span className="period-suffix">마다</span>
                   </div>
-                  {/* 에러 메시지가 있을 때만 노출 */}
                   {periodError && <div className="error-text">{periodError}</div>}
                 </div>
-
               </div>
               <div className="input-row between">
                 <label>시간</label>
@@ -235,7 +250,6 @@ function ControlPage() {
 
         {/* 수동 급수, 실시간 모니터링 */}
         <div className="right-column-wrapper">
-          {/* 수동 급수 패널 */}
           <div className="control-card manual-card">
             <div className="card-title-group">
               <h3>수동 급수</h3>
@@ -252,7 +266,6 @@ function ControlPage() {
             <button className="btn-water-now" onClick={handleManualWatering}><MdWaterDrop /> 급수 시작</button>
           </div>
 
-          {/* 실시간 상태 모니터링 패널 */}
           <div className="control-card status-card">
             <div className="card-title-group">
               <h3>실시간 모니터링</h3>

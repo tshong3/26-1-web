@@ -1,70 +1,62 @@
 import { create } from 'zustand';
 import { notificationService } from '../services/notificationService';
 
-const useNotificationStore = create((set, get) => ({
+const useNotificationStore = create((set) => ({
   notifications: [],
   unreadCount: 0,
-  nextCursor: null,
   loading: false,
 
-  // 안 읽은 알림 개수 새로고침(배지)
   fetchUnreadCount: async () => {
     try {
-      const data = await notificationService.getUnreadCount();
-      set({ unreadCount: data.count });
+      const res = await notificationService.getUnreadCount();
+      if (res.success) {
+        set({ unreadCount: res.data.count || 0 });
+      }
     } catch (error) {
-      console.error('안 읽은 알림 개수 조회 실패:', error);
+      console.error('안 읽은 알림 개수 조회 에러:', error);
     }
   },
 
-  // 알림 목록 불러오기(최신순)
-  fetchNotifications: async (isMore = false) => {
+  fetchNotifications: async () => {
     set({ loading: true });
     try {
-      const params = { limit: 20 };
-      if (isMore && get().nextCursor) {
-        params.cursor = get().nextCursor;
+      const res = await notificationService.getNotifications();
+      if (res.success) {
+        set({ notifications: res.data || [] });
       }
-
-      const data = await notificationService.getNotifications(params);
-      
-      set((state) => ({
-        notifications: isMore ? [...state.notifications, ...data.notifications] : data.notifications,
-        nextCursor: data.nextCursor,
-        loading: false
-      }));
     } catch (error) {
-      console.error('알림 목록 조회 실패:', error);
+      console.error('알림 목록 조회 에러:', error);
+    } finally {
       set({ loading: false });
     }
   },
 
-  // 특정 알림 읽음 처리
   markAsRead: async (id) => {
+    // 빠른 UX를 위해 UI를 먼저 변경하고 서버에 요청을 보냄
+    set((state) => ({
+      notifications: state.notifications.map((n) =>
+        n.id === id ? { ...n, is_read: 1 } : n
+      ),
+      unreadCount: Math.max(0, state.unreadCount - 1)
+    }));
+
     try {
       await notificationService.markAsRead(id);
-      // 로컬 상태 즉시 업데이트(서버 다시 안 불러와도 되게끔)
-      set((state) => ({
-        notifications: state.notifications.map((n) =>
-          n.id === id ? { ...n, is_read: 1 } : n
-        ),
-        unreadCount: Math.max(0, state.unreadCount - 1)
-      }));
     } catch (error) {
-      console.error('알림 읽음 처리 실패:', error);
+      console.error('알림 읽음 처리 에러:', error);
     }
   },
 
-  // 모든 알림 읽음 처리
   markAllAsRead: async () => {
+    set((state) => ({
+      notifications: state.notifications.map((n) => ({ ...n, is_read: 1 })),
+      unreadCount: 0
+    }));
+
     try {
       await notificationService.markAllAsRead();
-      set((state) => ({
-        notifications: state.notifications.map((n) => ({ ...n, is_read: 1 })),
-        unreadCount: 0
-      }));
     } catch (error) {
-      console.error('전체 알림 읽음 처리 실패:', error);
+      console.error('알림 모두 읽음 처리 에러:', error);
     }
   }
 }));

@@ -22,7 +22,6 @@ function HomePage() {
       <div className="hero-bg-wrapper">
         <section className="hero-section">
           <div className="hero-content">
-            <div className="hero-badge">✨ Smart Home Gardening</div>
             
             <h1 className="hero-title">
               더 쉽고 더 편리한<br />
@@ -33,8 +32,8 @@ function HomePage() {
             </p>
             
             <div className="hero-buttons">
-              {/* 무료로 시작하기 버튼을 로그인 페이지로 연결 */}
-              <Link to="/login" className="btn-primary-large">무료로 시작하기</Link>
+              {/* 시작하기 버튼을 로그인 페이지로 연결 */}
+              <Link to="/login" className="btn-primary-large">시작하기</Link>
               <a onClick={scrollToFeatures} className="btn-secondary-large" style={{ cursor: 'pointer' }}>더 알아보기</a>
             </div>
           </div>
@@ -84,7 +83,7 @@ function HomePage() {
         <section className="home-section feature-section">
           <div className="section-header text-center">
             <h2>모든 것을 알아서, 스마트하게</h2>
-            <p>식물 초보자도 전문가처럼 키울 수 있는 강력한 기능들</p>
+            <p>식물 초보자도 전문가처럼 키울 수 있는 유용한 기능들을 소개할게요</p>
           </div>
           
           <div className="feature-grid">
@@ -104,10 +103,10 @@ function HomePage() {
       <div className="cta-wrapper">
         <section className="cta-section modern-cta">
           <div className="cta-content">
-            <h2>지금 바로 스마트 가드닝을 경험하세요</h2>
-            <p>몇 번의 클릭만으로 내 화분과 웹을 연동할 수 있습니다.</p>
+            <h2>지금 식물을 등록하고 바로 시작해 보세요</h2>
+            <p>쉽고 재미있게 식물을 키울 수 있습니다.</p>
           </div>
-          <Link to="/login" className="btn-primary-large shadow-glow">내 화분 등록하기</Link>
+          <Link to="/login" className="btn-primary-large shadow-glow">시작하기</Link>
         </section>
       </div>
 

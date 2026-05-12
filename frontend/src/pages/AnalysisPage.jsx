@@ -4,6 +4,7 @@ import {
   ResponsiveContainer, Brush, ReferenceArea 
 } from 'recharts';
 import { MdRefresh } from "react-icons/md";
+import useSensorStore from '../store/useSensorStore';
 import './AnalysisPage.css';
 
 const generateMockData = () => {
@@ -22,8 +23,17 @@ const generateMockData = () => {
 const mockChartData = generateMockData();
 
 function AnalysisPage() {
+  // 스토어에서 화분 목록과 선택 변경 함수 가져오기
+  const { potList, activePotId, setActivePotId } = useSensorStore();
   const [activeTab, setActiveTab] = useState('moisture'); // 기본 탭 토양 습도
   const [timeRange, setTimeRange] = useState('day'); // 기간 선택 상태
+
+  // 드롭다운 변경 핸들러
+  const handleDropdownChange = (e) => {
+    setActivePotId(Number(e.target.value));
+  };
+
+  const activePot = potList.find(p => p.id === activePotId) || potList[0];
 
   const getChartInfo = () => {
     switch (activeTab) {
@@ -35,15 +45,27 @@ function AnalysisPage() {
   };
 
   const chartInfo = getChartInfo();
-
-  // 데이터가 너무 많을 때 가장 최근 10개 데이터만 처음 화면에 보여줌
   const startIndex = Math.max(mockChartData.length - 10, 0);
+
+  // 화분이 없을 때의 예외 처리
+  if (!activePot) {
+    return <div className="analysis-container"><h2>등록된 화분이 없습니다.</h2></div>;
+  }
 
   return (
     <div className="analysis-container">
+      
+      {/* 헤더 영역을 드롭다운 UI로 교체 */}
       <div className="analysis-header">
         <div>
-          <h2>데이터 분석</h2>
+          <div className="header-title-group">
+            <select className="pot-dropdown" value={activePot.id} onChange={handleDropdownChange}>
+              {potList.map((pot) => (
+                <option key={pot.id} value={pot.id}>{pot.potName}</option>
+              ))}
+            </select>
+            <span className="plant-tag">📊 {activePot.plantName || activePot.plantType}</span>
+          </div>
           <p>식물의 상태 변화를 확인할 수 있어요</p>
         </div>
         <button className="refresh-btn">

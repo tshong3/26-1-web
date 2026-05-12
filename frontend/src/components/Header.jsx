@@ -5,7 +5,6 @@ import useSensorStore from '../store/useSensorStore';
 import useNotificationStore from '../store/useNotificationStore'; 
 import './Header.css';
 
-// 시간 형식을 "방금 전", "10분 전" 등으로 바꿈
 const timeAgo = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
@@ -21,9 +20,9 @@ const timeAgo = (dateString) => {
 };
 
 function Header() {
-  const { isLoggedIn, logout, nickname } = useSensorStore();
+  // 💡 potList를 추가로 가져옵니다
+  const { isLoggedIn, logout, nickname, potList } = useSensorStore(); 
   
-  // 알림 스토어에서 모든 상태와 액션 가져오기
   const { 
     unreadCount, fetchUnreadCount, 
     notifications, fetchNotifications, loading, 
@@ -50,14 +49,13 @@ function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location.pathname]); 
 
-  // 주기적 알림 확인 및 외부 클릭 감지
   useEffect(() => {
     let interval;
     if (isLoggedIn) {
       fetchUnreadCount();
       interval = setInterval(() => {
         fetchUnreadCount();
-      }, 60000); // 1분마다 안 읽은 개수 갱신
+      }, 60000); 
     }
 
     const handleClickOutside = (event) => {
@@ -73,7 +71,6 @@ function Header() {
     };
   }, [isLoggedIn, fetchUnreadCount]);
 
-  // 알림창을 열 때 목록 데이터를 가져옴
   useEffect(() => {
     if (isNotiOpen) {
       fetchNotifications();
@@ -158,36 +155,41 @@ function Header() {
                 <div className="noti-dropdown">
                   <div className="noti-dropdown-header">
                     <h4>알림</h4>
-                    {/* 모두 읽음 버튼 클릭 이벤트 연결 */}
                     <button className="mark-all-read-btn" onClick={markAllAsRead}>
                       모두 읽음
                     </button>
                   </div>
                   
-                  {/* 알림 목록 렌더링 영역 */}
                   <div className="noti-dropdown-body">
                     {loading && notifications.length === 0 ? (
                       <div className="noti-empty">알림을 불러오는 중...</div>
                     ) : notifications.length === 0 ? (
                       <div className="noti-empty">새로운 알림이 없습니다.</div>
                     ) : (
-                      notifications.map((noti) => (
-                        <div 
-                          key={noti.id} 
-                          // 읽음 여부와 심각도에 따라 CSS 클래스 동적 부여
-                          className={`noti-item ${noti.is_read ? 'read' : 'unread'} severity-${noti.severity}`}
-                          // 안 읽은 알림을 클릭하면 읽음 처리 API 호출
-                          onClick={() => {
-                            if (!noti.is_read) markAsRead(noti.id);
-                          }}
-                        >
-                          <div className="noti-content">
-                            <p className="noti-message">{noti.message}</p>
-                            <span className="noti-time">{timeAgo(noti.created_at)}</span>
+                      notifications.map((noti) => {
+                        // 💡 알림의 pot_id로 화분 이름을 찾습니다.
+                        const targetPot = potList.find(p => p.id === noti.pot_id);
+                        const potName = targetPot ? targetPot.potName : '알 수 없는 화분';
+
+                        return (
+                          <div 
+                            key={noti.id} 
+                            // 💡 severity 클래스 제거 (색상 삭제)
+                            className={`noti-item ${noti.is_read ? 'read' : 'unread'}`}
+                            onClick={() => {
+                              if (!noti.is_read) markAsRead(noti.id);
+                            }}
+                          >
+                            <div className="noti-content">
+                              {/* 💡 화분 이름 표시 추가 */}
+                              <p className="noti-pot-name">[{potName}]</p>
+                              <p className="noti-message">{noti.message}</p>
+                              <span className="noti-time">{timeAgo(noti.created_at)}</span>
+                            </div>
+                            {!noti.is_read && <div className="noti-dot"></div>}
                           </div>
-                          {!noti.is_read && <div className="noti-dot"></div>}
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
                 </div>
