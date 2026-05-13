@@ -14,7 +14,6 @@ function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     
-    // 에러 검증 로직
     let newErrors = { email: '', password: '' };
     let hasError = false;
 
@@ -29,7 +28,7 @@ function LoginPage() {
 
     if (hasError) {
       setErrors(newErrors);
-      return; // 에러가 있으면 멈춤
+      return; 
     }
 
     setLoading(true); 
@@ -37,10 +36,9 @@ function LoginPage() {
     setLoading(false); 
 
     if (result.success) {
-      alert('환영합니다!');
       navigate('/dashboard'); 
     } else {
-      alert(result.message); 
+      alert(result.message);
     }
   };
 
@@ -65,7 +63,7 @@ function LoginPage() {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                setErrors(prev => ({ ...prev, email: '' })); // 입력 시 에러 해제
+                setErrors(prev => ({ ...prev, email: '' })); 
               }}
               disabled={loading}
             />
@@ -102,7 +100,7 @@ function LoginPage() {
 
         <div className="signup-link-box">
           계정이 없으신가요?
-          <Link to="/register" className="signup-link">회원가입하기</Link>
+          <Link to="/register" className="signup-link">계정 만들기</Link>
         </div>
       </div>
     </div>
