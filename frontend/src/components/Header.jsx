@@ -20,7 +20,7 @@ const timeAgo = (dateString) => {
 };
 
 function Header() {
-  // 💡 potList를 추가로 가져옵니다
+  // potList를 가져옴
   const { isLoggedIn, logout, nickname, potList } = useSensorStore(); 
   
   const { 
@@ -167,21 +167,20 @@ function Header() {
                       <div className="noti-empty">새로운 알림이 없습니다.</div>
                     ) : (
                       notifications.map((noti) => {
-                        // 💡 알림의 pot_id로 화분 이름을 찾습니다.
+                        // 알림의 pot_id로 화분 이름을 찾음
                         const targetPot = potList.find(p => p.id === noti.pot_id);
                         const potName = targetPot ? targetPot.potName : '알 수 없는 화분';
 
                         return (
                           <div 
-                            key={noti.id} 
-                            // 💡 severity 클래스 제거 (색상 삭제)
+                            key={noti.id}
                             className={`noti-item ${noti.is_read ? 'read' : 'unread'}`}
                             onClick={() => {
                               if (!noti.is_read) markAsRead(noti.id);
                             }}
                           >
                             <div className="noti-content">
-                              {/* 💡 화분 이름 표시 추가 */}
+                              {/* 화분 이름 표시 */}
                               <p className="noti-pot-name">[{potName}]</p>
                               <p className="noti-message">{noti.message}</p>
                               <span className="noti-time">{timeAgo(noti.created_at)}</span>
@@ -204,7 +203,7 @@ function Header() {
         ) : (
           <>
             <Link to="/login" className="login-btn">로그인</Link>
-            <Link to="/register" className="signup-btn">무료로 시작하기</Link>
+            <Link to="/register" className="signup-btn">회원가입</Link>
           </>
         )}
       </div>

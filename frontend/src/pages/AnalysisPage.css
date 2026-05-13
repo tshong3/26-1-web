@@ -18,6 +18,13 @@
   margin-bottom: 8px;
 }
 
+.custom-select-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
 .pot-dropdown {
   font-size: 24px;
   font-weight: 800;
@@ -28,6 +35,23 @@
   outline: none;
   padding: 0;
   margin: 0;
+  padding-right: 32px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.dropdown-arrow-icon {
+  position: absolute;
+  right: 0;
+  font-size: 28px;
+  color: #64748b;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.custom-select-wrapper:hover .dropdown-arrow-icon {
+  color: #10b981;
 }
 
 .plant-tag {
@@ -56,7 +80,7 @@
   padding: 8px 12px;
   border-radius: 8px;
   transition: background-color 0.2s;
-  margin-top: 4px; /* 높이 맞춤 */
+  margin-top: 4px;
 }
 .refresh-btn:hover { background-color: #f3f4f6; }
 .refresh-icon { font-size: 18px; }
@@ -140,3 +164,83 @@
     gap: 16px;
   }
 }
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 60vh;
+}
+
+.modal-overlay {
+  position: fixed; 
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5); 
+  backdrop-filter: blur(4px);
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white; 
+  padding: 32px; 
+  border-radius: 24px; 
+  width: 100%; 
+  max-width: 400px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  text-align: left;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.close-btn { 
+  background: none; border: none; font-size: 20px; color: #888; cursor: pointer; 
+}
+.close-btn:hover { color: #222; }
+
+.add-pot-form { display: flex; flex-direction: column; gap: 16px; }
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  text-align: left;
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input-group input:focus { border-color: #10b981; }

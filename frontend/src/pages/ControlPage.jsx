@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useSensorStore from '../store/useSensorStore';
-import { MdWaterDrop, MdOutlineSettingsBackupRestore } from "react-icons/md"; 
+import { MdWaterDrop, MdOutlineSettingsBackupRestore, MdKeyboardArrowDown } from "react-icons/md"; 
 import './ControlPage.css';
-
 
 function ControlPage() {
   const { 
@@ -17,8 +16,15 @@ function ControlPage() {
     saveWateringSettings, 
     runManualWatering, 
     fetchWateringLogs, 
-    fetchLatestSensorData
+    fetchLatestSensorData,
+    addPot,
+    nickname
   } = useSensorStore();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newPotName, setNewPotName] = useState('');
+  const [newPlantName, setNewPlantName] = useState('');
+  const [newDeviceId, setNewDeviceId] = useState('');
 
   const [isAutoMode, setIsAutoMode] = useState(controlSettings.isAutoMode || false);
   const [threshold, setThreshold] = useState(controlSettings.autoWateringThreshold || 30);
@@ -67,7 +73,6 @@ function ControlPage() {
     const result = await runManualWatering(activePotId);
     if(result.success){
       alert(`수동 급수를 시작합니다.`);
-
       await fetchWateringLogs(activePotId);
       await fetchLatestSensorData(activePotId);
     }else{
@@ -80,14 +85,52 @@ function ControlPage() {
     alert('물탱크가 가득 채워졌습니다.');
   };
 
-  // 드롭다운 핸들러 추가
   const handleDropdownChange = (e) => {
-    setActivePotId(Number(e.target.value));
+    const value = e.target.value;
+    if (value === 'add_new') setIsModalOpen(true);
+    else setActivePotId(Number(value));
   };
+
+  const handleAddPot = (e) => {
+    e.preventDefault();
+    if (potList.some((pot) => pot.potName === newPotName)) return alert('이미 존재하는 화분 이름입니다.');
+    if (!newDeviceId.trim() || newDeviceId.length < 4) return alert('올바른 등록 PIN(최소 4자리 이상)을 입력해 주세요.');
+    addPot({ potName: newPotName, plantName: newPlantName, deviceId: newDeviceId });
+    alert('화분이 등록되었습니다!');
+    setIsModalOpen(false);
+    setNewPotName(''); setNewPlantName(''); setNewDeviceId('');
+  };
+
+  const renderAddPotModal = () => (
+    isModalOpen && (
+      <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h3>새로운 화분 등록</h3>
+            <button className="close-btn" onClick={() => setIsModalOpen(false)}>✕</button>
+          </div>
+          <form onSubmit={handleAddPot} className="add-pot-form">
+            <div className="input-group">
+              <label>화분 이름</label>
+              <input type="text" placeholder="예: 안방 화분" value={newPotName} onChange={(e) => setNewPotName(e.target.value)} required />
+            </div>
+            <div className="input-group">
+              <label>식물 이름</label>
+              <input type="text" placeholder="예: 장미" value={newPlantName} onChange={(e) => setNewPlantName(e.target.value)} required />
+            </div>
+            <div className="input-group">
+              <label>등록 PIN (기기 식별용)</label>
+              <input type="text" placeholder="아두이노 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
+            </div>
+            <button type="submit" className="btn-primary-large" style={{ width: '100%', marginTop: '16px' }}>등록하기</button>
+          </form>
+        </div>
+      </div>
+    )
+  );
 
   const isDurationEnabled = isAutoMode || isScheduleMode;
 
-  // activePotId 바뀌거나 페이지 처음 들어올 때 설정 가져오기
   useEffect(() => {
     if (!activePotId) return;
 
@@ -106,35 +149,49 @@ function ControlPage() {
     })();
   }, [activePotId, fetchWateringSettings, fetchWateringLogs, fetchLatestSensorData]);
 
-  const activePot = potList.find(p => p.id === activePotId) || potList[0];
-
-  if (!activePot) {
-    return <div className="control-container"><h2>등록된 화분이 없습니다.</h2></div>;
+  if (potList.length === 0) {
+    return (
+      <div className="control-container empty-state" style={{ textAlign: 'center', minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        <div className="empty-icon" style={{ fontSize: '60px', marginBottom: '20px' }}>🪴</div>
+        <h2 style={{ color: '#0f172a', margin: '0 0 16px 0' }}>등록된 화분이 없습니다</h2>
+        <p style={{ color: '#64748b', margin: '0 0 30px 0' }}>
+          {nickname}님의 식물을 등록하고 스마트하게 관리해보세요!
+        </p>
+        <button className="btn-primary-large" onClick={() => setIsModalOpen(true)}>
+          + 새 화분 등록하기
+        </button>
+        {renderAddPotModal()}
+      </div>
+    );
   }
+
+  const activePot = potList.find(p => p.id === activePotId) || potList[0];
 
   return (
     <div className="control-container">
       <div className="dashboard-header flex-header">
         <div className="header-title-group">
-          <select className="pot-dropdown" value={activePot.id} onChange={handleDropdownChange}>
-            {potList.map((pot) => (
-              <option key={pot.id} value={pot.id}>{pot.potName}</option>
-            ))}
-          </select>
+          <div className="custom-select-wrapper">
+            <select className="pot-dropdown" value={activePot.id} onChange={handleDropdownChange}>
+              {potList.map((pot) => (
+                <option key={pot.id} value={pot.id}>{pot.potName}</option>
+              ))}
+              <option value="add_new" style={{ fontWeight: 'bold', color: '#10b981' }}>+ 새 화분 등록</option>
+            </select>
+            <MdKeyboardArrowDown className="dropdown-arrow-icon" />
+          </div>
           <span className="plant-tag">🌿 {activePot.plantName || activePot.plantType}</span>
         </div>
         <p>급수 시스템을 설정하고 수동으로 물을 줄 수 있습니다.</p>
       </div>
 
       <div className="control-panels-wrapper">
-        {/* 자동 급수 설정 패널 */}
         <div className="control-card">
           <div className="card-title-group">
             <h3>자동 급수</h3>
           </div>
           <p className="card-desc" style={{ marginBottom: '24px' }}>식물의 상태와 시간에 맞춰 자동으로 물을 공급합니다.</p>
 
-          {/* 자동 급수 설정 */}
           <div className={`inner-setting-card ${isAutoMode ? 'active' : ''}`}>
             <div className="inner-card-header">
               <div className="inner-title-area">
@@ -160,7 +217,6 @@ function ControlPage() {
             </div>
           </div>
 
-          {/* 예약 급수 설정 */}
           <div className={`inner-setting-card ${isScheduleMode ? 'active' : ''}`}>
             <div className="inner-card-header">
               <div className="inner-title-area">
@@ -222,7 +278,6 @@ function ControlPage() {
             </div>
           </div>
 
-          {/* 1회 급수량 설정 */}
           <div className={`inner-setting-card ${!isDurationEnabled ? 'disabled' : ''}`}>
             <div className="inner-card-header no-border">
               <div className="inner-title-area">
@@ -248,7 +303,6 @@ function ControlPage() {
           </button>
         </div>
 
-        {/* 수동 급수, 실시간 모니터링 */}
         <div className="right-column-wrapper">
           <div className="control-card manual-card">
             <div className="card-title-group">
@@ -315,6 +369,7 @@ function ControlPage() {
         </div>
 
       </div>
+      {renderAddPotModal()}
     </div>
   );
 }

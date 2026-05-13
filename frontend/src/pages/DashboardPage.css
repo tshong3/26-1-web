@@ -139,27 +139,40 @@
   gap: 8px;
 }
 
-/* 화분 선택 드롭다운 디자인 */
-.pot-dropdown {
-  appearance: none;
-  background-color: transparent;
-  border: none;
-  font-size: 28px;
-  font-weight: 800;
-  color: #222;
+.custom-select-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
-  padding-right: 32px;
-  /* 커스텀 화살표 아이콘 */
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23222222%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat;
-  background-position: right center;
-  background-size: 14px;
-  outline: none;
 }
 
-.pot-dropdown:hover, .pot-dropdown:focus {
+.pot-dropdown {
+  font-size: 28px;
+  font-weight: 800;
+  border: none;
+  background: transparent;
+  color: #222;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  padding-right: 32px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.dropdown-arrow-icon {
+  position: absolute;
+  right: 0;
+  font-size: 28px;
+  color: #64748b;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.custom-select-wrapper:hover .dropdown-arrow-icon {
   color: #10b981;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2310b981%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
 }
 
 /* 빈 화면 디자인 */
@@ -172,7 +185,6 @@
   min-height: 60vh;
 }
 
-/* 모달 및 폼 요소 디자인 */
 .modal-overlay {
   position: fixed; 
   top: 0; left: 0; right: 0; bottom: 0;
@@ -194,16 +206,17 @@
 }
 
 .modal-header {
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
 }
 
-.modal-header h3 { 
-  margin: 0; 
-  font-size: 20px; 
-  color: #222; 
+.modal-header h3 {
+  margin: 0;
+  text-align: left;
+  font-size: 20px;
+  color: #0f172a;
 }
 
 .close-btn { 
@@ -225,13 +238,18 @@
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .input-group label {
+  text-align: left;
+  width: 100%;
+  margin-bottom: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #555;
+  color: #333;
 }
 
 .input-group input {
@@ -274,29 +292,20 @@
 }
 
 /* 심각도별 카드 색상 및 테두리 */
-/* Critical(위험 - 빨간색) */
 .ai-message-card.danger {
   background-color: #fef2f2;
   border-left: 4px solid #ef4444;
 }
-.ai-message-card.danger .ai-icon {
-  color: #ef4444;
-}
+.ai-message-card.danger .ai-icon { color: #ef4444; }
 
-/* Warning(경고 - 노란색) */
 .ai-message-card.warning {
   background-color: #fffbeb;
   border-left: 4px solid #f59e0b;
 }
-.ai-message-card.warning .ai-icon {
-  color: #f59e0b;
-}
+.ai-message-card.warning .ai-icon { color: #f59e0b; }
 
-/* Info/Tip(정보 - 초록색) */
 .ai-message-card.tip {
   background-color: #f0fdf4;
   border-left: 4px solid #10b981;
 }
-.ai-message-card.tip .ai-icon {
-  color: #10b981;
-}
+.ai-message-card.tip .ai-icon { color: #10b981; }

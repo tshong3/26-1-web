@@ -4,6 +4,68 @@
   padding: 40px 20px;
 }
 
+.flex-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 30px;
+}
+
+.header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.custom-select-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.pot-dropdown {
+  font-size: 24px;
+  font-weight: 800;
+  border: none;
+  background: transparent;
+  color: #0f172a;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  padding-right: 32px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.dropdown-arrow-icon {
+  position: absolute;
+  right: 0;
+  font-size: 28px;
+  color: #64748b;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.custom-select-wrapper:hover .dropdown-arrow-icon {
+  color: #10b981;
+}
+
+.plant-tag {
+  background-color: #ecfdf5;
+  color: #10b981;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .control-header h2 { margin: 0 0 8px 0; color: #222; }
 .control-header p { color: #666; margin: 0 0 30px 0; }
 
@@ -173,22 +235,14 @@
 }
 
 .custom-period-input input[type="number"]:focus:not(.error-border),
-.custom-period-input select:focus {
-  border-color: #10b981;
-}
+.custom-period-input select:focus { border-color: #10b981; }
 
 .custom-period-input select:disabled,
 .custom-period-input input[type="number"]:disabled {
-  background-color: #f9fafb;
-  color: #aaa;
-  cursor: not-allowed;
-  border-color: #ddd;
+  background-color: #f9fafb; color: #aaa; cursor: not-allowed; border-color: #ddd;
 }
 
-.period-suffix {
-  color: #555;
-  font-size: 14px;
-}
+.period-suffix { color: #555; font-size: 14px; }
 
 .toggle-switch { position: relative; display: inline-block; width: 46px; height: 26px; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -202,8 +256,7 @@
 .btn-save {
   width: 100%; padding: 18px; background-color: #10b981; color: white; border: none;
   border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s;
-  display: flex; justify-content: center; align-items: center;
-  margin-top: auto; 
+  display: flex; justify-content: center; align-items: center; margin-top: auto; 
 }
 .btn-save:hover { background-color: #059669; }
 
@@ -232,70 +285,108 @@
   align-items: center;
   margin-bottom: 10px;
 }
+.status-info-text span:first-child { font-size: 14px; font-weight: 600; color: #64748b; }
 
-.status-info-text span:first-child {
-  font-size: 14px;
-  font-weight: 600;
-  color: #64748b;
-}
-
-.status-percent {
-  font-size: 18px;
-  font-weight: 800;
-}
-
+.status-percent { font-size: 18px; font-weight: 800; }
 .status-percent.moisture { color: #10b981; } 
 .status-percent.water { color: #3b82f6; } 
 .status-percent.danger { color: #ef4444; } 
 
 .status-progress-bar {
-  width: 100%;
-  height: 8px;
-  background-color: #e2e8f0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 8px;
+  width: 100%; height: 8px; background-color: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 8px;
 }
-
-.status-progress-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.5s ease-in-out;
-}
-
+.status-progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease-in-out; }
 .status-progress-fill.moisture { background-color: #10b981; } 
 .status-progress-fill.water { background-color: #3b82f6; } 
 .status-progress-fill.danger { background-color: #ef4444; } 
 
-.status-hint {
-  font-size: 12px;
-  color: #64748b;
-  margin: 0;
-}
+.status-hint { font-size: 12px; color: #64748b; margin: 0; }
 
 .btn-refill {
-  width: 100%;
-  padding: 14px;
-  background-color: white;
-  color: #3b82f6;
-  border: 1px solid #3b82f6;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s;
-  margin-top: 20px;
+  width: 100%; padding: 14px; background-color: white; color: #3b82f6; border: 1px solid #3b82f6;
+  border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex;
+  justify-content: center; align-items: center; gap: 8px; transition: all 0.2s; margin-top: 20px;
 }
-
-.btn-refill:hover {
-  background-color: #eff6ff;
-  transform: translateY(-1px);
-}
+.btn-refill:hover { background-color: #eff6ff; transform: translateY(-1px); }
 
 @media (max-width: 768px) {
   .control-panels-wrapper { grid-template-columns: 1fr; }
 }
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 60vh;
+}
+
+.modal-overlay {
+  position: fixed; 
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5); 
+  backdrop-filter: blur(4px);
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white; 
+  padding: 32px; 
+  border-radius: 24px; 
+  width: 100%; 
+  max-width: 400px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  text-align: left;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.close-btn { background: none; border: none; font-size: 20px; color: #888; cursor: pointer; }
+.close-btn:hover { color: #222; }
+
+.add-pot-form { display: flex; flex-direction: column; gap: 16px; }
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  text-align: left;
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input-group input:focus { border-color: #10b981; }

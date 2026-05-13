@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useSensorStore from '../store/useSensorStore';
 import useNotificationStore from '../store/useNotificationStore';
 import SensorCard from '../components/SensorCard';
-import { MdOutlineTipsAndUpdates, MdWarningAmber, MdEco, MdInfoOutline, MdErrorOutline } from "react-icons/md";
+import { MdOutlineTipsAndUpdates, MdWarningAmber, MdEco, MdInfoOutline, MdErrorOutline, MdKeyboardArrowDown } from "react-icons/md";
 import './DashboardPage.css';
 
 // 시간 변환
@@ -32,20 +32,17 @@ function DashboardPage() {
     fetchPots
   } = useSensorStore();
 
-  // 알림 스토어에서 상태와 데이터 가져오기
   const { notifications, fetchNotifications, loading } = useNotificationStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPotName, setNewPotName] = useState('');
   const [newPlantName, setNewPlantName] = useState('');
   const [newDeviceId, setNewDeviceId] = useState('');
 
-  // 대시보드 진입 시 알림 목록 가져오기
   useEffect(() => {
     fetchNotifications();
     fetchPots();
   }, [fetchNotifications, fetchPots]);
 
-  // 상태 판단 및 기타 핸들러
   const getMoistureStatus = (value) => {
     if (value < 20) return { status: 'danger', badge: '위험' };
     if (value < 30) return { status: 'warning', badge: '주의' };
@@ -64,7 +61,6 @@ function DashboardPage() {
     return { status: 'normal', badge: '양호' };
   };
 
-  // 하나라도 이상이 있으면 포괄적인 경고 띄우기
   const getOverallStatus = () => {
     const isMoistureBad = getMoistureStatus(sensorData.soilMoisture).status !== 'normal';
     const isTempBad = getTemperatureStatus(sensorData.temperature).status !== 'normal';
@@ -76,7 +72,7 @@ function DashboardPage() {
       return { 
         text: '상태 관리가 필요해요', 
         type: 'danger', 
-        desc: '아래의 빨간색 또는 노란색 센서 카드를 확인해 주세요.' 
+        desc: '노란색 또는 빨간색이 뜨는 상태를 확인해 주세요.' 
       };
     }
 
@@ -89,7 +85,6 @@ function DashboardPage() {
 
   const overall = getOverallStatus();
 
-  // 알림 타입별 아이콘 및 클래스 결정 함수
   const getNotiStyle = (severity, type) => {
     switch (severity) {
       case 'critical':
@@ -98,7 +93,6 @@ function DashboardPage() {
         return { icon: <MdWarningAmber />, className: 'warning' };
       case 'info':
       default:
-        // 조도 관련이면 전구 아이콘, 그 외는 정보 아이콘
         return { 
           icon: type === 'light' ? <MdOutlineTipsAndUpdates /> : <MdInfoOutline />, 
           className: 'tip' 
@@ -132,16 +126,16 @@ function DashboardPage() {
           </div>
           <form onSubmit={handleAddPot} className="add-pot-form">
             <div className="input-group">
-              <label>화분 별명</label>
+              <label>화분 이름</label>
               <input type="text" placeholder="예: 안방 화분" value={newPotName} onChange={(e) => setNewPotName(e.target.value)} required />
             </div>
             <div className="input-group">
-              <label>식물 종류</label>
+              <label>식물 이름</label>
               <input type="text" placeholder="예: 장미" value={newPlantName} onChange={(e) => setNewPlantName(e.target.value)} required />
             </div>
             <div className="input-group">
-              <label>등록 PIN</label>
-              <input type="text" placeholder="아두이노 PIN 번호를 입력하세요" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
+              <label>등록 PIN (기기 식별용)</label>
+              <input type="text" placeholder="아두이노 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
             </div>
             <button type="submit" className="btn-primary-large" style={{ width: '100%', marginTop: '16px' }}>
               등록하기
@@ -154,10 +148,10 @@ function DashboardPage() {
 
   if (potList.length === 0) {
     return (
-      <div className="dashboard-container empty-state">
+      <div className="dashboard-container empty-state" style={{ textAlign: 'center', minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
         <div className="empty-icon" style={{ fontSize: '60px', marginBottom: '20px' }}>🪴</div>
-        <h2>등록된 화분이 없습니다</h2>
-        <p style={{ color: '#64748b', marginBottom: '30px' }}>
+        <h2 style={{ color: '#0f172a', margin: '0 0 16px 0' }}>등록된 화분이 없습니다</h2>
+        <p style={{ color: '#64748b', margin: '0 0 30px 0' }}>
           {nickname}님의 식물을 등록하고 스마트하게 관리해보세요!
         </p>
         <button className="btn-primary-large" onClick={() => setIsModalOpen(true)}>
@@ -175,12 +169,15 @@ function DashboardPage() {
       
       <div className="dashboard-header flex-header">
         <div className="header-title-group">
-          <select className="pot-dropdown" value={activePot.id} onChange={handleDropdownChange}>
-            {potList.map((pot) => (
-              <option key={pot.id} value={pot.id}>{pot.potName}</option>
-            ))}
-            <option value="add_new" style={{ fontWeight: 'bold', color: '#10b981' }}>+ 새 화분 등록</option>
-          </select>
+          <div className="custom-select-wrapper">
+            <select className="pot-dropdown" value={activePot.id} onChange={handleDropdownChange}>
+              {potList.map((pot) => (
+                <option key={pot.id} value={pot.id}>{pot.potName}</option>
+              ))}
+              <option value="add_new" style={{ fontWeight: 'bold', color: '#10b981' }}>+ 새 화분 등록</option>
+            </select>
+            <MdKeyboardArrowDown className="dropdown-arrow-icon" />
+          </div>
           <span className="plant-tag"><MdEco /> {activePot.plantName || activePot.plantType}</span>
         </div>
         <p>화분의 실시간 상태를 확인하세요.</p>
@@ -209,7 +206,6 @@ function DashboardPage() {
             {loading && notifications.length === 0 ? (
               <p className="loading-text">알림 분석 중...</p>
             ) : (
-              // 현재 선택된 화분의 알림만 필터링
               (() => {
                 const currentPotNotifications = notifications.filter(noti => noti.pot_id === activePot.id);
                 
@@ -221,7 +217,6 @@ function DashboardPage() {
                   );
                 }
 
-                // 해당 화분의 알림 중 최신 3개만 잘라서 렌더링
                 return currentPotNotifications.slice(0, 3).map((noti) => {
                   const style = getNotiStyle(noti.severity, noti.type);
                   return (

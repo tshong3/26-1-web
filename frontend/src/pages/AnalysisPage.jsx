@@ -3,7 +3,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
   ResponsiveContainer, Brush, ReferenceArea 
 } from 'recharts';
-import { MdRefresh } from "react-icons/md";
+import { MdRefresh, MdKeyboardArrowDown } from "react-icons/md";
 import useSensorStore from '../store/useSensorStore';
 import './AnalysisPage.css';
 
@@ -23,17 +23,65 @@ const generateMockData = () => {
 const mockChartData = generateMockData();
 
 function AnalysisPage() {
-  // 스토어에서 화분 목록과 선택 변경 함수 가져오기
-  const { potList, activePotId, setActivePotId } = useSensorStore();
-  const [activeTab, setActiveTab] = useState('moisture'); // 기본 탭 토양 습도
-  const [timeRange, setTimeRange] = useState('day'); // 기간 선택 상태
+  const { 
+    potList, 
+    activePotId, 
+    setActivePotId,
+    addPot,
+    nickname
+  } = useSensorStore();
 
-  // 드롭다운 변경 핸들러
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newPotName, setNewPotName] = useState('');
+  const [newPlantName, setNewPlantName] = useState('');
+  const [newDeviceId, setNewDeviceId] = useState('');
+
+  const [activeTab, setActiveTab] = useState('moisture'); 
+  const [timeRange, setTimeRange] = useState('day'); 
+
   const handleDropdownChange = (e) => {
-    setActivePotId(Number(e.target.value));
+    const value = e.target.value;
+    if (value === 'add_new') setIsModalOpen(true);
+    else setActivePotId(Number(value));
   };
 
-  const activePot = potList.find(p => p.id === activePotId) || potList[0];
+  const handleAddPot = (e) => {
+    e.preventDefault();
+    if (potList.some((pot) => pot.potName === newPotName)) return alert('이미 존재하는 화분 이름입니다.');
+    if (!newDeviceId.trim() || newDeviceId.length < 4) return alert('올바른 등록 PIN(최소 4자리 이상)을 입력해 주세요.');
+    addPot({ potName: newPotName, plantName: newPlantName, deviceId: newDeviceId });
+    alert('화분이 등록되었습니다!');
+    setIsModalOpen(false);
+    setNewPotName(''); setNewPlantName(''); setNewDeviceId('');
+  };
+
+  const renderAddPotModal = () => (
+    isModalOpen && (
+      <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h3>새로운 화분 등록</h3>
+            <button className="close-btn" onClick={() => setIsModalOpen(false)}>✕</button>
+          </div>
+          <form onSubmit={handleAddPot} className="add-pot-form">
+            <div className="input-group">
+              <label>화분 이름</label>
+              <input type="text" placeholder="예: 안방 화분" value={newPotName} onChange={(e) => setNewPotName(e.target.value)} required />
+            </div>
+            <div className="input-group">
+              <label>식물 이름</label>
+              <input type="text" placeholder="예: 장미" value={newPlantName} onChange={(e) => setNewPlantName(e.target.value)} required />
+            </div>
+            <div className="input-group">
+              <label>등록 PIN (기기 식별용)</label>
+              <input type="text" placeholder="아두이노 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
+            </div>
+            <button type="submit" className="btn-primary-large" style={{ width: '100%', marginTop: '16px' }}>등록하기</button>
+          </form>
+        </div>
+      </div>
+    )
+  );
 
   const getChartInfo = () => {
     switch (activeTab) {
@@ -47,23 +95,39 @@ function AnalysisPage() {
   const chartInfo = getChartInfo();
   const startIndex = Math.max(mockChartData.length - 10, 0);
 
-  // 화분이 없을 때의 예외 처리
-  if (!activePot) {
-    return <div className="analysis-container"><h2>등록된 화분이 없습니다.</h2></div>;
+  if (potList.length === 0) {
+    return (
+      <div className="analysis-container empty-state" style={{ textAlign: 'center', minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        <div className="empty-icon" style={{ fontSize: '60px', marginBottom: '20px' }}>🪴</div>
+        <h2 style={{ color: '#0f172a', margin: '0 0 16px 0' }}>등록된 화분이 없습니다</h2>
+        <p style={{ color: '#64748b', margin: '0 0 30px 0' }}>
+          {nickname}님의 식물을 등록하고 스마트하게 관리해보세요!
+        </p>
+        <button className="btn-primary-large" onClick={() => setIsModalOpen(true)}>
+          + 새 화분 등록하기
+        </button>
+        {renderAddPotModal()}
+      </div>
+    );
   }
+
+  const activePot = potList.find(p => p.id === activePotId) || potList[0];
 
   return (
     <div className="analysis-container">
       
-      {/* 헤더 영역을 드롭다운 UI로 교체 */}
       <div className="analysis-header">
         <div>
           <div className="header-title-group">
-            <select className="pot-dropdown" value={activePot.id} onChange={handleDropdownChange}>
-              {potList.map((pot) => (
-                <option key={pot.id} value={pot.id}>{pot.potName}</option>
-              ))}
-            </select>
+            <div className="custom-select-wrapper">
+              <select className="pot-dropdown" value={activePot.id} onChange={handleDropdownChange}>
+                {potList.map((pot) => (
+                  <option key={pot.id} value={pot.id}>{pot.potName}</option>
+                ))}
+                <option value="add_new" style={{ fontWeight: 'bold', color: '#10b981' }}>+ 새 화분 등록</option>
+              </select>
+              <MdKeyboardArrowDown className="dropdown-arrow-icon" />
+            </div>
             <span className="plant-tag">📊 {activePot.plantName || activePot.plantType}</span>
           </div>
           <p>식물의 상태 변화를 확인할 수 있어요</p>
@@ -73,7 +137,6 @@ function AnalysisPage() {
         </button>
       </div>
 
-      {/* 조회 기간 선택 필터 */}
       <div className="filter-controls">
         <div className="tab-menu">
           <button className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>전체 보기</button>
@@ -92,7 +155,6 @@ function AnalysisPage() {
       <div className="chart-card">
         <div className="chart-card-header">
           <h3 className="chart-title">{chartInfo.title}</h3>
-          {/* 정상 범위 안내 뱃지 */}
           {activeTab !== 'all' && (
             <span className="safe-range-badge">
               적정 범위: {chartInfo.safeMin} ~ {chartInfo.safeMax}{chartInfo.unit}
@@ -112,7 +174,6 @@ function AnalysisPage() {
               />
               <Legend verticalAlign="top" height={40} />
               
-              {/* 정상 범위 배경 칠하기 */}
               {activeTab !== 'all' && chartInfo.safeMin !== null && (
                 <ReferenceArea 
                   y1={chartInfo.safeMin} 
@@ -122,7 +183,6 @@ function AnalysisPage() {
                 />
               )}
 
-              {/* 데이터 선 */}
               {(activeTab === 'all' || activeTab === 'moisture') && 
                 <Line type="monotone" dataKey="moisture" name="토양 습도 (%)" stroke="#3b82f6" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 6 }} />}
               {(activeTab === 'all' || activeTab === 'temperature') && 
@@ -130,7 +190,6 @@ function AnalysisPage() {
               {(activeTab === 'all' || activeTab === 'humidity') && 
                 <Line type="monotone" dataKey="humidity" name="주변 습도 (%)" stroke="#06b6d4" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 6 }} />}
               
-              {/* 하단 가로 스크롤바 */}
               <Brush 
                 dataKey="time" 
                 height={30} 
@@ -143,6 +202,7 @@ function AnalysisPage() {
           </ResponsiveContainer>
         </div>
       </div>
+      {renderAddPotModal()}
     </div>
   );
 }
