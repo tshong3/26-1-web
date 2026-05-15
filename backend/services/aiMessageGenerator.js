@@ -103,9 +103,62 @@ function buildPrompt({ plantLabel, type, severity, sensor, target, lastWatering 
 - 이모지나 특수문자 없이 평문만
 - 메시지 본문만 출력 (앞뒤 설명, 인사말 없이)`;
 
-    return situation;
+return situation;
+}
+/**
+ * 매일 아침 날씨 기반 식물 관리 메시지 생성
+ *
+ * @param {Object} context
+ * @param {string} context.plantName - 식물명 (예: "장미")
+ * @param {Object} context.weather - { temperature, humidity, weather, description, wind_speed, feels_like }
+ * @param {string} fallbackMessage - AI 실패 시 사용할 메시지
+ * @returns {Promise<string>}
+ */
+async function generateDailyWeatherTip(context, fallbackMessage) {
+    try {
+        const prompt = buildWeatherPrompt(context);
+
+        const response = await client.messages.create({
+            model: MODEL,
+            max_tokens: MAX_TOKENS,
+            messages: [{ role: "user", content: prompt }],
+        });
+
+        const text = response.content?.[0]?.text?.trim();
+
+        if (!text || text.length < 5 || text.length > 200) {
+            console.warn("[ai weather] invalid response, using fallback");
+            return fallbackMessage;
+        }
+
+        return text;
+    } catch (error) {
+        console.error("[ai weather] error:", error.message);
+        return fallbackMessage;
+    }
+}
+
+function buildWeatherPrompt({ plantName, weather }) {
+    return `오늘 서울 날씨:
+- 기온: ${weather.temperature}도 (체감 ${weather.feels_like}도)
+- 습도: ${weather.humidity}%
+- 날씨: ${weather.description}
+- 풍속: ${weather.wind_speed}m/s
+
+사용자가 키우는 식물: ${plantName}
+
+위 정보를 바탕으로 오늘 ${plantName} 관리에 대한 조언을 한국어 메시지로 작성해주세요.
+
+조건:
+- 80자 이내
+- 친근한 톤
+- 오늘 날씨에 맞는 구체적인 행동 제안 1가지 포함
+- 이모지나 특수문자 없이 평문만
+- "오늘은" 같은 시간 표현으로 시작
+- 메시지 본문만 출력 (앞뒤 설명, 인사말 없이)`;
 }
 
 module.exports = {
     generateNotificationMessage,
+    generateDailyWeatherTip,
 };
