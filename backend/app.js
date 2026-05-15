@@ -9,6 +9,7 @@ const notificationRoutes = require("./routes/notifications");
 const plantRoutes = require("./routes/plants");
 const startWateringScheduler = require("./jobs/wateringScheduler");
 const startNotificationScheduler = require("./jobs/notificationScheduler");
+const startDailyWeatherScheduler = require("./jobs/dailyWeatherScheduler");
 const app = express();
 
 app.use(cors());
@@ -29,4 +30,5 @@ app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
   startWateringScheduler();
   startNotificationScheduler();
+  startDailyWeatherScheduler();
 });
