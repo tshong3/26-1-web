@@ -5,6 +5,8 @@ const {
     formatKstDateTime,
     getKstNowDate,
 } = require("../utils/kstDate");
+// [알림 통합-효성] 자동/예약 급수 시 알림 발송 모듈
+const { sendWateringNotification } = require("../services/wateringNotification");
 
 const promiseDb = db.promise();
 
@@ -586,6 +588,9 @@ router.post("/device/command/result", async (req, res) => {
                 [potId]
             );
         }
+        // [알림통합-효성] 자동/예약 급수 알림 발송 (MANUAL은 함수 내부에서 스킵)
+        // 실패해도 catch되니 응답에 영향 없음
+        await sendWateringNotification(potId, command.command_type, isSuccess, message);
 
         res.json({
             success: true,
