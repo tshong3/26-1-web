@@ -49,8 +49,8 @@ function HomePage() {
                     <div className="pulse-ring"></div>
                     <div className="ai-main-icon"><MdOutlineEco /></div>
                   </div>
-                  <h4>AI 스마트 케어 작동 중</h4>
-                  <span className="ai-badge">Auto Mode ON</span>
+                  <h4>식물 관리 시스템 작동 중</h4>
+                  <span className="ai-badge">SYSTEM ON</span>
                 </div>
 
                 <div className="ai-action-list">
@@ -58,14 +58,14 @@ function HomePage() {
                     <div className="action-icon bg-blue"><MdOutlineWaterDrop /></div>
                     <div className="action-text">
                       <strong>자동 급수 완료</strong>
-                      <p>토양 건조 감지 (방금 전)</p>
+                      <p>토양 건조 감지</p>
                     </div>
                   </div>
                   <div className="ai-action-item">
                     <div className="action-icon bg-yellow"><MdOutlineBolt /></div>
                     <div className="action-text">
-                      <strong>광합성 효율 최적</strong>
-                      <p>창가 햇빛 상태 양호</p>
+                      <strong>햇빛 상태 양호</strong>
+                      <p>광합성 효율 최적</p>
                     </div>
                   </div>
                 </div>
