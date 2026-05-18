@@ -43,6 +43,7 @@ const useSensorStore = create((set, get) => ({
   // 화분 및 센서 상태
   potList: [],
   activePotId: null, 
+  plantGuide: [],
 
   sensorData: {
     soilMoisture: 0, temperature: 0, humidity: 0, illuminance: 0, waterLevel: 0,   
@@ -71,10 +72,39 @@ const useSensorStore = create((set, get) => ({
     ]);
   },
 
-  addPot: (newPot) => set((state) => {
-    const newId = Date.now(); 
-    return { potList: [...state.potList, { id: newId, ...newPot }], activePotId: newId }; 
-  }),
+  // 식물 도감 데이터를 백엔드에서 가져오는 함수
+  fetchPlantGuide: async () => {
+    try {
+      const res = await plantService.getGuide();
+      if (res.success) {
+        set({ plantGuide: res.data });
+      }
+    } catch (error) {
+      console.error('식물 도감 조회 에러:', error);
+    }
+  },
+
+  // 백엔드 API를 호출하고 숫자형 ID를 전송
+  addPot: async ({ potName, plantId, deviceId }) => {
+    try {
+      const payload = {
+        plant_id: parseInt(plantId),
+        pot_id: parseInt(deviceId),
+        nickname: potName
+      };
+
+      const res = await plantService.registerPot(payload);
+      if (res.success) {
+        await get().fetchPots(); // DB에 등록 성공 시 목록 새로고침
+        return { success: true };
+      } else {
+        return { success: false, message: res.message };
+      }
+    } catch (error) {
+      console.error('화분 등록 에러:', error);
+      return { success: false, message: error.message };
+    }
+  },
 
   // 백엔드 API 통신 함수
   fetchPots: async () => {

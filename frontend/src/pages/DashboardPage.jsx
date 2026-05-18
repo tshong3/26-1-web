@@ -5,7 +5,6 @@ import SensorCard from '../components/SensorCard';
 import { MdOutlineTipsAndUpdates, MdWarningAmber, MdEco, MdInfoOutline, MdErrorOutline, MdKeyboardArrowDown } from "react-icons/md";
 import './DashboardPage.css';
 
-// 시간 변환
 const timeAgo = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
@@ -22,26 +21,25 @@ const timeAgo = (dateString) => {
 
 function DashboardPage() {
   const { 
-    sensorData, 
-    wateringHistory, 
-    potList, 
-    activePotId, 
-    setActivePotId, 
-    addPot, 
-    nickname,
-    fetchPots
+    sensorData, wateringHistory, potList, activePotId, setActivePotId, 
+    addPot, nickname, fetchPots, plantGuide, fetchPlantGuide
   } = useSensorStore();
 
   const { notifications, fetchNotifications, loading } = useNotificationStore();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPotName, setNewPotName] = useState('');
   const [newPlantName, setNewPlantName] = useState('');
   const [newDeviceId, setNewDeviceId] = useState('');
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedPlantId, setSelectedPlantId] = useState(null);
+
   useEffect(() => {
     fetchNotifications();
     fetchPots();
-  }, [fetchNotifications, fetchPots]);
+    fetchPlantGuide();
+  }, [fetchNotifications, fetchPots, fetchPlantGuide]);
 
   const getMoistureStatus = (value) => {
     if (value < 20) return { status: 'danger', badge: '위험' };
@@ -87,16 +85,10 @@ function DashboardPage() {
 
   const getNotiStyle = (severity, type) => {
     switch (severity) {
-      case 'critical':
-        return { icon: <MdErrorOutline />, className: 'danger' };
-      case 'warning':
-        return { icon: <MdWarningAmber />, className: 'warning' };
+      case 'critical': return { icon: <MdErrorOutline />, className: 'danger' };
+      case 'warning': return { icon: <MdWarningAmber />, className: 'warning' };
       case 'info':
-      default:
-        return { 
-          icon: type === 'light' ? <MdOutlineTipsAndUpdates /> : <MdInfoOutline />, 
-          className: 'tip' 
-        };
+      default: return { icon: type === 'light' ? <MdOutlineTipsAndUpdates /> : <MdInfoOutline />, className: 'tip' };
     }
   };
 
@@ -106,19 +98,35 @@ function DashboardPage() {
     else setActivePotId(Number(value));
   };
 
-  const handleAddPot = (e) => {
+  const handleAddPot = async (e) => {
     e.preventDefault();
-    if (potList.some((pot) => pot.potName === newPotName)) return alert('이미 존재하는 화분 이름입니다.');
     if (!newDeviceId.trim() || newDeviceId.length < 4) return alert('올바른 등록 PIN(최소 4자리 이상)을 입력해 주세요.');
-    addPot({ potName: newPotName, plantName: newPlantName, deviceId: newDeviceId });
-    alert('화분이 등록되었습니다!');
-    setIsModalOpen(false);
-    setNewPotName(''); setNewPlantName(''); setNewDeviceId('');
+    
+    let finalPlantId = selectedPlantId;
+    if (!finalPlantId) {
+      const exactMatch = plantGuide.find(p => p.name === newPlantName);
+      if (exactMatch) {
+        finalPlantId = exactMatch.id;
+      } else {
+        return alert('목록에서 정확한 식물 종류를 선택해 주세요.');
+      }
+    }
+
+    const result = await addPot({ potName: newPotName, plantId: finalPlantId, deviceId: newDeviceId });
+    if (result.success) {
+      alert('화분이 등록되었습니다!');
+      setIsModalOpen(false);
+      setNewPotName(''); setNewPlantName(''); setNewDeviceId(''); setSelectedPlantId(null);
+    } else {
+      alert(result.message || '화분 등록에 실패했습니다.');
+    }
   };
+
+  const filteredPlants = plantGuide.filter(plant => plant.name.includes(newPlantName));
 
   const renderAddPotModal = () => (
     isModalOpen && (
-      <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+      <div className="modal-overlay" onClick={() => { setIsModalOpen(false); setIsDropdownOpen(false); }}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
             <h3>새로운 화분 등록</h3>
@@ -129,10 +137,36 @@ function DashboardPage() {
               <label>화분 이름</label>
               <input type="text" placeholder="예: 안방 화분" value={newPotName} onChange={(e) => setNewPotName(e.target.value)} required />
             </div>
+            
             <div className="input-group">
               <label>식물 이름</label>
-              <input type="text" placeholder="예: 장미" value={newPlantName} onChange={(e) => setNewPlantName(e.target.value)} required />
+              <div className="autocomplete-wrapper">
+                <input 
+                  type="text" placeholder="예: 장미" value={newPlantName} 
+                  onChange={(e) => {
+                    setNewPlantName(e.target.value);
+                    setIsDropdownOpen(true);
+                    setSelectedPlantId(null); 
+                  }} 
+                  onFocus={() => setIsDropdownOpen(true)}
+                  required 
+                />
+                {isDropdownOpen && newPlantName && filteredPlants.length > 0 && (
+                  <ul className="autocomplete-dropdown">
+                    {filteredPlants.map((plant) => (
+                      <li key={plant.id} className="autocomplete-item" onClick={() => {
+                        setNewPlantName(plant.name);
+                        setSelectedPlantId(plant.id);
+                        setIsDropdownOpen(false);
+                      }}>
+                        {plant.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
+
             <div className="input-group">
               <label>등록 PIN (기기 식별용)</label>
               <input type="text" placeholder="아두이노 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
