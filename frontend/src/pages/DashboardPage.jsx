@@ -41,57 +41,6 @@ function DashboardPage() {
     fetchPlantGuide();
   }, [fetchNotifications, fetchPots, fetchPlantGuide]);
 
-  const getMoistureStatus = (value) => {
-    if (value < 20) return { status: 'danger', badge: '위험' };
-    if (value < 30) return { status: 'warning', badge: '주의' };
-    return { status: 'normal', badge: '양호' };
-  };
-
-  const getTemperatureStatus = (value) => {
-    if (value < 10 || value > 32) return { status: 'danger', badge: '위험' };
-    if (value < 18 || value > 26) return { status: 'warning', badge: '주의' };
-    return { status: 'normal', badge: '양호' };
-  };
-
-  const getWaterLevelStatus = (value) => {
-    if (value <= 10) return { status: 'danger', badge: '위험' };
-    if (value <= 20) return { status: 'warning', badge: '주의' };
-    return { status: 'normal', badge: '양호' };
-  };
-
-  const getOverallStatus = () => {
-    const isMoistureBad = getMoistureStatus(sensorData.soilMoisture).status !== 'normal';
-    const isTempBad = getTemperatureStatus(sensorData.temperature).status !== 'normal';
-    const isWaterBad = getWaterLevelStatus(sensorData.waterLevel).status !== 'normal';
-    const isIlluminanceBad = sensorData.illuminance < 500;
-    const isHumidityBad = sensorData.humidity < 40 || sensorData.humidity > 70;
-
-    if (isMoistureBad || isTempBad || isWaterBad || isIlluminanceBad || isHumidityBad) {
-      return { 
-        text: '상태 관리가 필요해요', 
-        type: 'danger', 
-        desc: '노란색 또는 빨간색이 뜨는 상태를 확인해 주세요.' 
-      };
-    }
-
-    return { 
-      text: '식물이 잘 관리되고 있어요', 
-      type: 'good', 
-      desc: '모든 환경 수치가 적절합니다. 식물이 아주 건강하게 자라고 있어요!' 
-    };
-  };
-
-  const overall = getOverallStatus();
-
-  const getNotiStyle = (severity, type) => {
-    switch (severity) {
-      case 'critical': return { icon: <MdErrorOutline />, className: 'danger' };
-      case 'warning': return { icon: <MdWarningAmber />, className: 'warning' };
-      case 'info':
-      default: return { icon: type === 'light' ? <MdOutlineTipsAndUpdates /> : <MdInfoOutline />, className: 'tip' };
-    }
-  };
-
   const handleDropdownChange = (e) => {
     const value = e.target.value;
     if (value === 'add_new') setIsModalOpen(true);
@@ -100,7 +49,7 @@ function DashboardPage() {
 
   const handleAddPot = async (e) => {
     e.preventDefault();
-    if (!newDeviceId.trim() || newDeviceId.length < 4) return alert('올바른 등록 PIN(최소 4자리 이상)을 입력해 주세요.');
+    if (!newDeviceId.trim() || newDeviceId.length < 4) return alert('올바른 등록 PIN을 입력해 주세요.');
     
     let finalPlantId = selectedPlantId;
     if (!finalPlantId) {
@@ -108,7 +57,7 @@ function DashboardPage() {
       if (exactMatch) {
         finalPlantId = exactMatch.id;
       } else {
-        return alert('목록에서 정확한 식물 종류를 선택해 주세요.');
+        return alert('식물 종류를 선택해 주세요.');
       }
     }
 
@@ -168,7 +117,7 @@ function DashboardPage() {
             </div>
 
             <div className="input-group">
-              <label>등록 PIN (기기 식별용)</label>
+              <label>등록 PIN</label>
               <input type="text" placeholder="아두이노 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
             </div>
             <button type="submit" className="btn-primary-large" style={{ width: '100%', marginTop: '16px' }}>
@@ -198,6 +147,56 @@ function DashboardPage() {
 
   const activePot = potList.find(p => p.id === activePotId) || potList[0];
 
+  const checkStatus = (value, min, max) => {
+    if (min === null || max === null || value === null || value === undefined) {
+      return { status: 'normal', badge: '양호' }; 
+    }
+    const val = Number(value);
+    if (val >= min && val <= max) {
+      return { status: 'normal', badge: '양호' };
+    }
+    if (val < min - 10 || val > max + 10) {
+      return { status: 'danger', badge: '위험' };
+    }
+    return { status: 'warning', badge: '주의' };
+  };
+
+  const getWaterLevelStatus = (value) => {
+    if (value <= 10) return { status: 'danger', badge: '위험' };
+    if (value <= 20) return { status: 'warning', badge: '주의' };
+    return { status: 'normal', badge: '양호' };
+  };
+
+  const moistureStatus = checkStatus(sensorData.soilMoisture, activePot.moistureMin, activePot.moistureMax);
+  const tempStatus = checkStatus(sensorData.temperature, activePot.tempMin, activePot.tempMax);
+  const humidityStatus = checkStatus(sensorData.humidity, activePot.humidityMin, activePot.humidityMax);
+  const lightStatus = checkStatus(sensorData.illuminance, activePot.lightMin, activePot.lightMax);
+  const waterStatus = getWaterLevelStatus(sensorData.waterLevel);
+
+  const getOverallStatus = () => {
+    const hasDanger = [moistureStatus.status, tempStatus.status, humidityStatus.status, lightStatus.status, waterStatus.status].includes('danger');
+    const hasWarning = [moistureStatus.status, tempStatus.status, humidityStatus.status, lightStatus.status, waterStatus.status].includes('warning');
+
+    if (hasDanger) {
+      return { text: '긴급 조치가 필요해요', type: 'danger', desc: '위험 범위(적정값 대비 오차 10 초과)를 이탈한 센서가 있습니다. 즉시 환경을 점검해 주세요.' };
+    }
+    if (hasWarning) {
+      return { text: '주의 관리가 필요해요', type: 'warning', desc: '주의 범위(적정값 대비 오차 10 이내)에 진입한 수치가 있습니다. 지속적인 모니터링이 권장됩니다.' };
+    }
+    return { text: '식물이 아주 잘 자라고 있어요', type: 'good', desc: '모든 환경 수치가 식물별 최적 영역에 존재합니다. 현재 완벽하게 관리되고 있습니다!' };
+  };
+
+  const overall = getOverallStatus();
+
+  const getNotiStyle = (severity, type) => {
+    switch (severity) {
+      case 'critical': return { icon: <MdErrorOutline />, className: 'danger' };
+      case 'warning': return { icon: <MdWarningAmber />, className: 'warning' };
+      case 'info':
+      default: return { icon: type === 'light' ? <MdOutlineTipsAndUpdates /> : <MdInfoOutline />, className: 'tip' };
+    }
+  };
+
   return (
     <div className="dashboard-container">
       
@@ -212,7 +211,7 @@ function DashboardPage() {
             </select>
             <MdKeyboardArrowDown className="dropdown-arrow-icon" />
           </div>
-          <span className="plant-tag"><MdEco /> {activePot.plantName || activePot.plantType}</span>
+          <span className="plant-tag"><MdEco /> {activePot.plantType}</span>
         </div>
         <p>화분의 실시간 상태를 확인하세요.</p>
       </div>
@@ -225,11 +224,31 @@ function DashboardPage() {
       </div>
 
       <div className="sensor-cards-wrapper">
-        <SensorCard title="토양 습도" value={sensorData.soilMoisture} unit="%" icon="💧" optimalRange="적정: 30 ~ 70%" {...getMoistureStatus(sensorData.soilMoisture)} />
-        <SensorCard title="온도" value={sensorData.temperature} unit="°C" icon="🌡️" optimalRange="적정: 18 ~ 26°C" {...getTemperatureStatus(sensorData.temperature)} />
-        <SensorCard title="주변 습도" value={sensorData.humidity} unit="%" icon="💨" optimalRange="적정: 40 ~ 70%" status={sensorData.humidity < 40 || sensorData.humidity > 70 ? 'warning' : 'normal'} badge={sensorData.humidity < 40 || sensorData.humidity > 70 ? '주의' : '양호'} />
-        <SensorCard title="밝기" value={sensorData.illuminance} unit="lx" icon="☀️" optimalRange="적정: 500lx 이상" status={sensorData.illuminance < 500 ? 'warning' : 'normal'} badge={sensorData.illuminance < 500 ? '주의' : '양호'} />
-        <SensorCard title="물탱크 수위" value={sensorData.waterLevel} unit="%" icon="🌊" {...getWaterLevelStatus(sensorData.waterLevel)} />
+        <SensorCard 
+          title="토양 습도" value={sensorData.soilMoisture} unit="%" icon="💧" 
+          optimalRange={activePot.moistureMin !== undefined ? `적정: ${activePot.moistureMin} ~ ${activePot.moistureMax}%` : "적정 정보 없음"} 
+          status={moistureStatus.status} badge={moistureStatus.badge} 
+        />
+        <SensorCard 
+          title="온도" value={sensorData.temperature} unit="°C" icon="🌡️" 
+          optimalRange={activePot.tempMin !== undefined ? `적정: ${activePot.tempMin} ~ ${activePot.tempMax}°C` : "적정 정보 없음"} 
+          status={tempStatus.status} badge={tempStatus.badge} 
+        />
+        <SensorCard 
+          title="주변 습도" value={sensorData.humidity} unit="%" icon="💨" 
+          optimalRange={activePot.humidityMin !== undefined ? `적정: ${activePot.humidityMin} ~ ${activePot.humidityMax}%` : "적정 정보 없음"} 
+          status={humidityStatus.status} badge={humidityStatus.badge} 
+        />
+        <SensorCard 
+          title="밝기" value={sensorData.illuminance} unit="lx" icon="☀️" 
+          optimalRange={activePot.lightMin !== undefined ? `적정: ${activePot.lightMin} ~ ${activePot.lightMax}lx` : "적정 정보 없음"} 
+          status={lightStatus.status} badge={lightStatus.badge} 
+        />
+        <SensorCard 
+          title="물탱크 수위" value={sensorData.waterLevel} unit="%" icon="🌊" 
+          optimalRange="적정: 20% 이상 유지" 
+          status={waterStatus.status} badge={waterStatus.badge} 
+        />
       </div>
 
       <div className="dashboard-bottom-wrapper">
@@ -253,18 +272,40 @@ function DashboardPage() {
 
                 return currentPotNotifications.slice(0, 3).map((noti) => {
                   const style = getNotiStyle(noti.severity, noti.type);
+                  
+                  // 타입들에 대한 제목 매핑
+                  let notiTitle = '식물 건강 가이드';
+                  if (noti.type === 'soil_moisture') notiTitle = '토양 수분 이상';
+                  else if (noti.type === 'temperature') notiTitle = '온도 이상';
+                  else if (noti.type === 'humidity') notiTitle = '주변 습도 이상';
+                  else if (noti.type === 'light') notiTitle = '조도 이상';
+                  else if (noti.type === 'system') notiTitle = '스마트 시스템 알림'; 
+                  
                   return (
-                    <div key={noti.id} className={`ai-message-card ${style.className}`}>
+                    <div 
+                      key={noti.id} 
+                      className={`ai-message-card ${style.className}`}
+                      style={{ 
+                        opacity: noti.is_read ? 0.6 : 1, 
+                        cursor: noti.is_read ? 'default' : 'pointer',
+                        transition: 'opacity 0.3s',
+                        position: 'relative'
+                      }}
+                      onClick={() => {
+                        if (!noti.is_read) {
+                          useNotificationStore.getState().markAsRead(noti.id);
+                        }
+                      }}
+                    >
                       <div className="ai-icon">{style.icon}</div>
                       <div className="ai-content">
-                        <strong>
-                          {noti.type === 'soil_moisture' ? '토양 수분 부족' : 
-                           noti.type === 'water_level' ? '물탱크 수위 부족' : 
-                           noti.type === 'temperature' ? '주의 온도 이탈' : '식물 건강 가이드'}
-                        </strong>
+                        <strong>{notiTitle}</strong>
                         <p>{noti.message}</p>
                         <span className="ai-time">{timeAgo(noti.created_at)}</span>
                       </div>
+                      {!noti.is_read && (
+                        <div style={{ width: '8px', height: '8px', backgroundColor: '#ef4444', borderRadius: '50%', position: 'absolute', top: '16px', right: '16px' }} />
+                      )}
                     </div>
                   );
                 });

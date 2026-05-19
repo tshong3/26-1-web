@@ -10,13 +10,6 @@ const useSensorStore = create((set, get) => ({
   nickname: localStorage.getItem('nickname') || '',
 
   login: async (email, password) => {
-    if (email === 'test@test.com') {
-      localStorage.setItem('token', 'dev-fake-token');
-      localStorage.setItem('nickname', '테스트유저'); 
-      set({ isLoggedIn: true, nickname: '테스트유저' });
-      return { success: true };
-    }
-
     try {
       const data = await authService.login(email, password);
       localStorage.setItem('token', data.token); 
@@ -43,7 +36,7 @@ const useSensorStore = create((set, get) => ({
   // 화분 및 센서 상태
   potList: [],
   activePotId: null, 
-  plantGuide: [],
+  plantGuide: [], 
 
   sensorData: {
     soilMoisture: 0, temperature: 0, humidity: 0, illuminance: 0, waterLevel: 0,   
@@ -72,7 +65,6 @@ const useSensorStore = create((set, get) => ({
     ]);
   },
 
-  // 식물 도감 데이터를 백엔드에서 가져오는 함수
   fetchPlantGuide: async () => {
     try {
       const res = await plantService.getGuide();
@@ -84,7 +76,6 @@ const useSensorStore = create((set, get) => ({
     }
   },
 
-  // 백엔드 API를 호출하고 숫자형 ID를 전송
   addPot: async ({ potName, plantId, deviceId }) => {
     try {
       const payload = {
@@ -95,18 +86,19 @@ const useSensorStore = create((set, get) => ({
 
       const res = await plantService.registerPot(payload);
       if (res.success) {
-        await get().fetchPots(); // DB에 등록 성공 시 목록 새로고침
+        await get().fetchPots();
         return { success: true };
       } else {
         return { success: false, message: res.message };
       }
     } catch (error) {
       console.error('화분 등록 에러:', error);
-      return { success: false, message: error.message };
+      // 백엔드가 보내는 에러 원인을 화면에 띄움
+      const errorMessage = error.response?.data?.message || '화분 등록 중 오류가 발생했습니다.';
+      return { success: false, message: errorMessage };
     }
   },
 
-  // 백엔드 API 통신 함수
   fetchPots: async () => {
     try {
       const res = await plantService.getMyPots();
@@ -118,6 +110,14 @@ const useSensorStore = create((set, get) => ({
         potName: p.pot_name || p.nickname || `화분 ${p.id}`,
         plantType: p.plant_name || '알 수 없음',
         pin: p.device_id || '',
+        moistureMin: p.soil_moisture_min,
+        moistureMax: p.soil_moisture_max,
+        tempMin: p.temperature_min,
+        tempMax: p.temperature_max,
+        humidityMin: p.humidity_min,
+        humidityMax: p.humidity_max,
+        lightMin: p.light_min,
+        lightMax: p.light_max,
       }));
 
       const currentActiveId = get().activePotId;

@@ -9,8 +9,9 @@ const useNotificationStore = create((set) => ({
   fetchUnreadCount: async () => {
     try {
       const res = await notificationService.getUnreadCount();
-      if (res.success) {
-        set({ unreadCount: res.data.count || 0 });
+      // 백엔드 응답 포맷에 맞춰 { count: 3 } 형태를 파싱
+      if (res && typeof res.count === 'number') {
+        set({ unreadCount: res.count });
       }
     } catch (error) {
       console.error('안 읽은 알림 개수 조회 에러:', error);
@@ -21,8 +22,9 @@ const useNotificationStore = create((set) => ({
     set({ loading: true });
     try {
       const res = await notificationService.getNotifications();
-      if (res.success) {
-        set({ notifications: res.data || [] });
+      // 백엔드 응답 포맷에 맞게 { notifications: [...] } 형태를 파싱
+      if (res && Array.isArray(res.notifications)) {
+        set({ notifications: res.notifications });
       }
     } catch (error) {
       console.error('알림 목록 조회 에러:', error);
