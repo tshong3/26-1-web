@@ -35,7 +35,13 @@ router.post("/login", (req, res) => {
     if (!isMatch) return res.status(401).json({ message: "이메일 또는 비밀번호가 틀렸습니다." });
 
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.json({ message: "로그인 성공", token });
+    
+    // 로그인 성공 응답에 nickname 필드를 추가하여 유저의 이름을 함께 반환
+    res.json({ 
+      message: "로그인 성공", 
+      token, 
+      nickname: user.username 
+    });
   });
 });
 
