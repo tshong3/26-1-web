@@ -1,4 +1,3 @@
-// src/pages/RegisterPage.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/authService';
@@ -47,8 +46,8 @@ function RegisterPage() {
 
     setLoading(true);
     try {
-      await authService.register({ email, password, nickname });
-      alert('회원가입이 완료되었습니다! 로그인해 주세요.');
+      await authService.register({ email, password, username: nickname });
+      alert('회원가입이 완료되었습니다. 로그인해 주세요.');
       navigate('/login'); 
     } catch (error) {
       console.error('회원가입 에러:', error);
