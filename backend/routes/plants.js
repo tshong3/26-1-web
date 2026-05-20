@@ -21,15 +21,16 @@ router.get("/guide", async (req, res) => {
 // 내 화분 등록
 router.post("/register", authMiddleware, async (req, res) => {
     try {
-        const { plant_id, pot_id } = req.body;
+        const { pot_name, plant_id, pot_id } = req.body;
         const user_id = req.user.id;
 
         const [result] = await promiseDb.query(
             `UPDATE pot 
-            SET plant_id = ?, 
+            SET pot_name = ?,
+                plant_id = ?, 
                 user_id = ? 
             WHERE id = ?`,
-            [plant_id, user_id, pot_id]
+            [pot_name, plant_id, user_id, pot_id]
         );
 
         if (result.affectedRows === 0) {
