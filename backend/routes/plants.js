@@ -21,16 +21,15 @@ router.get("/guide", async (req, res) => {
 // 내 화분 등록
 router.post("/register", authMiddleware, async (req, res) => {
     try {
-        const { plant_id, pot_id, nickname } = req.body;
+        const { plant_id, pot_id } = req.body;
         const user_id = req.user.id;
 
         const [result] = await promiseDb.query(
             `UPDATE pot 
             SET plant_id = ?, 
-                nickname = ?, 
                 user_id = ? 
             WHERE id = ?`,
-            [plant_id, nickname, user_id, pot_id]
+            [plant_id, user_id, pot_id]
         );
 
         if (result.affectedRows === 0) {
@@ -56,7 +55,6 @@ router.get("/pots", authMiddleware, async (req, res) => {
             `SELECT 
                 pot.id,
                 pot.pot_name,
-                pot.nickname,
                 pot.device_id,
                 pot.last_ai_comment,
                 pot.created_at,
@@ -95,7 +93,6 @@ router.get("/pots/:potId", authMiddleware, async (req, res) => {
             `SELECT 
                 pot.id,
                 pot.pot_name,
-                pot.nickname,
                 pot.device_id,
                 pot.last_ai_comment,
                 pot.created_at,
@@ -132,17 +129,15 @@ router.put("/pots/:potId", authMiddleware, async (req, res) => {
     try {
         const user_id = req.user.id;
         const potId = Number(req.params.potId);
-        const { pot_name, nickname, plant_id } = req.body;
+        const { pot_name, plant_id } = req.body;
 
         const [result] = await promiseDb.query(
             `UPDATE pot 
             SET pot_name = COALESCE(?, pot_name),
-                nickname = COALESCE(?, nickname),
                 plant_id = COALESCE(?, plant_id)
             WHERE id = ? AND user_id = ?`,
             [
                 pot_name ?? null,
-                nickname ?? null,
                 plant_id ?? null,
                 potId,
                 user_id
