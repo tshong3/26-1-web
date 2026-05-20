@@ -49,7 +49,8 @@ function DashboardPage() {
 
   const handleAddPot = async (e) => {
     e.preventDefault();
-    if (!newDeviceId.trim() || newDeviceId.length < 4) return alert('올바른 등록 PIN을 입력해 주세요.');
+    if (!newPotName.trim()) return alert('화분 이름을 입력해 주세요.');
+    if (!newDeviceId.trim()) return alert('올바른 PIN을 입력해 주세요.');
     
     let finalPlantId = selectedPlantId;
     if (!finalPlantId) {
@@ -61,13 +62,18 @@ function DashboardPage() {
       }
     }
 
-    const result = await addPot({ potName: newPotName, plantId: finalPlantId, deviceId: newDeviceId });
+    const result = await addPot({ 
+      potName: newPotName, 
+      plantId: finalPlantId, 
+      deviceId: newDeviceId 
+    });
+
     if (result.success) {
-      alert('화분이 등록되었습니다!');
+      alert('화분이 등록되었어요.');
       setIsModalOpen(false);
       setNewPotName(''); setNewPlantName(''); setNewDeviceId(''); setSelectedPlantId(null);
     } else {
-      alert(result.message || '화분 등록에 실패했습니다.');
+      alert(result.message || '화분 등록에 실패했어요.');
     }
   };
 
@@ -78,17 +84,17 @@ function DashboardPage() {
       <div className="modal-overlay" onClick={() => { setIsModalOpen(false); setIsDropdownOpen(false); }}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
-            <h3>새로운 화분 등록</h3>
+            <h3>새 화분 등록</h3>
             <button className="close-btn" onClick={() => setIsModalOpen(false)}>✕</button>
           </div>
           <form onSubmit={handleAddPot} className="add-pot-form">
             <div className="input-group">
               <label>화분 이름</label>
-              <input type="text" placeholder="예: 안방 화분" value={newPotName} onChange={(e) => setNewPotName(e.target.value)} required />
+              <input type="text" placeholder="예: 거실 화분" value={newPotName} onChange={(e) => setNewPotName(e.target.value)} required />
             </div>
             
             <div className="input-group">
-              <label>식물 이름</label>
+              <label>식물 종류</label>
               <div className="autocomplete-wrapper">
                 <input 
                   type="text" placeholder="예: 장미" value={newPlantName} 
@@ -118,7 +124,7 @@ function DashboardPage() {
 
             <div className="input-group">
               <label>등록 PIN</label>
-              <input type="text" placeholder="아두이노 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
+              <input type="text" placeholder="기기 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
             </div>
             <button type="submit" className="btn-primary-large" style={{ width: '100%', marginTop: '16px' }}>
               등록하기
@@ -133,9 +139,9 @@ function DashboardPage() {
     return (
       <div className="dashboard-container empty-state" style={{ textAlign: 'center', minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
         <div className="empty-icon" style={{ fontSize: '60px', marginBottom: '20px' }}>🪴</div>
-        <h2 style={{ color: '#0f172a', margin: '0 0 16px 0' }}>등록된 화분이 없습니다</h2>
+        <h2 style={{ color: '#0f172a', margin: '0 0 16px 0' }}>등록된 화분이 없어요.</h2>
         <p style={{ color: '#64748b', margin: '0 0 30px 0' }}>
-          {nickname}님의 식물을 등록하고 스마트하게 관리해보세요!
+          {nickname}님의 식물을 등록하고 스마트하게 관리해보세요
         </p>
         <button className="btn-primary-large" onClick={() => setIsModalOpen(true)}>
           + 새 화분 등록하기
@@ -173,17 +179,27 @@ function DashboardPage() {
   const lightStatus = checkStatus(sensorData.illuminance, activePot.lightMin, activePot.lightMax);
   const waterStatus = getWaterLevelStatus(sensorData.waterLevel);
 
+  // 상태 도출 로직 (위험 > 주의 > 양호)
   const getOverallStatus = () => {
-    const hasDanger = [moistureStatus.status, tempStatus.status, humidityStatus.status, lightStatus.status, waterStatus.status].includes('danger');
-    const hasWarning = [moistureStatus.status, tempStatus.status, humidityStatus.status, lightStatus.status, waterStatus.status].includes('warning');
+    const statuses = [
+      moistureStatus.status,
+      tempStatus.status,
+      humidityStatus.status,
+      lightStatus.status,
+      waterStatus.status
+    ];
+
+    // 배열 내에 특정 상태가 하나라도 포함되어 있는지 확인
+    const hasDanger = statuses.includes('danger');
+    const hasWarning = statuses.includes('warning');
 
     if (hasDanger) {
-      return { text: '긴급 조치가 필요해요', type: 'danger', desc: '위험 범위(적정값 대비 오차 10 초과)를 이탈한 센서가 있습니다. 즉시 환경을 점검해 주세요.' };
+      return { text: '긴급 조치가 필요해요', type: 'danger', desc: '위험 표시가 뜨는 센서가 있어요. 즉시 식물의 환경을 점검해 주세요.' };
     }
     if (hasWarning) {
-      return { text: '주의 관리가 필요해요', type: 'warning', desc: '주의 범위(적정값 대비 오차 10 이내)에 진입한 수치가 있습니다. 지속적인 모니터링이 권장됩니다.' };
+      return { text: '주의가 필요해요', type: 'warning', desc: '주의 범위에 진입한 센서가 있어요. 지속적인 모니터링이 필요해요.' };
     }
-    return { text: '식물이 아주 잘 자라고 있어요', type: 'good', desc: '모든 환경 수치가 식물별 최적 영역에 존재합니다. 현재 완벽하게 관리되고 있습니다!' };
+    return { text: '식물이 잘 자라고 있어요', type: 'good', desc: '모든 수치가 양호해요. 식물이 잘 관리되고 있어요.' };
   };
 
   const overall = getOverallStatus();
@@ -213,12 +229,12 @@ function DashboardPage() {
           </div>
           <span className="plant-tag"><MdEco /> {activePot.plantType}</span>
         </div>
-        <p>화분의 실시간 상태를 확인하세요.</p>
+        <p>화분의 실시간 상태를 확인할 수 있어요</p>
       </div>
 
       <div className={`overall-status-banner ${overall.type}`}>
         <div className="status-info">
-          <h3>현재 상태: <strong>{overall.text}</strong></h3>
+          <h3>상태: <strong>{overall.text}</strong></h3>
           <p>{overall.desc}</p>
         </div>
       </div>
@@ -265,7 +281,7 @@ function DashboardPage() {
                 if (currentPotNotifications.length === 0) {
                   return (
                     <div className="ai-message-card empty">
-                      <p>현재 화분에는 분석된 알림이 없습니다.</p>
+                      <p>현재 분석된 알림이 없어요</p>
                     </div>
                   );
                 }
@@ -273,7 +289,6 @@ function DashboardPage() {
                 return currentPotNotifications.slice(0, 3).map((noti) => {
                   const style = getNotiStyle(noti.severity, noti.type);
                   
-                  // 타입들에 대한 제목 매핑
                   let notiTitle = '식물 건강 가이드';
                   if (noti.type === 'soil_moisture') notiTitle = '토양 수분 이상';
                   else if (noti.type === 'temperature') notiTitle = '온도 이상';

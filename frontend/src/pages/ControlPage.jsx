@@ -46,31 +46,31 @@ function ControlPage() {
       wateringDuration: duration,
     });
 
-    if(!activePotId) return alert('선택된 화분이 없습니다.');
+    if(!activePotId) return alert('선택된 화분이 없어요.');
 
     const result = await saveWateringSettings(activePotId);
-    if(result.success) alert('급수 설정이 저장되었습니다.');
-    else alert(result.message||'급수 설정 저장에 실패했습니다.');
+    if(result.success) alert('급수 설정이 저장되었어요.');
+    else alert(result.message||'급수 설정 저장에 실패했어요.');
   };
 
   const handleManualWatering = async() => {
-    if(!activePotId) return alert('선택된 화분이 없습니다.');
+    if(!activePotId) return alert('선택된 화분이 없어요.');
 
     updateControlSettings({wateringDuration: manualDuration});
 
     const result = await runManualWatering(activePotId);
     if(result.success){
-      alert(`수동 급수를 시작합니다.`);
+      alert(`수동 급수를 시작할게요.`);
       await fetchWateringLogs(activePotId);
       await fetchLatestSensorData(activePotId);
     }else{
-      alert(result.message||'수동 급수에 실패했습니다.')
+      alert(result.message||'수동 급수에 실패했어요.')
     }
   };
 
   const handleWaterRefill = () => {
     updateSensorData({ waterLevel: 100 });
-    alert('물탱크가 가득 채워졌습니다.');
+    alert('물탱크가 가득 채워졌어요.');
   };
 
   const handleDropdownChange = (e) => {
@@ -81,7 +81,8 @@ function ControlPage() {
 
   const handleAddPot = async (e) => {
     e.preventDefault();
-    if (!newDeviceId.trim() || newDeviceId.length < 4) return alert('올바른 등록 PIN(최소 4자리 이상)을 입력해 주세요.');
+    if (!newPotName.trim()) return alert('화분 이름을 입력해 주세요.');
+    if (!newDeviceId.trim()) return alert('올바른 PIN을 입력해 주세요.');
     
     let finalPlantId = selectedPlantId;
     if (!finalPlantId) {
@@ -89,17 +90,22 @@ function ControlPage() {
       if (exactMatch) {
         finalPlantId = exactMatch.id;
       } else {
-        return alert('목록에서 정확한 식물 종류를 선택해 주세요.');
+        return alert('식물 종류를 선택해 주세요.');
       }
     }
 
-    const result = await addPot({ potName: newPotName, plantId: finalPlantId, deviceId: newDeviceId });
+    const result = await addPot({ 
+      potName: newPotName, 
+      plantId: finalPlantId, 
+      deviceId: newDeviceId 
+    });
+
     if (result.success) {
-      alert('화분이 등록되었습니다!');
+      alert('화분이 등록되었어요.');
       setIsModalOpen(false);
       setNewPotName(''); setNewPlantName(''); setNewDeviceId(''); setSelectedPlantId(null);
     } else {
-      alert(result.message || '화분 등록에 실패했습니다.');
+      alert(result.message || '화분 등록에 실패했어요.');
     }
   };
 
@@ -110,17 +116,17 @@ function ControlPage() {
       <div className="modal-overlay" onClick={() => { setIsModalOpen(false); setIsDropdownOpen(false); }}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
-            <h3>새로운 화분 등록</h3>
+            <h3>새 화분 등록</h3>
             <button className="close-btn" onClick={() => setIsModalOpen(false)}>✕</button>
           </div>
           <form onSubmit={handleAddPot} className="add-pot-form">
             <div className="input-group">
               <label>화분 이름</label>
-              <input type="text" placeholder="예: 안방 화분" value={newPotName} onChange={(e) => setNewPotName(e.target.value)} required />
+              <input type="text" placeholder="예: 거실 화분" value={newPotName} onChange={(e) => setNewPotName(e.target.value)} required />
             </div>
             
             <div className="input-group">
-              <label>식물 이름</label>
+              <label>식물 종류</label>
               <div className="autocomplete-wrapper">
                 <input 
                   type="text" placeholder="예: 장미" value={newPlantName} 
@@ -149,8 +155,8 @@ function ControlPage() {
             </div>
 
             <div className="input-group">
-              <label>등록 PIN (기기 식별용)</label>
-              <input type="text" placeholder="아두이노 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
+              <label>등록 PIN</label>
+              <input type="text" placeholder="기기 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
             </div>
             <button type="submit" className="btn-primary-large" style={{ width: '100%', marginTop: '16px' }}>등록하기</button>
           </form>
@@ -183,9 +189,9 @@ function ControlPage() {
     return (
       <div className="control-container empty-state" style={{ textAlign: 'center', minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
         <div className="empty-icon" style={{ fontSize: '60px', marginBottom: '20px' }}>🪴</div>
-        <h2 style={{ color: '#0f172a', margin: '0 0 16px 0' }}>등록된 화분이 없습니다</h2>
+        <h2 style={{ color: '#0f172a', margin: '0 0 16px 0' }}>등록된 화분이 없어요</h2>
         <p style={{ color: '#64748b', margin: '0 0 30px 0' }}>
-          {nickname}님의 식물을 등록하고 스마트하게 관리해보세요!
+          {nickname}님의 식물을 등록하고 스마트하게 관리해보세요
         </p>
         <button className="btn-primary-large" onClick={() => setIsModalOpen(true)}>
           + 새 화분 등록하기
@@ -212,7 +218,7 @@ function ControlPage() {
           </div>
           <span className="plant-tag">🌿 {activePot.plantName || activePot.plantType}</span>
         </div>
-        <p>급수 시스템을 설정하고 수동으로 물을 줄 수 있습니다.</p>
+        <p>자동 급수를 설정하거나 수동 급수를 할 수 있어요</p>
       </div>
 
       <div className="control-panels-wrapper">
@@ -220,7 +226,7 @@ function ControlPage() {
           <div className="card-title-group">
             <h3>자동 급수</h3>
           </div>
-          <p className="card-desc" style={{ marginBottom: '24px' }}>식물의 상태와 시간에 맞춰 자동으로 물을 공급합니다.</p>
+          <p className="card-desc" style={{ marginBottom: '24px' }}>식물의 상태와 시간에 맞춰 자동으로 물을 공급해요</p>
 
           <div className={`inner-setting-card ${isAutoMode ? 'active' : ''}`}>
             <div className="inner-card-header">
@@ -228,7 +234,7 @@ function ControlPage() {
                 <span className="icon-circle auto-icon">🍃</span>
                 <div>
                   <h4>자동 급수 설정</h4>
-                  <p>토양 습도가 기준 이하일 때 자동으로 급수합니다.</p>
+                  <p>토양 습도가 기준 이하일 때 자동으로 급수해요</p>
                 </div>
               </div>
               <label className="toggle-switch">
@@ -253,7 +259,7 @@ function ControlPage() {
                 <span className="icon-circle schedule-icon">📅</span>
                 <div>
                   <h4>예약 급수 설정</h4>
-                  <p>정해진 주기와 시간에 맞춰 급수합니다.</p>
+                  <p>정해진 주기와 시간에 맞춰 급수해요</p>
                 </div>
               </div>
               <label className="toggle-switch">
@@ -273,7 +279,7 @@ function ControlPage() {
                       onChange={(e) => {
                         let val = e.target.value;
                         if (val.startsWith('0')) {
-                          setPeriodError('1부터 입력할 수 있습니다.');
+                          setPeriodError('1부터 입력할 수 있어요');
                           return;
                         }
                         setPeriodError('');
@@ -314,7 +320,7 @@ function ControlPage() {
                 <span className="icon-circle water-icon">💧</span>
                 <div>
                   <h4>1회 급수량 설정</h4>
-                  <p>급수 1회 실행 시 펌프 작동 시간을 설정합니다.</p>
+                  <p>급수 1회 실행 시 펌프 작동 시간을 설정하세요</p>
                 </div>
               </div>
             </div>
@@ -339,7 +345,7 @@ function ControlPage() {
               <h3>수동 급수</h3>
               <span className="badge">실행</span>
             </div>
-            <p className="card-desc">지금 바로 식물에 물을 공급합니다.</p>
+            <p className="card-desc">수동으로 급수를 할 수 있어요</p>
             <div className="setting-group highlight" style={{ marginBottom: '24px' }}>
               <div className="setting-header"><label>급수량 설정</label></div>
               <div className="input-row">
@@ -354,7 +360,7 @@ function ControlPage() {
             <div className="card-title-group">
               <h3>실시간 모니터링</h3>
             </div>
-            <p className="card-desc">수동 급수 전 현재 상태를 확인하세요.</p>
+            <p className="card-desc">수동 급수 전 현재 상태를 확인하세요</p>
             
             <div className="status-box">
               <div className="status-info-text">
@@ -370,7 +376,7 @@ function ControlPage() {
                 ></div>
               </div>
               <p className="status-hint">
-                {sensorData.soilMoisture < 30 ? '⚠️ 건조합니다. 물이 필요해요.' : '✅ 수분이 충분한 상태입니다.'}
+                {sensorData.soilMoisture < 30 ? '⚠️ 급수가 필요해요' : '✅ 수분이 충분한 상태에요'}
               </p>
             </div>
 
@@ -388,7 +394,7 @@ function ControlPage() {
                 ></div>
               </div>
               <p className="status-hint">
-                {sensorData.waterLevel <= 20 ? '⚠️ 물을 보충해 주세요.' : '✅ 펌프 작동이 가능합니다.'}
+                {sensorData.waterLevel <= 20 ? '⚠️ 물을 보충해 주세요' : '✅ 펌프 작동이 가능해요'}
               </p>
             </div>
 

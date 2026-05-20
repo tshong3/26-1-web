@@ -10,13 +10,9 @@ export const plantService = {
   },
 
   // 내 화분 등록
-  registerPot: async ({ plant_id, pot_id, nickname }) => {
-    const response = await api.post('/api/plants/register', {
-      plant_id,
-      pot_id,
-      nickname,
-    });
-    return response.data; 
+  registerPot: async (payload) => {
+    const response = await api.post('/api/plants/register', payload); 
+    return response.data;
   },
 
   // 내 화분 목록 조회

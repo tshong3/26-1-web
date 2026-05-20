@@ -55,7 +55,8 @@ function AnalysisPage() {
 
   const handleAddPot = async (e) => {
     e.preventDefault();
-    if (!newDeviceId.trim() || newDeviceId.length < 4) return alert('올바른 등록 PIN(최소 4자리 이상)을 입력해 주세요.');
+    if (!newPotName.trim()) return alert('화분 이름을 입력해 주세요.');
+    if (!newDeviceId.trim()) return alert('올바른 PIN을 입력해 주세요.');
     
     let finalPlantId = selectedPlantId;
     if (!finalPlantId) {
@@ -63,17 +64,22 @@ function AnalysisPage() {
       if (exactMatch) {
         finalPlantId = exactMatch.id;
       } else {
-        return alert('목록에서 정확한 식물 종류를 선택해 주세요.');
+        return alert('식물 종류를 선택해 주세요.');
       }
     }
 
-    const result = await addPot({ potName: newPotName, plantId: finalPlantId, deviceId: newDeviceId });
+    const result = await addPot({ 
+      potName: newPotName, 
+      plantId: finalPlantId, 
+      deviceId: newDeviceId 
+    });
+
     if (result.success) {
-      alert('화분이 등록되었습니다!');
+      alert('화분이 등록되었어요.');
       setIsModalOpen(false);
       setNewPotName(''); setNewPlantName(''); setNewDeviceId(''); setSelectedPlantId(null);
     } else {
-      alert(result.message || '화분 등록에 실패했습니다.');
+      alert(result.message || '화분 등록에 실패했어요.');
     }
   };
 
@@ -84,17 +90,17 @@ function AnalysisPage() {
       <div className="modal-overlay" onClick={() => { setIsModalOpen(false); setIsDropdownOpen(false); }}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
-            <h3>새로운 화분 등록</h3>
+            <h3>새 화분 등록</h3>
             <button className="close-btn" onClick={() => setIsModalOpen(false)}>✕</button>
           </div>
           <form onSubmit={handleAddPot} className="add-pot-form">
             <div className="input-group">
               <label>화분 이름</label>
-              <input type="text" placeholder="예: 안방 화분" value={newPotName} onChange={(e) => setNewPotName(e.target.value)} required />
+              <input type="text" placeholder="예: 거실 화분" value={newPotName} onChange={(e) => setNewPotName(e.target.value)} required />
             </div>
             
             <div className="input-group">
-              <label>식물 이름</label>
+              <label>식물 종류</label>
               <div className="autocomplete-wrapper">
                 <input 
                   type="text" placeholder="예: 장미" value={newPlantName} 
@@ -123,8 +129,8 @@ function AnalysisPage() {
             </div>
 
             <div className="input-group">
-              <label>등록 PIN (기기 식별용)</label>
-              <input type="text" placeholder="아두이노 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
+              <label>등록 PIN</label>
+              <input type="text" placeholder="기기 PIN 입력" value={newDeviceId} onChange={(e) => setNewDeviceId(e.target.value)} required />
             </div>
             <button type="submit" className="btn-primary-large" style={{ width: '100%', marginTop: '16px' }}>등록하기</button>
           </form>
@@ -149,8 +155,8 @@ function AnalysisPage() {
     return (
       <div className="analysis-container empty-state">
         <div className="empty-icon" style={{ fontSize: '60px', marginBottom: '20px' }}>🪴</div>
-        <h2 style={{ color: '#0f172a', margin: '0 0 16px 0' }}>등록된 화분이 없습니다</h2>
-        <p style={{ color: '#64748b', margin: '0 0 30px 0' }}>{nickname}님의 식물을 등록하고 스마트하게 관리해보세요!</p>
+        <h2 style={{ color: '#0f172a', margin: '0 0 16px 0' }}>등록된 화분이 없어요</h2>
+        <p style={{ color: '#64748b', margin: '0 0 30px 0' }}>{nickname}님의 식물을 등록하고 스마트하게 관리해보세요</p>
         <button className="btn-primary-large" onClick={() => setIsModalOpen(true)}>+ 새 화분 등록하기</button>
         {renderAddPotModal()}
       </div>

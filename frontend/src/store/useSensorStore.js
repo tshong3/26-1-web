@@ -78,11 +78,15 @@ const useSensorStore = create((set, get) => ({
 
   addPot: async ({ potName, plantId, deviceId }) => {
     try {
+      // 컴포넌트에서 넘어온 3가지 데이터를 백엔드와 맞게 포장
       const payload = {
         plant_id: parseInt(plantId),
-        pot_id: parseInt(deviceId),
-        nickname: potName
+        device_id: deviceId, 
+        pot_name: potName
       };
+
+      // 데이터가 잘 담겼는지 콘솔에서 확인
+      console.log("백엔드로 보낼 준비가 완료된 데이터:", payload);
 
       const res = await plantService.registerPot(payload);
       if (res.success) {
@@ -93,8 +97,7 @@ const useSensorStore = create((set, get) => ({
       }
     } catch (error) {
       console.error('화분 등록 에러:', error);
-      // 백엔드가 보내는 에러 원인을 화면에 띄움
-      const errorMessage = error.response?.data?.message || '화분 등록 중 오류가 발생했습니다.';
+      const errorMessage = error.response?.data?.message || '화분 등록 중 오류가 발생했어요.';
       return { success: false, message: errorMessage };
     }
   },
@@ -107,7 +110,7 @@ const useSensorStore = create((set, get) => ({
       const potsFromServer = res.data;
       const pots = potsFromServer.map((p) => ({
         id: p.id,
-        potName: p.pot_name || p.nickname || `화분 ${p.id}`,
+        potName: p.pot_name || p.nickname || `${p.plant_name || '식물'} (PIN: ${p.device_id})`,
         plantType: p.plant_name || '알 수 없음',
         pin: p.device_id || '',
         moistureMin: p.soil_moisture_min,
