@@ -21,31 +21,94 @@ router.get("/guide", async (req, res) => {
 // 내 화분 등록
 router.post("/register", authMiddleware, async (req, res) => {
     try {
-        const { pot_name, plant_id, pot_id } = req.body;
+        const { pot_name, plant_id, device_id } = req.body;
         const user_id = req.user.id;
 
-        const [result] = await promiseDb.query(
-            `UPDATE pot 
-            SET pot_name = ?,
-                plant_id = ?, 
-                user_id = ? 
-            WHERE id = ?`,
-            [pot_name, plant_id, user_id, pot_id]
-        );
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ success: false, message: "해당 화분(기기)을 찾을 수 없습니다." });
+        if (!pot_name || !plant_id || !device_id) {
+            return res.status(400).json({
+                success: false,
+                message: "pot_name, plant_id, device_id는 필수입니다."
+            });
         }
 
-        res.status(200).json({ 
+        // 같은 사용자가 이미 같은 화분 이름을 사용 중인지 확인
+        const [existingPotName] = await promiseDb.query(
+            `SELECT id 
+             FROM pot 
+             WHERE user_id = ? AND pot_name = ?`,
+            [user_id, pot_name]
+        );
+
+        if (existingPotName.length > 0) {
+            return res.status(409).json({
+                success: false,
+                message: "이미 사용 중인 화분 이름입니다."
+            });
+        }
+
+        // 같은 기기(device_id)가 이미 등록되어 있는지 확인
+        const [existingDevice] = await promiseDb.query(
+            `SELECT id 
+             FROM pot 
+             WHERE device_id = ?`,
+            [device_id]
+        );
+
+        if (existingDevice.length > 0) {
+            return res.status(409).json({
+                success: false,
+                message: "이미 등록된 기기입니다."
+            });
+        }
+
+        await promiseDb.query(
+            `INSERT INTO pot 
+            (pot_name, plant_id, user_id, device_id)
+            VALUES (?, ?, ?, ?)`,
+            [pot_name, plant_id, user_id, device_id]
+        );
+
+        res.status(201).json({
             success: true,
             message: "내 화분 등록 완료! AI가 식물 상태 분석을 시작합니다."
         });
+
     } catch (error) {
         console.error("화분 등록 오류:", error);
-        res.status(500).json({ success: false, message: "화분 등록 실패", error: error.message });
+        res.status(500).json({
+            success: false,
+            message: "화분 등록 실패",
+            error: error.message
+        });
     }
 });
+// router.post("/register", authMiddleware, async (req, res) => {
+//     try {
+//         const { pot_name, plant_id, pot_id } = req.body;
+//         const user_id = req.user.id;
+
+//         const [result] = await promiseDb.query(
+//             `UPDATE pot 
+//             SET pot_name = ?,
+//                 plant_id = ?, 
+//                 user_id = ? 
+//             WHERE id = ?`,
+//             [pot_name, plant_id, user_id, pot_id]
+//         );
+
+//         if (result.affectedRows === 0) {
+//             return res.status(404).json({ success: false, message: "해당 화분(기기)을 찾을 수 없습니다." });
+//         }
+
+//         res.status(200).json({ 
+//             success: true,
+//             message: "내 화분 등록 완료! AI가 식물 상태 분석을 시작합니다."
+//         });
+//     } catch (error) {
+//         console.error("화분 등록 오류:", error);
+//         res.status(500).json({ success: false, message: "화분 등록 실패", error: error.message });
+//     }
+// });
 
 // 내 화분 목록 조회
 router.get("/pots", authMiddleware, async (req, res) => {
