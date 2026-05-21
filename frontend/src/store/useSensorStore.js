@@ -6,15 +6,15 @@ import { sensorService } from '../services/sensorService';
 
 const useSensorStore = create((set, get) => ({
   // 로그인 및 유저 정보
-  isLoggedIn: !!localStorage.getItem('token'),
-  nickname: localStorage.getItem('nickname') || '',
+  isLoggedIn: !!sessionStorage.getItem('token'),
+  nickname: sessionStorage.getItem('nickname') || '',
 
   login: async (email, password) => {
     try {
       const data = await authService.login(email, password);
-      localStorage.setItem('token', data.token); 
-      const userNick = data.nickname || '가드너'; 
-      localStorage.setItem('nickname', userNick);
+      sessionStorage.setItem('token', data.token); 
+      const userNick = data.nickname || '농부'; 
+      sessionStorage.setItem('nickname', userNick);
       set({ isLoggedIn: true, nickname: userNick });
       return { success: true };
     } catch (error) {
@@ -27,8 +27,8 @@ const useSensorStore = create((set, get) => ({
     try { await authService.logout(); } 
     catch (error) { console.error('로그아웃 에러:', error); } 
     finally {
-      localStorage.removeItem('token');
-      localStorage.removeItem('nickname'); 
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('nickname'); 
       set({ isLoggedIn: false, nickname: '' });
     }
   },

@@ -9,7 +9,7 @@ const api = axios.create({
 
 // 요청 인터셉터: 토큰이 있으면 알아서 Authorization 헤더에 추가
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
