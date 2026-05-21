@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MdOutlineWaterDrop, MdOutlineEco, MdOutlineBolt, MdOutlineNotificationsActive } from "react-icons/md";
+import { MdOutlineWaterDrop, MdOutlineMonitor, MdOutlineBarChart, MdOutlineNotificationsActive, MdOutlineEco, MdOutlineBolt } from "react-icons/md";
+import mainLogo from '../assets/logo.png'; 
 import './HomePage.css';
 
 function HomePage() {
   const features = [
-    { id: 1, title: '스마트 자동 급수', desc: '토양 습도를 분석해 최적의 시점에 알아서 물을 줍니다. 장기 외출 시에도 안심하세요.', icon: <MdOutlineWaterDrop />, color: '#10b981', bg: '#ecfdf5' },
-    { id: 2, title: '실시간 환경 모니터링', desc: '온도, 습도, 조도 등 화분 주변의 모든 생육 데이터를 지연 없이 실시간으로 확인합니다.', icon: <MdOutlineBolt />, color: '#a855f7', bg: '#f3e8ff' },
-    { id: 3, title: 'AI 데이터 분석 및 진단', desc: '수집된 센서 데이터를 AI가 분석하여, 현재 식물 상태에 맞는 맞춤형 관리 가이드를 제공합니다.', icon: <MdOutlineEco />, color: '#f59e0b', bg: '#fef3c7' },
-    { id: 4, title: '이상 감지 스마트 알림', desc: '물탱크 수위가 낮아지거나 치명적인 환경 변화가 감지되면 즉시 알림을 보내드립니다.', icon: <MdOutlineNotificationsActive />, color: '#f43f5e', bg: '#ffe4e6' },
+    { id: 1, title: '실시간 환경 모니터링', desc: '온도, 습도 등 식물 주변의 환경 데이터를 실시간으로 확인해요', icon: <MdOutlineMonitor />, color: '#a855f7', bg: '#f3e8ff' },
+    { id: 2, title: 'AI 진단 및 스마트 알림', desc: '식물 상태를 AI가 점검하며 여러 정보를 알림으로 보내드려요', icon: <MdOutlineNotificationsActive />, color: '#f43f5e', bg: '#ffe4e6' },
+    { id: 3, title: '스마트 자동 급수', desc: '토양 습도를 분석하여 적절한 시점에 자동으로 물을 공급해요', icon: <MdOutlineWaterDrop />, color: '#3b82f6', bg: '#eff6ff' },
+    { id: 4, title: '직관적인 데이터 차트', desc: '기간별 환경 데이터를 차트로 제공하여 식물의 상태를 쉽게 파악할 수 있어요', icon: <MdOutlineBarChart />, color: '#f59e0b', bg: '#fef3c7' },
   ];
 
   const scrollToFeatures = (e) => {
@@ -28,11 +29,10 @@ function HomePage() {
               <span className="text-highlight-yellow">식물 키우기</span>
             </h1>
             <p className="hero-subtitle">
-              식물의 상태를 실시간으로 관찰하며 식물을 언제나 건강하게 유지합니다.
+              식물의 상태를 실시간으로 관찰하며 식물을 언제나 건강하게 유지헤요
             </p>
             
             <div className="hero-buttons">
-              {/* 시작하기 버튼을 로그인 페이지로 연결 */}
               <Link to="/login" className="btn-primary-large">시작하기</Link>
               <a onClick={scrollToFeatures} className="btn-secondary-large" style={{ cursor: 'pointer' }}>더 알아보기</a>
             </div>
@@ -83,7 +83,7 @@ function HomePage() {
         <section className="home-section feature-section">
           <div className="section-header text-center">
             <h2>모든 것을 알아서, 스마트하게</h2>
-            <p>식물 초보자도 전문가처럼 키울 수 있는 유용한 기능들을 소개할게요</p>
+            <p>식물 초보자도 전문가처럼 키울 수 있는 유용한 기능들을 제공해요</p>
           </div>
           
           <div className="feature-grid">
@@ -104,18 +104,22 @@ function HomePage() {
         <section className="cta-section modern-cta">
           <div className="cta-content">
             <h2>지금 식물을 등록하고 바로 시작해 보세요</h2>
-            <p>쉽고 재미있게 식물을 키울 수 있습니다.</p>
+            <p>쉽고 재미있게 식물을 키울 수 있어요</p>
           </div>
           <Link to="/login" className="btn-primary-large shadow-glow">시작하기</Link>
         </section>
       </div>
 
       <footer className="home-footer">
-        <div className="footer-logo">
-          <span className="logo-icon">🌱</span>
+        <div className="footer-logo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <img 
+            src={mainLogo} 
+            alt="식물 키우기 footer 로고" 
+            style={{ width: '24px', height: '24px', objectFit: 'contain' }} 
+          />
           <span className="logo-text-light">식물 키우기</span>
         </div>
-        <p className="copyright">© 2026 Smart Home Gardening System. All rights reserved.</p>
+        <p className="copyright">© 2026 농부들. All rights reserved.</p>
       </footer>
     </div>
   );

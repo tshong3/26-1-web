@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { MdLogout, MdNotifications, MdNotificationsNone } from "react-icons/md"; 
 import useSensorStore from '../store/useSensorStore';
 import useNotificationStore from '../store/useNotificationStore'; 
+import mainLogo from '../assets/logo.png'; 
 import './Header.css';
 
 const timeAgo = (dateString) => {
@@ -101,7 +102,12 @@ function Header() {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
         >
-          <span className="logo-icon">🌱</span>
+          <img 
+            src={mainLogo} 
+            alt="식물 키우기 로고" 
+            className="main-logo-icon" 
+            style={{ width: '32px', height: '32px', objectFit: 'contain' }} 
+          />
           <h1 className="logo-text">식물 키우기</h1>
         </Link>
       </div>

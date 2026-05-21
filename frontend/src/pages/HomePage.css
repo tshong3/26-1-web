@@ -169,31 +169,33 @@ html {
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
 
 /* 기능 소개 섹션 */
-.feature-bg-wrapper { background-color: #f8fafc; padding-bottom: 60px; }
-.home-section { max-width: 1200px; margin: 0 auto; padding: 100px 20px; }
-.text-center { text-align: center; margin-bottom: 70px; }
-.text-center h2 { font-size: 34px; color: #0f172a; margin: 0 0 16px 0; font-weight: 800; }
+.feature-bg-wrapper { background-color: #f8fafc; padding-bottom: 20px; }
+.home-section { max-width: 1200px; margin: 0 auto; padding: 60px 20px 20px; }
+.text-center { text-align: center; margin-bottom: 30px; }
+.text-center h2 { font-size: 34px; color: #0f172a; margin: 0 0 12px 0; font-weight: 800; }
 .text-center p { font-size: 18px; color: #64748b; }
 
 .feature-grid { 
   display: grid; 
   grid-template-columns: repeat(2, 1fr); 
-  gap: 40px;
+  gap: 24px;
   max-width: 1100px;
   margin: 0 auto;
 }
 
-.glass-card { background: white; border: none; border-radius: 24px; padding: 40px 32px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.glass-card { background: white; border: none; border-radius: 24px; padding: 32px 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .glass-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
-.feature-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; justify-content: center; align-items: center; font-size: 28px; margin-bottom: 24px; }
-.feature-title { font-size: 20px; color: #0f172a; margin: 0 0 12px 0; font-weight: 700; }
-.feature-desc { font-size: 15px; color: #64748b; line-height: 1.6; margin: 0; }
+.feature-icon { width: 52px; height: 52px; border-radius: 16px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 20px; }
+.feature-title { font-size: 20px; color: #0f172a; margin: 0 0 10px 0; font-weight: 700; }
+.feature-desc { font-size: 15px; color: #64748b; line-height: 1.5; margin: 0; }
 
-.cta-wrapper { padding: 80px 20px; background-color: #f8fafc; }
-.modern-cta { max-width: 1200px; margin: 0 auto; background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 60px; border-radius: 32px; display: flex; align-items: center; justify-content: space-between; color: white; box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2); }
-.cta-content h2 { font-size: 32px; margin: 0 0 12px 0; font-weight: 800; }
-.cta-content p { font-size: 18px; opacity: 0.9; margin: 0; }
-.shadow-glow { background-color: white; color: #064e3b; padding: 20px 40px; }
+/* 시작하기 CTA 영역 */
+.cta-wrapper { padding: 20px 20px 60px; background-color: #f8fafc; }
+.modern-cta { max-width: 1200px; margin: 0 auto; background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 50px; border-radius: 32px; display: flex; align-items: center; justify-content: space-between; color: white; box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2); }
+.cta-content h2 { font-size: 30px; margin: 0 0 10px 0; font-weight: 800; }
+.cta-content p { font-size: 17px; opacity: 0.9; margin: 0; }
+.shadow-glow { background-color: white; color: #064e3b; padding: 16px 36px; }
+
 .home-footer { background-color: #0f172a; color: #94a3b8; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .footer-logo { display: flex; align-items: center; gap: 8px; }
 .logo-text-light { font-size: 18px; font-weight: bold; color: white; }
