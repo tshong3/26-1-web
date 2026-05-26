@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import useSensorStore from '../store/useSensorStore'; 
+import mainLogo from '../assets/logo.png'; 
 import './LoginPage.css';
 
 function LoginPage() {
@@ -8,8 +9,17 @@ function LoginPage() {
   const { login } = useSensorStore(); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [saveId, setSaveId] = useState(false); 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '' });
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('savedEmail');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setSaveId(true);
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,6 +46,11 @@ function LoginPage() {
     setLoading(false); 
 
     if (result.success) {
+      if (saveId) {
+        localStorage.setItem('savedEmail', email);
+      } else {
+        localStorage.removeItem('savedEmail');
+      }
       navigate('/dashboard'); 
     } else {
       alert(result.message);
@@ -47,9 +62,13 @@ function LoginPage() {
       <div className="login-box">
         <div className="login-header">
           <div className="login-logo">
-            <span className="logo-icon-large">🌱</span>
+            <img 
+              src={mainLogo} 
+              alt="식물 키우기 로고" 
+              style={{ width: '56px', height: '56px', objectFit: 'contain' }} 
+            />
           </div>
-          <h2>식물 키우기</h2>
+          <h2>로그인</h2>
           <p>쉽고 편리한 식물 관리 시스템</p>
         </div>
 
@@ -88,19 +107,28 @@ function LoginPage() {
 
           <div className="login-options">
             <label className="remember-me">
-              <input type="checkbox" /> 자동 로그인
+              <input 
+                type="checkbox" 
+                checked={saveId}
+                onChange={(e) => setSaveId(e.target.checked)}
+              /> 이메일 저장
             </label>
-            <span className="forgot-password">비밀번호 찾기</span>
+            <span 
+              className="forgot-password" 
+              onClick={() => alert('준비 중')}
+            >
+              비밀번호 찾기
+            </span>
           </div>
 
           <button type="submit" className="btn-login-submit" disabled={loading}>
-            {loading ? '로그인 중...' : '로그인'}
+            {loading ? '로그인' : '로그인'}
           </button>
         </form>
 
         <div className="signup-link-box">
           계정이 없으신가요?
-          <Link to="/register" className="signup-link">계정 만들기</Link>
+          <Link to="/register" className="signup-link">회원가입</Link>
         </div>
       </div>
     </div>

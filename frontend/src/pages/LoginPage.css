@@ -11,7 +11,7 @@
   background-color: white;
   width: 100%;
   max-width: 400px;
-  padding: 40px;
+  padding: 30px;
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
   border: 1px solid #eaeaea;
@@ -19,7 +19,7 @@
 
 .login-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 
 .login-logo {
@@ -28,50 +28,45 @@
   align-items: center;
   width: 64px;
   height: 64px;
-  background-color: #ecfdf5;
   border-radius: 16px;
-  margin-bottom: 16px;
-}
-
-.logo-icon-large {
-  font-size: 32px;
+  margin-bottom: 12px;
 }
 
 .login-header h2 {
-  margin: 0 0 8px 0;
-  font-size: 24px;
+  margin: 0 0 6px 0;
+  font-size: 22px;
   color: #222;
 }
 
 .login-header p {
   margin: 0;
   color: #666;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
 }
 
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .input-group label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #333;
 }
 
 .input-group input {
-  padding: 14px 16px;
+  padding: 12px 14px;
   border: 1px solid #ddd;
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 14px;
   transition: border-color 0.2s;
 }
 
@@ -84,8 +79,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 13px;
-  margin-bottom: 10px;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 8px;
 }
 
 .remember-me {
@@ -106,12 +102,13 @@
   background-color: #10b981;
   color: white;
   border: none;
-  padding: 16px;
+  padding: 14px;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s;
+  margin-top: 4px;
 }
 
 .btn-login-submit:hover {
@@ -119,9 +116,9 @@
 }
 
 .signup-link-box {
-  margin-top: 30px;
+  margin-top: 20px;
   text-align: center;
-  font-size: 14px;
+  font-size: 13px;
   color: #666;
 }
 
@@ -130,6 +127,7 @@
   font-weight: bold;
   cursor: pointer;
   margin-left: 4px;
+  text-decoration: none;
 }
 
 .input-group input.error-border {
@@ -141,6 +139,6 @@
   color: #ef4444;
   font-size: 12px;
   font-weight: 500;
-  margin-top: 1px;
+  margin-top: 2px;
   display: block;
 }

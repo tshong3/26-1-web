@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/authService';
+import mainLogo from '../assets/logo.png'; 
 import './LoginPage.css';
 
 function RegisterPage() {
@@ -20,22 +21,22 @@ function RegisterPage() {
 
     // 각 칸별 에러 검증 로직
     if (!nickname) {
-      newErrors.nickname = '닉네임을 입력하세요.';
+      newErrors.nickname = '닉네임을 입력하세요';
       hasError = true;
     }
     if (!email) {
-      newErrors.email = '이메일을 입력하세요.';
+      newErrors.email = '이메일을 입력하세요';
       hasError = true;
     }
     if (!password) {
-      newErrors.password = '비밀번호를 입력하세요.';
+      newErrors.password = '비밀번호를 입력하세요';
       hasError = true;
     }
     if (!passwordConfirm) {
-      newErrors.passwordConfirm = '비밀번호를 한 번 더 입력하세요.';
+      newErrors.passwordConfirm = '비밀번호를 입력하세요';
       hasError = true;
     } else if (password !== passwordConfirm) {
-      newErrors.passwordConfirm = '비밀번호가 일치하지 않습니다.';
+      newErrors.passwordConfirm = '비밀번호가 일치하지 않아요';
       hasError = true;
     }
 
@@ -62,7 +63,11 @@ function RegisterPage() {
       <div className="login-box">
         <div className="login-header">
           <div className="login-logo">
-            <span className="logo-icon-large">🌱</span>
+            <img 
+              src={mainLogo} 
+              alt="식물 키우기 로고" 
+              style={{ width: '56px', height: '56px', objectFit: 'contain' }} 
+            />
           </div>
           <h2>회원가입</h2>
           <p>식물 키우기에 오신 것을 환영합니다</p>
@@ -134,12 +139,12 @@ function RegisterPage() {
           </div>
 
           <button type="submit" className="btn-login-submit" disabled={loading}>
-            {loading ? '가입 처리 중...' : '회원가입 완료'}
+            {loading ? '회원가입' : '회원가입'}
           </button>
         </form>
 
         <div className="signup-link-box">
-          이미 계정이 있으신가요? <Link to="/login" className="signup-link">로그인하기</Link>
+          이미 계정이 있으신가요? <Link to="/login" className="signup-link">로그인</Link>
         </div>
       </div>
     </div>
