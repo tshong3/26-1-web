@@ -227,7 +227,7 @@ function DashboardPage() {
             </select>
             <MdKeyboardArrowDown className="dropdown-arrow-icon" />
           </div>
-          <span className="plant-tag"><MdEco /> {activePot.plantType}</span>
+          <span className="plant-tag">🪴 {activePot.plantType}</span>
         </div>
         <p>화분의 실시간 상태를 확인할 수 있어요</p>
       </div>

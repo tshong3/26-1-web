@@ -172,6 +172,21 @@
 
 .input-with-text.large input { width: 100px; padding: 14px; font-size: 18px; }
 
+
+.manual-input-wrapper { display: flex; align-items: center; gap: 10px; }
+.manual-input-wrapper input {
+  width: 60px;
+  padding: 10px; 
+  border: 1px solid #ddd; 
+  border-radius: 8px;
+  font-size: 15px; 
+  text-align: center; 
+  color: #111; 
+  font-weight: 600; 
+  outline: none;
+}
+.manual-input-wrapper input:focus { border-color: #3b82f6; }
+
 .inner-card-content input[type="time"] {
   padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px;
   font-size: 15px; color: #333; outline: none; background-color: #f9fafb;
@@ -254,18 +269,25 @@
 .slider.round:before { border-radius: 50%; }
 
 .btn-save {
-  width: 100%; padding: 18px; background-color: #10b981; color: white; border: none;
-  border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s;
+  width: 100%; padding: 14px; background-color: white; color: #10b981; border: 1px solid #10b981;
+  border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;
   display: flex; justify-content: center; align-items: center; margin-top: auto; 
 }
-.btn-save:hover { background-color: #059669; }
+.btn-save:hover { background-color: #ecfdf5; transform: translateY(-1px); }
 
 .btn-water-now {
-  width: 100%; padding: 24px; background-color: #111; color: white; border: none;
-  border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex;
-  justify-content: center; align-items: center; gap: 12px; transition: all 0.2s;
+  width: 100%; padding: 14px; background-color: white; color: #10b981; border: 1px solid #10b981;
+  border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex;
+  justify-content: center; align-items: center; gap: 8px; transition: all 0.2s;
 }
-.btn-water-now:hover { background-color: #333; transform: translateY(-2px); }
+.btn-water-now:hover { background-color: #ecfdf5; transform: translateY(-1px); }
+
+.btn-refill {
+  width: 100%; padding: 14px; background-color: white; color: #10b981; border: 1px solid #10b981;
+  border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex;
+  justify-content: center; align-items: center; gap: 8px; transition: all 0.2s; margin-top: 20px;
+}
+.btn-refill:hover { background-color: #ecfdf5; transform: translateY(-1px); }
 
 .setting-group { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f0f0f0; }
 .setting-group.highlight { background-color: #f8f9fa; padding: 20px; border-radius: 12px; border-bottom: none; }
@@ -301,13 +323,6 @@
 .status-progress-fill.danger { background-color: #ef4444; } 
 
 .status-hint { font-size: 12px; color: #64748b; margin: 0; }
-
-.btn-refill {
-  width: 100%; padding: 14px; background-color: white; color: #3b82f6; border: 1px solid #3b82f6;
-  border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex;
-  justify-content: center; align-items: center; gap: 8px; transition: all 0.2s; margin-top: 20px;
-}
-.btn-refill:hover { background-color: #eff6ff; transform: translateY(-1px); }
 
 @media (max-width: 768px) {
   .control-panels-wrapper { grid-template-columns: 1fr; }
@@ -391,7 +406,6 @@
 
 .input-group input:focus { border-color: #10b981; }
 
-/* 식물 이름 자동완성 드롭다운 스타일 */
 .autocomplete-wrapper {
   position: relative;
   width: 100%;

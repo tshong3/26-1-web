@@ -56,7 +56,12 @@ function ControlPage() {
   const handleManualWatering = async() => {
     if(!activePotId) return alert('선택된 화분이 없어요.');
 
-    updateControlSettings({wateringDuration: manualDuration});
+    const durationVal = Number(manualDuration);
+    if (durationVal <= 0 || isNaN(durationVal)) {
+      return alert('급수 시간은 1초 이상으로 설정해 주세요.');
+    }
+
+    updateControlSettings({wateringDuration: durationVal});
 
     const result = await runManualWatering(activePotId);
     if(result.success){
@@ -216,9 +221,9 @@ function ControlPage() {
             </select>
             <MdKeyboardArrowDown className="dropdown-arrow-icon" />
           </div>
-          <span className="plant-tag">🌿 {activePot.plantName || activePot.plantType}</span>
+          <span className="plant-tag">🪴 {activePot.plantName || activePot.plantType}</span>
         </div>
-        <p>자동 급수를 설정하거나 수동 급수를 할 수 있어요</p>
+        <p>급수에 대한 설정을 할 수 있어요</p>
       </div>
 
       <div className="control-panels-wrapper">
@@ -319,7 +324,7 @@ function ControlPage() {
               <div className="inner-title-area">
                 <span className="icon-circle water-icon">💧</span>
                 <div>
-                  <h4>1회 급수량 설정</h4>
+                  <h4>1회 급수 시간 설정</h4>
                   <p>급수 1회 실행 시 펌프 작동 시간을 설정하세요</p>
                 </div>
               </div>
@@ -335,7 +340,7 @@ function ControlPage() {
           </div>
 
           <button className="btn-save" onClick={handleSaveSettings}>
-            <span style={{ marginRight: '6px' }}>💧</span> 저장
+            저장
           </button>
         </div>
 
@@ -343,17 +348,16 @@ function ControlPage() {
           <div className="control-card manual-card">
             <div className="card-title-group">
               <h3>수동 급수</h3>
-              <span className="badge">실행</span>
             </div>
             <p className="card-desc">수동으로 급수를 할 수 있어요</p>
             <div className="setting-group highlight" style={{ marginBottom: '24px' }}>
-              <div className="setting-header"><label>급수량 설정</label></div>
-              <div className="input-row">
-                <input type="number" value={manualDuration} onChange={(e) => setManualDuration(Number(e.target.value))} min="1" />
+              <div className="setting-header"><label>급수 시간 설정</label></div>
+              <div className="input-row manual-input-wrapper">
+                <input type="number" value={manualDuration} onChange={(e) => setManualDuration(e.target.value)} min="1" />
                 <span>초 동안 펌프 가동</span>
               </div>
             </div>
-            <button className="btn-water-now" onClick={handleManualWatering}><MdWaterDrop /> 급수 시작</button>
+            <button className="btn-water-now" onClick={handleManualWatering}>급수 시작</button>
           </div>
 
           <div className="control-card status-card">
@@ -398,9 +402,7 @@ function ControlPage() {
               </p>
             </div>
 
-            <button className="btn-refill" onClick={handleWaterRefill}>
-              <MdOutlineSettingsBackupRestore /> 물 보충 완료
-            </button>
+            <button className="btn-refill" onClick={handleWaterRefill}>물 보충 완료</button>
           </div>
         </div>
 

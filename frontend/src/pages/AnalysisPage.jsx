@@ -180,7 +180,7 @@ function AnalysisPage() {
               </select>
               <MdKeyboardArrowDown className="dropdown-arrow-icon" />
             </div>
-            <span className="plant-tag">📊 {activePot.plantName || activePot.plantType}</span>
+            <span className="plant-tag">🪴 {activePot.plantName || activePot.plantType}</span>
           </div>
           <p>식물의 상태 변화를 확인할 수 있어요</p>
         </div>
