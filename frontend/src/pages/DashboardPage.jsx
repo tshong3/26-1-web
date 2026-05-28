@@ -189,7 +189,6 @@ function DashboardPage() {
       waterStatus.status
     ];
 
-    // 배열 내에 특정 상태가 하나라도 포함되어 있는지 확인
     const hasDanger = statuses.includes('danger');
     const hasWarning = statuses.includes('warning');
 
@@ -271,7 +270,7 @@ function DashboardPage() {
         <div className="ai-alert-panel">
           <h3 className="panel-title">AI 스마트 알림</h3>
           
-          <div className="ai-messages-container">
+          <div className="ai-messages-container" style={{ maxHeight: '430px', overflowY: 'auto', paddingRight: '10px' }}>
             {loading && notifications.length === 0 ? (
               <p className="loading-text">알림 분석 중...</p>
             ) : (
@@ -286,7 +285,7 @@ function DashboardPage() {
                   );
                 }
 
-                return currentPotNotifications.slice(0, 3).map((noti) => {
+                return currentPotNotifications.map((noti) => {
                   const style = getNotiStyle(noti.severity, noti.type);
                   
                   let notiTitle = '식물 건강 가이드';
@@ -304,7 +303,8 @@ function DashboardPage() {
                         opacity: noti.is_read ? 0.6 : 1, 
                         cursor: noti.is_read ? 'default' : 'pointer',
                         transition: 'opacity 0.3s',
-                        position: 'relative'
+                        position: 'relative',
+                        marginBottom: '12px'
                       }}
                       onClick={() => {
                         if (!noti.is_read) {
