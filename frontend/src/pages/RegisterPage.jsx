@@ -79,7 +79,7 @@ function RegisterPage() {
             <input 
               type="text" 
               className={errors.nickname ? 'error-border' : ''}
-              placeholder="사용할 닉네임을 입력하세요" 
+              placeholder="사용하실 닉네임을 입력하세요" 
               value={nickname}
               onChange={(e) => {
                 setNickname(e.target.value);
@@ -91,7 +91,7 @@ function RegisterPage() {
           </div>
 
           <div className="input-group">
-            <label>이메일</label>
+            <label>아이디</label>
             <input 
               type="email" 
               className={errors.email ? 'error-border' : ''}

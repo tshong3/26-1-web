@@ -74,7 +74,7 @@ function LoginPage() {
 
         <form className="login-form" onSubmit={handleLogin}>
           <div className="input-group">
-            <label>이메일</label>
+            <label>아이디</label>
             <input 
               type="email" 
               className={errors.email ? 'error-border' : ''}
@@ -111,14 +111,8 @@ function LoginPage() {
                 type="checkbox" 
                 checked={saveId}
                 onChange={(e) => setSaveId(e.target.checked)}
-              /> 이메일 저장
+              /> 아이디 저장
             </label>
-            <span 
-              className="forgot-password" 
-              onClick={() => alert('준비 중')}
-            >
-              비밀번호 찾기
-            </span>
           </div>
 
           <button type="submit" className="btn-login-submit" disabled={loading}>
