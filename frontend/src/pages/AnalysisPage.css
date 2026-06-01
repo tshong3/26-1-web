@@ -14,19 +14,19 @@
 .analysis-title-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 8px; 
+  gap: 8px;
 }
 
 .header-title-group {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 8px; 
+  margin-bottom: 0;
 }
 
 .analysis-header p { 
   color: #666; 
-  margin: 16px 0 0 0; 
+  margin: 0; 
 }
 
 .custom-select-wrapper {

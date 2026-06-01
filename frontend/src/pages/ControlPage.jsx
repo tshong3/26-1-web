@@ -208,6 +208,29 @@ function ControlPage() {
 
   const activePot = potList.find(p => p.id === activePotId) || potList[0];
 
+  const checkStatus = (value, min, max) => {
+    if (min === null || max === null || value === null || value === undefined) {
+      return { status: 'normal' }; 
+    }
+    const val = Number(value);
+    if (val >= min && val <= max) {
+      return { status: 'normal' };
+    }
+    if (val < min - 10 || val > max + 10) {
+      return { status: 'danger' };
+    }
+    return { status: 'warning' };
+  };
+
+  const getWaterLevelStatus = (value) => {
+    if (value <= 10) return { status: 'danger' };
+    if (value <= 20) return { status: 'warning' };
+    return { status: 'normal' };
+  };
+
+  const moistureStatus = checkStatus(sensorData.soilMoisture, activePot.moistureMin, activePot.moistureMax);
+  const waterStatus = getWaterLevelStatus(sensorData.waterLevel);
+
   return (
     <div className="control-container">
       <div className="dashboard-header flex-header">
@@ -366,39 +389,41 @@ function ControlPage() {
             </div>
             <p className="card-desc">수동 급수 전 현재 상태를 확인하세요</p>
             
+            {/* 💡 JSX 부분에서 하드코딩을 제거하고, 상태(status) 값에 맞게 클래스가 부여되도록 수정했습니다. */}
             <div className="status-box">
               <div className="status-info-text">
                 <span>토양 습도</span>
-                <span className={`status-percent ${sensorData.soilMoisture < 30 ? 'danger' : 'moisture'}`}>
+                <span className={`status-percent ${moistureStatus.status === 'danger' ? 'danger' : moistureStatus.status === 'warning' ? 'warning' : 'moisture'}`}>
                   {sensorData.soilMoisture}%
                 </span>
               </div>
               <div className="status-progress-bar">
                 <div 
-                  className={`status-progress-fill ${sensorData.soilMoisture < 30 ? 'danger' : 'moisture'}`} 
+                  className={`status-progress-fill ${moistureStatus.status === 'danger' ? 'danger' : moistureStatus.status === 'warning' ? 'warning' : 'moisture'}`} 
                   style={{ width: `${sensorData.soilMoisture}%` }}
                 ></div>
               </div>
               <p className="status-hint">
-                {sensorData.soilMoisture < 30 ? '⚠️ 급수가 필요해요' : '✅ 수분이 충분한 상태에요'}
+                {moistureStatus.status === 'normal' ? '✅ 적정 습도입니다' : '⚠️ 습도 조절이 필요해요'}
               </p>
             </div>
 
+            {/* 💡 물탱크 수위 부분도 동일하게 수정했습니다. */}
             <div className="status-box">
               <div className="status-info-text">
                 <span>물탱크 수위</span>
-                <span className={`status-percent ${sensorData.waterLevel <= 20 ? 'danger' : 'water'}`}>
+                <span className={`status-percent ${waterStatus.status === 'danger' ? 'danger' : waterStatus.status === 'warning' ? 'warning' : 'water'}`}>
                   {sensorData.waterLevel}%
                 </span>
               </div>
               <div className="status-progress-bar">
                 <div 
-                  className={`status-progress-fill ${sensorData.waterLevel <= 20 ? 'danger' : 'water'}`} 
+                  className={`status-progress-fill ${waterStatus.status === 'danger' ? 'danger' : waterStatus.status === 'warning' ? 'warning' : 'water'}`} 
                   style={{ width: `${sensorData.waterLevel}%` }}
                 ></div>
               </div>
               <p className="status-hint">
-                {sensorData.waterLevel <= 20 ? '⚠️ 물을 보충해 주세요' : '✅ 펌프 작동이 가능해요'}
+                {waterStatus.status === 'normal' ? '✅ 펌프 작동이 가능해요' : '⚠️ 물을 보충해 주세요'}
               </p>
             </div>
 
