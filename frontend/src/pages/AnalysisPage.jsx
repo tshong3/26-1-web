@@ -140,7 +140,6 @@ function AnalysisPage() {
   );
 
   const getChartInfo = () => {
-    // 💡 선택된 화분(activePot)의 설정값을 우선적으로 사용합니다.
     const pot = potList.find(p => p.id === activePotId);
     
     if (!pot) return { title: '통합 센서 데이터', safeMin: null, safeMax: null, unit: '' };

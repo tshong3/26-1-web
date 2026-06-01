@@ -389,7 +389,6 @@ function ControlPage() {
             </div>
             <p className="card-desc">수동 급수 전 현재 상태를 확인하세요</p>
             
-            {/* 💡 JSX 부분에서 하드코딩을 제거하고, 상태(status) 값에 맞게 클래스가 부여되도록 수정했습니다. */}
             <div className="status-box">
               <div className="status-info-text">
                 <span>토양 습도</span>
@@ -408,7 +407,6 @@ function ControlPage() {
               </p>
             </div>
 
-            {/* 💡 물탱크 수위 부분도 동일하게 수정했습니다. */}
             <div className="status-box">
               <div className="status-info-text">
                 <span>물탱크 수위</span>
