@@ -193,12 +193,12 @@ function DashboardPage() {
     const hasWarning = statuses.includes('warning');
 
     if (hasDanger) {
-      return { text: '긴급 조치가 필요해요', type: 'danger', desc: '위험 표시가 뜨는 센서가 있어요. 즉시 식물의 환경을 점검해 주세요.' };
+      return { text: '위험', type: 'danger', desc: '위험 표시가 뜨는 센서가 있어요. 즉시 식물의 환경을 점검해 주세요.' };
     }
     if (hasWarning) {
-      return { text: '주의가 필요해요', type: 'warning', desc: '주의 범위에 진입한 센서가 있어요. 지속적인 모니터링이 필요해요.' };
+      return { text: '주의', type: 'warning', desc: '주의 범위에 진입한 센서가 있어요. 지속적인 모니터링이 필요해요.' };
     }
-    return { text: '식물이 잘 자라고 있어요', type: 'good', desc: '모든 수치가 양호해요. 식물이 잘 관리되고 있어요.' };
+    return { text: '양호', type: 'good', desc: '모든 수치가 양호해요. 식물이 잘 관리되고 있어요.' };
   };
 
   const overall = getOverallStatus();
