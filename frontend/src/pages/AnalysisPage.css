@@ -11,11 +11,22 @@
   margin-bottom: 30px;
 }
 
+.analysis-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; 
+}
+
 .header-title-group {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 8px; 
+}
+
+.analysis-header p { 
+  color: #666; 
+  margin: 16px 0 0 0; 
 }
 
 .custom-select-wrapper {
@@ -65,8 +76,6 @@
   align-items: center;
   gap: 4px;
 }
-
-.analysis-header p { color: #666; margin: 0; }
 
 .refresh-btn {
   display: flex;
@@ -245,7 +254,6 @@
 
 .input-group input:focus { border-color: #10b981; }
 
-/* 식물 이름 자동완성 드롭다운 스타일 */
 .autocomplete-wrapper {
   position: relative;
   width: 100%;

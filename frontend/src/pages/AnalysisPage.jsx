@@ -22,7 +22,7 @@ function AnalysisPage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedPlantId, setSelectedPlantId] = useState(null);
 
-  const [activeTab, setActiveTab] = useState('moisture'); 
+  const [activeTab, setActiveTab] = useState('all'); 
   const [timeRange, setTimeRange] = useState('hour'); 
   
   const [chartData, setChartData] = useState([]); 
@@ -169,7 +169,7 @@ function AnalysisPage() {
     <div className="analysis-container">
       
       <div className="analysis-header">
-        <div>
+        <div className="analysis-title-wrapper">
           <div className="header-title-group">
             <div className="custom-select-wrapper">
               <select className="pot-dropdown" value={activePot.id} onChange={handleDropdownChange}>
@@ -216,21 +216,59 @@ function AnalysisPage() {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eaeaea" />
-              <XAxis dataKey="label" tick={{ fill: '#888', fontSize: 12 }} tickMargin={10} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#888', fontSize: 12 }} axisLine={false} tickLine={false} domain={['dataMin - 10', 'dataMax + 10']} />
-              <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} itemStyle={{ fontWeight: 'bold' }} />
+              <XAxis dataKey="label" tick={{ fill: '#888', fontSize: 12 }} tickMargin={10} axisLine={false} tickLine={false} minTickGap={20} />
+              <YAxis 
+                tick={{ fill: '#888', fontSize: 12 }} 
+                axisLine={false} 
+                tickLine={false} 
+                domain={[
+                  (dataMin) => {
+                    if (!isFinite(dataMin)) return 0;
+                    if (activeTab === 'all' || chartInfo.safeMin === null) return Math.floor(dataMin - 10);
+                    
+                    const rangeSpan = chartInfo.safeMax - chartInfo.safeMin;
+                    const padding = Math.max(10, Math.floor(rangeSpan * 0.5));
+                    const minBase = Math.min(dataMin, chartInfo.safeMin);
+                    const calculatedMin = Math.floor(minBase - padding);
+                    
+                    return activeTab === 'temperature' ? calculatedMin : Math.max(0, calculatedMin);
+                  },
+                  (dataMax) => {
+                    if (!isFinite(dataMax)) return 100;
+                    if (activeTab === 'all' || chartInfo.safeMax === null) return Math.ceil(dataMax + 10);
+                    
+                    const rangeSpan = chartInfo.safeMax - chartInfo.safeMin;
+                    const padding = Math.max(10, Math.floor(rangeSpan * 0.5));
+                    const maxBase = Math.max(dataMax, chartInfo.safeMax);
+                    
+                    return Math.ceil(maxBase + padding);
+                  }
+                ]}
+                tickFormatter={(value) => Math.round(value)} 
+              />
+              <Tooltip 
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} 
+                itemStyle={{ fontWeight: 'bold' }} 
+                formatter={(value) => Number(value).toFixed(1)} 
+              />
               <Legend verticalAlign="top" height={40} />
               
               {activeTab !== 'all' && chartInfo.safeMin !== null && (
-                <ReferenceArea y1={chartInfo.safeMin} y2={chartInfo.safeMax} fill="#10b981" fillOpacity={0.08} />
+                <ReferenceArea 
+                  y1={chartInfo.safeMin} 
+                  y2={chartInfo.safeMax} 
+                  fill="#10b981" 
+                  fillOpacity={0.08} 
+                  ifOverflow="extend" 
+                />
               )}
 
               {(activeTab === 'all' || activeTab === 'moisture') && 
-                <Line type="monotone" dataKey="soil_moisture" name="토양 습도 (%)" stroke="#3b82f6" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 6 }} />}
+                <Line connectNulls type="monotone" dataKey="soil_moisture" name="토양 습도 (%)" stroke="#3b82f6" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 6 }} />}
               {(activeTab === 'all' || activeTab === 'temperature') && 
-                <Line type="monotone" dataKey="temperature" name="온도 (°C)" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 6 }} />}
+                <Line connectNulls type="monotone" dataKey="temperature" name="온도 (°C)" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 6 }} />}
               {(activeTab === 'all' || activeTab === 'humidity') && 
-                <Line type="monotone" dataKey="humidity" name="주변 습도 (%)" stroke="#06b6d4" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 6 }} />}
+                <Line connectNulls type="monotone" dataKey="humidity" name="주변 습도 (%)" stroke="#06b6d4" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 6 }} />}
               
               <Brush dataKey="label" height={30} stroke="#d1d5db" fill="#f9fafb" travellerWidth={10} startIndex={startIndex} />
             </LineChart>
