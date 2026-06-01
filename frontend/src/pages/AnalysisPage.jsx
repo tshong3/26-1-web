@@ -140,10 +140,15 @@ function AnalysisPage() {
   );
 
   const getChartInfo = () => {
+    // 💡 선택된 화분(activePot)의 설정값을 우선적으로 사용합니다.
+    const pot = potList.find(p => p.id === activePotId);
+    
+    if (!pot) return { title: '통합 센서 데이터', safeMin: null, safeMax: null, unit: '' };
+
     switch (activeTab) {
-      case 'moisture': return { title: '토양 습도 변화', safeMin: 30, safeMax: 70, unit: '%' };
-      case 'temperature': return { title: '온도 변화', safeMin: 18, safeMax: 26, unit: '°C' };
-      case 'humidity': return { title: '주변 습도 변화', safeMin: 40, safeMax: 70, unit: '%' };
+      case 'moisture': return { title: '토양 습도 변화', safeMin: pot.moistureMin, safeMax: pot.moistureMax, unit: '%' };
+      case 'temperature': return { title: '온도 변화', safeMin: pot.tempMin, safeMax: pot.tempMax, unit: '°C' };
+      case 'humidity': return { title: '주변 습도 변화', safeMin: pot.humidityMin, safeMax: pot.humidityMax, unit: '%' };
       default: return { title: '통합 센서 데이터', safeMin: null, safeMax: null, unit: '' };
     }
   };
