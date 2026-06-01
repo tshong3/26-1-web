@@ -208,7 +208,6 @@ function ControlPage() {
 
   const activePot = potList.find(p => p.id === activePotId) || potList[0];
 
-  // 상태 체크 로직
   const checkStatus = (value, min, max) => {
     if (min === null || max === null || value === null || value === undefined) {
       return { status: 'normal' }; 
@@ -252,7 +251,9 @@ function ControlPage() {
 
       <div className="control-panels-wrapper">
         <div className="control-card">
-          <div className="card-title-group"><h3>자동 급수</h3></div>
+          <div className="card-title-group">
+            <h3>자동 급수</h3>
+          </div>
           <p className="card-desc" style={{ marginBottom: '24px' }}>식물의 상태와 시간에 맞춰 자동으로 물을 공급해요</p>
 
           <div className={`inner-setting-card ${isAutoMode ? 'active' : ''}`}>
@@ -279,7 +280,7 @@ function ControlPage() {
               </div>
             </div>
           </div>
-          
+
           <div className={`inner-setting-card ${isScheduleMode ? 'active' : ''}`}>
             <div className="inner-card-header">
               <div className="inner-title-area">
@@ -305,7 +306,10 @@ function ControlPage() {
                       value={scheduleValue} 
                       onChange={(e) => {
                         let val = e.target.value;
-                        if (val.startsWith('0')) { setPeriodError('1부터 입력할 수 있어요'); return; }
+                        if (val.startsWith('0')) {
+                          setPeriodError('1부터 입력할 수 있어요');
+                          return;
+                        }
                         setPeriodError('');
                         if (val.length > 2) val = val.slice(0, 2); 
                         setScheduleValue(val === '' ? '' : parseInt(val));
@@ -315,8 +319,14 @@ function ControlPage() {
                         if (!scheduleValue || scheduleValue < 1) setScheduleValue(1);
                       }}
                       disabled={!isScheduleMode}
+                      min="1"
+                      max="99"
                     />
-                    <select value={scheduleUnit} onChange={(e) => setScheduleUnit(e.target.value)} disabled={!isScheduleMode}>
+                    <select 
+                      value={scheduleUnit} 
+                      onChange={(e) => setScheduleUnit(e.target.value)} 
+                      disabled={!isScheduleMode}
+                    >
                       <option value="일">일</option>
                       <option value="주">주</option>
                     </select>
@@ -331,22 +341,58 @@ function ControlPage() {
               </div>
             </div>
           </div>
-          <button className="btn-save" onClick={handleSaveSettings}>저장</button>
+
+          <div className={`inner-setting-card ${!isDurationEnabled ? 'disabled' : ''}`}>
+            <div className="inner-card-header no-border">
+              <div className="inner-title-area">
+                <span className="icon-circle water-icon">💧</span>
+                <div>
+                  <h4>1회 급수 시간 설정</h4>
+                  <p>급수 1회 실행 시 펌프 작동 시간을 설정하세요</p>
+                </div>
+              </div>
+            </div>
+            <div className="inner-card-content no-border">
+               <div className="input-row center">
+                <div className="input-with-text large">
+                  <input type="number" value={duration} onChange={(e) => setDuration(Number(e.target.value))} disabled={!isDurationEnabled} />
+                  <span>초 동안 펌프 가동</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button className="btn-save" onClick={handleSaveSettings}>
+            저장
+          </button>
         </div>
 
         <div className="right-column-wrapper">
           <div className="control-card manual-card">
-            <div className="card-title-group"><h3>수동 급수</h3></div>
+            <div className="card-title-group">
+              <h3>수동 급수</h3>
+            </div>
+            <p className="card-desc">수동으로 급수를 할 수 있어요</p>
+            <div className="setting-group highlight" style={{ marginBottom: '24px' }}>
+              <div className="setting-header"><label>급수 시간 설정</label></div>
+              <div className="input-row manual-input-wrapper">
+                <input type="number" value={manualDuration} onChange={(e) => setManualDuration(e.target.value)} min="1" />
+                <span>초 동안 펌프 가동</span>
+              </div>
+            </div>
             <button className="btn-water-now" onClick={handleManualWatering}>급수 시작</button>
           </div>
 
           <div className="control-card status-card">
-            <div className="card-title-group"><h3>실시간 모니터링</h3></div>
+            <div className="card-title-group">
+              <h3>실시간 모니터링</h3>
+            </div>
+            <p className="card-desc">수동 급수 전 현재 상태를 확인하세요</p>
             
             <div className="status-box">
               <div className="status-info-text">
                 <span>토양 습도</span>
-                <span className={`status-percent ${moistureStatus.status}`}>
+                <span className={`status-percent ${moistureStatus.status === 'danger' ? 'danger' : moistureStatus.status === 'warning' ? 'warning' : 'moisture'}`}>
                   {sensorData.soilMoisture}%
                 </span>
               </div>
@@ -354,26 +400,38 @@ function ControlPage() {
                 적정 범위: {activePot.moistureMin} ~ {activePot.moistureMax}%
               </p>
               <div className="status-progress-bar">
-                <div className={`status-progress-fill ${moistureStatus.status}`} style={{ width: `${sensorData.soilMoisture}%` }}></div>
+                <div 
+                  className={`status-progress-fill ${moistureStatus.status === 'danger' ? 'danger' : moistureStatus.status === 'warning' ? 'warning' : 'moisture'}`} 
+                  style={{ width: `${sensorData.soilMoisture}%` }}
+                ></div>
               </div>
-              <p className="status-hint">{moistureStatus.status === 'normal' ? '✅ 적정 습도입니다' : '⚠️ 습도 조절이 필요해요'}</p>
+              <p className="status-hint">
+                {moistureStatus.status === 'normal' ? '✅ 적정 습도입니다' : '⚠️ 습도 조절이 필요해요'}
+              </p>
             </div>
 
             <div className="status-box">
               <div className="status-info-text">
                 <span>물탱크 수위</span>
-                <span className={`status-percent ${waterStatus.status}`}>
+                <span className={`status-percent ${waterStatus.status === 'danger' ? 'danger' : waterStatus.status === 'warning' ? 'warning' : 'water'}`}>
                   {sensorData.waterLevel}%
                 </span>
               </div>
               <div className="status-progress-bar">
-                <div className={`status-progress-fill ${waterStatus.status}`} style={{ width: `${sensorData.waterLevel}%` }}></div>
+                <div 
+                  className={`status-progress-fill ${waterStatus.status === 'danger' ? 'danger' : waterStatus.status === 'warning' ? 'warning' : 'water'}`} 
+                  style={{ width: `${sensorData.waterLevel}%` }}
+                ></div>
               </div>
-              <p className="status-hint">{waterStatus.status === 'normal' ? '✅ 펌프 작동이 가능해요' : '⚠️ 물을 보충해 주세요'}</p>
+              <p className="status-hint">
+                {waterStatus.status === 'normal' ? '✅ 펌프 작동이 가능해요' : '⚠️ 물을 보충해 주세요'}
+              </p>
             </div>
+
             <button className="btn-refill" onClick={handleWaterRefill}>물 보충 완료</button>
           </div>
         </div>
+
       </div>
       {renderAddPotModal()}
     </div>
