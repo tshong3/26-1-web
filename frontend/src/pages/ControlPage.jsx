@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import useSensorStore from '../store/useSensorStore';
 import { MdWaterDrop, MdOutlineSettingsBackupRestore, MdKeyboardArrowDown } from "react-icons/md"; 
 import './ControlPage.css';
@@ -32,9 +32,39 @@ function ControlPage() {
   const [periodError, setPeriodError] = useState('');
   const [manualDuration, setManualDuration] = useState(15);
 
+  // 무한 자동 급수 알림 방지용 쿨타임 레퍼런스
+  const lastAutoWaterTime = useRef(0);
+
   useEffect(() => {
     fetchPlantGuide();
   }, [fetchPlantGuide]);
+
+  // 자동 급수 프론트엔드 알림 및 수위 감소 처리
+  useEffect(() => {
+    if (!activePotId || !isAutoMode) return;
+
+    const currentMoisture = sensorData.soilMoisture;
+    const currentWaterLevel = sensorData.waterLevel;
+    const now = Date.now();
+
+    // 조건: 습도 기준치 이하 & 물탱크에 물 존재 & 마지막 알림 후 10초 이상 경과
+    if (currentMoisture <= threshold && currentWaterLevel > 0 && (now - lastAutoWaterTime.current > 10000)) {
+      lastAutoWaterTime.current = now; // 쿨타임 초기화
+
+      setTimeout(() => {
+        alert(`🌱 [AI 자동 급수 작동]\n현재 토양 습도(${currentMoisture}%)가 설정값(${threshold}%) 이하로 감지되어 자동으로 물을 줍니다.`);
+        
+        // 물 수위 감소
+        const durationVal = Number(duration) || 15;
+        const waterDrop = durationVal * 2;
+        
+        updateSensorData({
+          waterLevel: Math.max(0, currentWaterLevel - waterDrop)
+        });
+      }, 500);
+    }
+  }, [sensorData.soilMoisture, threshold, isAutoMode, activePotId, duration, sensorData.waterLevel, updateSensorData]);
+
 
   const handleSaveSettings = async () => {
     updateControlSettings({
@@ -61,13 +91,24 @@ function ControlPage() {
       return alert('급수 시간은 1초 이상으로 설정해 주세요.');
     }
 
+    if (sensorData.waterLevel <= 0) {
+      return alert('⚠️ 물탱크에 물이 부족합니다. 먼저 물 보충을 완료해 주세요.');
+    }
+
     updateControlSettings({wateringDuration: durationVal});
 
     const result = await runManualWatering(activePotId);
     if(result.success){
-      alert(`수동 급수를 시작할게요.`);
+      alert(`수동 급수를 시작할게요. (${durationVal}초 가동)`);
       await fetchWateringLogs(activePotId);
-      await fetchLatestSensorData(activePotId);
+      await fetchLatestSensorData(activePotId); // 최신 데이터 동기화
+      
+      // 💡 프론트엔드 가짜 처리 (수위 감소만)
+      const waterDrop = durationVal * 2; // 1초당 수위 2% 감소
+      updateSensorData({ 
+        waterLevel: Math.max(0, sensorData.waterLevel - waterDrop)
+      });
+
     }else{
       alert(result.message||'수동 급수에 실패했어요.')
     }

@@ -32,7 +32,10 @@ function AnalysisPage() {
     try {
       const res = await sensorService.getChart(activePotId, timeRange);
       if (res.success) {
-        setChartData(res.data.items);
+        // 💡 API 구조가 items가 아니라 바로 배열로 올 경우를 대비한 강력한 방어 코드
+        const incomingData = Array.isArray(res.data) ? res.data : (res.data?.items || []);
+        console.log("📊 차트에 들어갈 데이터:", incomingData); // F12 개발자 도구에서 데이터가 제대로 오는지 확인용
+        setChartData(incomingData);
       }
     } catch (error) {
       console.error('차트 데이터 로드 실패:', error);
@@ -141,13 +144,12 @@ function AnalysisPage() {
 
   const getChartInfo = () => {
     const pot = potList.find(p => p.id === activePotId);
-    
     if (!pot) return { title: '통합 센서 데이터', safeMin: null, safeMax: null, unit: '' };
 
     switch (activeTab) {
-      case 'moisture': return { title: '토양 습도 변화', safeMin: pot.moistureMin, safeMax: pot.moistureMax, unit: '%' };
-      case 'temperature': return { title: '온도 변화', safeMin: pot.tempMin, safeMax: pot.tempMax, unit: '°C' };
-      case 'humidity': return { title: '주변 습도 변화', safeMin: pot.humidityMin, safeMax: pot.humidityMax, unit: '%' };
+      case 'moisture': return { title: '토양 습도 변화', safeMin: pot.moistureMin ?? null, safeMax: pot.moistureMax ?? null, unit: '%' };
+      case 'temperature': return { title: '온도 변화', safeMin: pot.tempMin ?? null, safeMax: pot.tempMax ?? null, unit: '°C' };
+      case 'humidity': return { title: '주변 습도 변화', safeMin: pot.humidityMin ?? null, safeMax: pot.humidityMax ?? null, unit: '%' };
       default: return { title: '통합 센서 데이터', safeMin: null, safeMax: null, unit: '' };
     }
   };
@@ -211,53 +213,62 @@ function AnalysisPage() {
       <div className="chart-card">
         <div className="chart-card-header">
           <h3 className="chart-title">{chartInfo.title}</h3>
-          {activeTab !== 'all' && (
+          {activeTab !== 'all' && chartInfo.safeMin != null && (
             <span className="safe-range-badge">적정 범위: {chartInfo.safeMin} ~ {chartInfo.safeMax}{chartInfo.unit}</span>
           )}
         </div>
         
         <div className="chart-wrapper">
-          <ResponsiveContainer width="100%" height="100%">
+          {/* 💡 높이가 0으로 찌그러지는 현상 방지를 위해 height 400 강제 고정 */}
+          <ResponsiveContainer width="100%" height={400}>
             <LineChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eaeaea" />
               <XAxis dataKey="label" tick={{ fill: '#888', fontSize: 12 }} tickMargin={10} axisLine={false} tickLine={false} minTickGap={20} />
+              
               <YAxis 
                 tick={{ fill: '#888', fontSize: 12 }} 
                 axisLine={false} 
                 tickLine={false} 
                 domain={[
                   (dataMin) => {
-                    if (!isFinite(dataMin)) return 0;
-                    if (activeTab === 'all' || chartInfo.safeMin === null) return Math.floor(dataMin - 10);
-                    
+                    const min = Number(dataMin);
+                    if (!isFinite(min)) return 0;
+                    if (activeTab === 'all' || chartInfo.safeMin == null || chartInfo.safeMax == null) {
+                      return Math.floor(min - 10);
+                    }
                     const rangeSpan = chartInfo.safeMax - chartInfo.safeMin;
                     const padding = Math.max(10, Math.floor(rangeSpan * 0.5));
-                    const minBase = Math.min(dataMin, chartInfo.safeMin);
-                    const calculatedMin = Math.floor(minBase - padding);
-                    
+                    const calculatedMin = Math.floor(Math.min(min, chartInfo.safeMin) - padding);
                     return activeTab === 'temperature' ? calculatedMin : Math.max(0, calculatedMin);
                   },
                   (dataMax) => {
-                    if (!isFinite(dataMax)) return 100;
-                    if (activeTab === 'all' || chartInfo.safeMax === null) return Math.ceil(dataMax + 10);
-                    
+                    const max = Number(dataMax);
+                    if (!isFinite(max)) return 100;
+                    if (activeTab === 'all' || chartInfo.safeMax == null || chartInfo.safeMin == null) {
+                      return Math.ceil(max + 10);
+                    }
                     const rangeSpan = chartInfo.safeMax - chartInfo.safeMin;
                     const padding = Math.max(10, Math.floor(rangeSpan * 0.5));
-                    const maxBase = Math.max(dataMax, chartInfo.safeMax);
-                    
-                    return Math.ceil(maxBase + padding);
+                    return Math.ceil(Math.max(max, chartInfo.safeMax) + padding);
                   }
                 ]}
-                tickFormatter={(value) => Math.round(value)} 
+                tickFormatter={(value) => {
+                  const num = Number(value);
+                  return isNaN(num) ? '' : Math.round(num);
+                }} 
               />
+              
               <Tooltip 
                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} 
                 itemStyle={{ fontWeight: 'bold' }} 
-                formatter={(value) => Number(value).toFixed(1)} 
+                formatter={(value) => {
+                  const num = Number(value);
+                  return isNaN(num) ? '데이터 없음' : num.toFixed(1);
+                }} 
               />
               <Legend verticalAlign="top" height={40} />
               
-              {activeTab !== 'all' && chartInfo.safeMin !== null && (
+              {activeTab !== 'all' && chartInfo.safeMin != null && chartInfo.safeMax != null && (
                 <ReferenceArea 
                   y1={chartInfo.safeMin} 
                   y2={chartInfo.safeMax} 
@@ -274,7 +285,10 @@ function AnalysisPage() {
               {(activeTab === 'all' || activeTab === 'humidity') && 
                 <Line connectNulls type="monotone" dataKey="humidity" name="주변 습도 (%)" stroke="#06b6d4" strokeWidth={3} dot={{ r: 3 }} activeDot={{ r: 6 }} />}
               
-              <Brush dataKey="label" height={30} stroke="#d1d5db" fill="#f9fafb" travellerWidth={10} startIndex={startIndex} />
+              {/* 💡 데이터가 2개 미만일 때 Brush가 차트를 터뜨리는 현상 방지 */}
+              {chartData.length > 1 && (
+                <Brush dataKey="label" height={30} stroke="#d1d5db" fill="#f9fafb" travellerWidth={10} startIndex={startIndex} />
+              )}
             </LineChart>
           </ResponsiveContainer>
         </div>
