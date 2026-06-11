@@ -64,11 +64,11 @@ Claude API를 활용하여 날씨 정보와 센서값을 기반으로 식물 관
 
 본 프로젝트는 아래 배포 주소를 통해 실제 웹 서비스 형태로 확인할 수 있습니다.
 
-- **Service URL**: [http://farm.nulldns.top](http://farm.nulldns.top)
+- **Service URL**: [https://farm.nulldns.top](https://farm.nulldns.top)
 
 로그인 없이 주요 화면과 기능 흐름을 확인할 수 있는 미리보기 모드를 제공합니다.
 
-- **Demo Preview**: [http://farm.nulldns.top/demo](http://farm.nulldns.top/demo)
+- **Demo Preview**: [https://farm.nulldns.top/demo](https://farm.nulldns.top/demo)
 
 > 미리보기 모드는 샘플 데이터를 기반으로 동작하며, 실제 급수 제어 기능은 실행되지 않습니다.
 
