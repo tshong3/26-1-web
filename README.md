@@ -60,22 +60,19 @@ Claude API를 활용하여 날씨 정보와 센서값을 기반으로 식물 관
 
 ---
 
-## 🌐 배포 주소 및 테스트 계정
+## 🌐 배포 주소
 
-본 프로젝트는 아래 주소를 통해 접속하여 확인할 수 있습니다.
+본 프로젝트는 아래 배포 주소를 통해 실제 웹 서비스 형태로 확인할 수 있습니다.
 
-* **Service URL**: http://farm.nulldns.top
+- **Service URL**: [http://farm.nulldns.top](http://farm.nulldns.top)
 
-### 🔐 테스트 계정
+로그인 없이 주요 화면과 기능 흐름을 확인할 수 있는 미리보기 모드를 제공합니다.
 
-서비스 기능 확인을 위해 아래 테스트 계정을 사용할 수 있습니다.
+- **Demo Preview**: [http://farm.nulldns.top/demo](http://farm.nulldns.top/demo)
 
-| 구분   | 정보               |
-| ---- | ---------------- |
-| 이메일  | `test2@test.com` |
-| 비밀번호 | `1234`           |
+> 미리보기 모드는 샘플 데이터를 기반으로 동작하며, 실제 급수 제어 기능은 실행되지 않습니다.
 
-> 해당 계정은 프로젝트 시연 및 기능 확인을 위한 테스트 계정입니다.
+---
 
 ## 🖼️ 실행 화면 (Execution Screens)
 
@@ -302,7 +299,8 @@ DB_NAME=smart_pot
 
 JWT_SECRET=your_jwt_secret
 
-CLAUDE_API_KEY=your_claude_api_key
+ANTHROPIC_API_KEY=your_claude_api_key
+OPENWEATHER_API_KEY=your_weather_api_key
 
 ```
 
