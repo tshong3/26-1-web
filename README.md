@@ -78,9 +78,9 @@ Claude API를 활용하여 날씨 정보와 센서값을 기반으로 식물 관
 
 ### 🏠 1. 메인화면, 로그인, 화분 등록 화면
 
-<!-- 이미지 위치: docs/images/main-login-register.png -->
+<!-- 이미지 위치: docs/main-login-register.png -->
 
-<img src="./docs/images/main-login-register.png" width="800" alt="메인화면, 로그인, 화분 등록 화면" />
+<img src="./docs/main-login-register.png" width="800" alt="메인화면, 로그인, 화분 등록 화면" />
 
 사용자는 메인화면에서 서비스에 접근하고, 회원가입 및 로그인을 통해 개인 계정으로 접속할 수 있습니다. 로그인 후에는 관리할 화분을 등록하고 선택하여 해당 화분의 상태를 확인할 수 있습니다.
 
@@ -88,9 +88,9 @@ Claude API를 활용하여 날씨 정보와 센서값을 기반으로 식물 관
 
 ### 🔔 2. 알림 및 대시보드
 
-<!-- 이미지 위치: docs/images/notification-dashboard.png -->
+<!-- 이미지 위치: docs/notification-dashboard.png -->
 
-<img src="./docs/images/notification-dashboard.png" width="800" alt="알림 및 대시보드 화면" />
+<img src="./docs/notification-dashboard.png" width="800" alt="알림 및 대시보드 화면" />
 
 대시보드에서는 현재 화분의 온도, 습도, 토양 습도, 조도, 물통 잔량 등의 센서값을 확인할 수 있습니다. 또한 Claude API를 활용하여 날씨 정보와 센서값 기반의 식물 관리 알림을 제공합니다.
 
@@ -98,9 +98,9 @@ Claude API를 활용하여 날씨 정보와 센서값을 기반으로 식물 관
 
 ### 📈 3. 차트 분석 및 급수 시스템
 
-<!-- 이미지 위치: docs/images/chart-watering-system.png -->
+<!-- 이미지 위치: docschart-watering-system.png -->
 
-<img src="./docs/images/chart-watering-system.png" width="800" alt="차트 분석 및 급수 시스템 화면" />
+<img src="./docs/chart-watering-system.png" width="800" alt="차트 분석 및 급수 시스템 화면" />
 
 수집된 센서 데이터는 차트 형태로 시각화되어 시간에 따른 변화 추이를 확인할 수 있습니다. 사용자는 토양 습도 기준값을 설정하여 자동 급수 조건을 구성하거나, 필요할 경우 수동 급수를 실행할 수 있습니다.
 
@@ -108,9 +108,9 @@ Claude API를 활용하여 날씨 정보와 센서값을 기반으로 식물 관
 
 ### 🪴 4. 스마트 화분 하드웨어
 
-<!-- 이미지 위치: docs/images/smart-planter-hardware.png -->
+<!-- 이미지 위치: docs/smart-planter-hardware.png -->
 
-<img src="./docs/images/smart-planter-hardware.png" width="800" alt="스마트 화분 하드웨어" />
+<img src="./docs/smart-planter-hardware.png" width="800" alt="스마트 화분 하드웨어" />
 
 스마트 화분 하드웨어는 ESP32, 토양 습도 센서, 온습도 센서, 조도 센서, 무게센서, 워터펌프, 릴레이 모듈을 결합하여 제작했습니다. 센서 데이터 수집과 급수 제어가 실제 화분 구조 안에서 동작하도록 구성했습니다.
 
@@ -185,9 +185,9 @@ Claude API를 활용하여 날씨 정보와 센서값을 기반으로 식물 관
 
 ### 🧩 1. 전체 시스템 구조
 
-<!-- 이미지 위치: docs/images/architecture-diagram.png -->
+<!-- 이미지 위치: docs/architecture-diagram.png -->
 
-<img src="./docs/images/architecture-diagram.png" width="800" alt="시스템 아키텍처 구조도" />
+<img src="./docs/architecture-diagram.png" width="800" alt="시스템 아키텍처 구조도" />
 
 본 프로젝트는 ESP32 기반 하드웨어, Node.js 백엔드 서버, MySQL 데이터베이스, React 프론트엔드, Claude API 기반 알림 서비스로 구성됩니다.
 
@@ -457,10 +457,10 @@ POST /api/notifications/generate
 
 | 이름  | 역할                                                |
 | --- | ------------------------------------------------- |
-| 홍태성 | 백엔드 API 구현, 데이터베이스 설계, 서버 배포, 센서 데이터 연동, 최종 문서 정리 |
-| 안효성 | 프론트엔드 화면 구현, 대시보드 UI 구성, 센서 데이터 차트 시각화            |
-| 서민식 | 스마트 화분 하드웨어 제작, 3D 프린터 출력물 조립, 센서 및 펌프 배치         |
-| 김혜성 | Claude API 기반 알림 서비스 구성 보조, 기능 테스트, 발표 자료 및 문서 정리 |
+| 홍태성 | DB 및 웹 서버 구성,  3D 프린터 기반 스마트 화분 제작, 센서 데이터 API 구현, ESP32 개발 |
+| 안효성 | Node.js 기반 API 구현,  Claude API 기반 알림 서비스 구현, 로그인/회원가입 API 구현            |
+| 서민식 | Node.js 기반 API 구현, 화분  등록 및 화분 도감 API 구현         |
+| 김혜성 | React 기반 웹 화면 구현,  메인화면, 대시보드 UI 등 전체 UI 화면 구성, API 연동 |
 
 ---
 
